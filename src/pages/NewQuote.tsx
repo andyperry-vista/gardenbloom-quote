@@ -1,0 +1,335 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuotes } from "@/hooks/useQuotes";
+import { useMaterials } from "@/hooks/useMaterials";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Plus, Trash2, Save } from "lucide-react";
+import AppLayout from "@/components/AppLayout";
+import type { Quote, QuoteLineItem, Client } from "@/types/quote";
+
+export default function NewQuote() {
+  const navigate = useNavigate();
+  const { addQuote } = useQuotes();
+  const { materials } = useMaterials();
+
+  const [client, setClient] = useState<Client>({
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  const [items, setItems] = useState<QuoteLineItem[]>([]);
+  const [notes, setNotes] = useState("");
+  const [defaultMarkup, setDefaultMarkup] = useState(40);
+
+  const addLineItem = (type: "material" | "labor") => {
+    setItems((prev) => [
+      ...prev,
+      {
+        id: `li-${Date.now()}`,
+        type,
+        description: "",
+        quantity: 1,
+        unitCost: 0,
+        markupPercent: defaultMarkup,
+        total: 0,
+      },
+    ]);
+  };
+
+  const updateItem = (id: string, updates: Partial<QuoteLineItem>) => {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const updated = { ...item, ...updates };
+        const costWithMarkup =
+          updated.unitCost * (1 + updated.markupPercent / 100);
+        updated.total = updated.quantity * costWithMarkup;
+        return updated;
+      })
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  const selectMaterial = (itemId: string, materialId: string) => {
+    const mat = materials.find((m) => m.id === materialId);
+    if (!mat) return;
+    updateItem(itemId, {
+      materialId,
+      description: mat.name,
+      unitCost: mat.wholesalePrice,
+    });
+  };
+
+  const subtotal = items.reduce((s, i) => s + i.quantity * i.unitCost, 0);
+  const grandTotal = items.reduce((s, i) => s + i.total, 0);
+  const markupTotal = grandTotal - subtotal;
+
+  const handleSave = () => {
+    if (!client.name) return;
+    const quote: Quote = {
+      id: `q-${Date.now()}`,
+      client: { ...client, id: `c-${Date.now()}` },
+      items,
+      subtotal,
+      markupTotal,
+      grandTotal,
+      status: "draft",
+      createdAt: new Date().toISOString(),
+      notes: notes || undefined,
+    };
+    addQuote(quote);
+    navigate(`/quotes/${quote.id}`);
+  };
+
+  return (
+    <AppLayout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="font-display text-3xl font-bold">New Quote</h1>
+          <p className="text-muted-foreground mt-1">
+            Build a garden styling quote for your client
+          </p>
+        </div>
+
+        {/* Client Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Client Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label>Full Name</Label>
+              <Input
+                value={client.name}
+                onChange={(e) => setClient({ ...client, name: e.target.value })}
+                placeholder="Jane Smith"
+              />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={client.email}
+                onChange={(e) => setClient({ ...client, email: e.target.value })}
+                placeholder="jane@example.com"
+              />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input
+                value={client.phone}
+                onChange={(e) => setClient({ ...client, phone: e.target.value })}
+                placeholder="021 123 4567"
+              />
+            </div>
+            <div>
+              <Label>Property Address</Label>
+              <Input
+                value={client.address}
+                onChange={(e) =>
+                  setClient({ ...client, address: e.target.value })
+                }
+                placeholder="123 Garden Lane, Auckland"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Default Markup */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <Label className="whitespace-nowrap">Default Markup %</Label>
+              <Input
+                type="number"
+                className="w-24"
+                value={defaultMarkup}
+                onChange={(e) => setDefaultMarkup(Number(e.target.value))}
+              />
+              <span className="text-sm text-muted-foreground">
+                Applied to new line items
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Line Items */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Line Items</CardTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => addLineItem("material")}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Material
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Labour
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {items.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">
+                Add materials or labour to build the quote
+              </p>
+            )}
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="grid gap-3 p-4 rounded-lg border bg-muted/30"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {item.type}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeItem(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                  {item.type === "material" ? (
+                    <div className="sm:col-span-2">
+                      <Label>Material</Label>
+                      <Select
+                        value={item.materialId}
+                        onValueChange={(v) => selectMaterial(item.id, v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose material" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {materials.map((m) => (
+                            <SelectItem key={m.id} value={m.id}>
+                              {m.name} – ${m.wholesalePrice.toFixed(2)}/{m.unit}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : (
+                    <div className="sm:col-span-2">
+                      <Label>Description</Label>
+                      <Input
+                        value={item.description}
+                        onChange={(e) =>
+                          updateItem(item.id, { description: e.target.value })
+                        }
+                        placeholder="e.g. Garden bed prep & planting"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <Label>Qty</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(e) =>
+                        updateItem(item.id, { quantity: Number(e.target.value) })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Unit Cost ($)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={item.unitCost}
+                      onChange={(e) =>
+                        updateItem(item.id, {
+                          unitCost: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Markup %</Label>
+                    <Input
+                      type="number"
+                      value={item.markupPercent}
+                      onChange={(e) =>
+                        updateItem(item.id, {
+                          markupPercent: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="text-right font-semibold text-primary">
+                  Line Total: ${item.total.toFixed(2)}
+                </div>
+              </div>
+            ))}
+
+            {items.length > 0 && (
+              <>
+                <Separator />
+                <div className="space-y-2 text-right">
+                  <p className="text-muted-foreground">
+                    Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span>
+                  </p>
+                  <p className="text-xl font-bold text-foreground">
+                    Total: ${grandTotal.toFixed(2)}
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Notes */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Notes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Additional notes for the client, e.g. timeline, access requirements…"
+              rows={3}
+            />
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={() => navigate("/")}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={!client.name || items.length === 0}>
+            <Save className="w-4 h-4 mr-2" />
+            Save Quote
+          </Button>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
