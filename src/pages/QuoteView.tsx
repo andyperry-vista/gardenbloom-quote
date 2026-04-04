@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Send, Leaf, Trash2 } from "lucide-react";
+import { ArrowLeft, Send, Trash2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import mayuraLogo from "@/assets/mayura-logo.jpeg";
 import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
