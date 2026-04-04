@@ -26,11 +26,11 @@ export default function Dashboard() {
       <div className="space-y-8">
         <div className="flex items-end justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-foreground">
-              Dashboard
+            <h1 className="font-display text-4xl text-foreground">
+              Mayura
             </h1>
             <p className="text-muted-foreground mt-1">
-              Pre-sale garden styling quotes
+              Garden Service — Quoting Dashboard
             </p>
           </div>
           <Link to="/quotes/new">
