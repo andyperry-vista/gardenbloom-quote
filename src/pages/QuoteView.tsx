@@ -230,5 +230,3 @@ export default function QuoteView() {
     </AppLayout>
   );
 }
-
-type Quote = import("@/types/quote").Quote;
