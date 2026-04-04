@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "./pages/Dashboard";
-import NewQuote from "./pages/NewQuote";
+import QuoteEditor from "./pages/QuoteEditor";
 import QuoteView from "./pages/QuoteView";
 import Materials from "./pages/Materials";
 import NotFound from "./pages/NotFound";
@@ -19,8 +19,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/quotes/new" element={<NewQuote />} />
+          <Route path="/quotes/new" element={<QuoteEditor />} />
           <Route path="/quotes/:id" element={<QuoteView />} />
+          <Route path="/quotes/:id/edit" element={<QuoteEditor />} />
           <Route path="/materials" element={<Materials />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
