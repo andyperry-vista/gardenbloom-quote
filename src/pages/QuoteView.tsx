@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Send, Trash2 } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Pencil } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import mayuraLogo from "@/assets/mayura-logo.jpeg";
 import { toast } from "sonner";
