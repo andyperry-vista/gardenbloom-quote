@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Send, Leaf, Trash2 } from "lucide-react";
+import { ArrowLeft, Send, Trash2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import mayuraLogo from "@/assets/mayura-logo.jpeg";
 import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
@@ -99,12 +100,10 @@ export default function QuoteView() {
           <div className="bg-primary p-8 text-primary-foreground">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-                  <Leaf className="w-6 h-6" />
-                </div>
+                <img src={mayuraLogo} alt="Mayura Garden Service" className="h-12 w-auto rounded" />
                 <div>
-                  <h2 className="font-display text-2xl font-bold">GardenQuote</h2>
-                  <p className="text-sm opacity-80">Pre-Sale Garden Styling</p>
+                  <h2 className="font-display text-3xl text-primary-foreground">Mayura</h2>
+                  <p className="text-xs text-primary-foreground/70 tracking-widest uppercase">Garden Service — Quote</p>
                 </div>
               </div>
               <div className="text-right">
