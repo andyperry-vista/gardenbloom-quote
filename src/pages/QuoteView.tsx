@@ -73,6 +73,11 @@ export default function QuoteView() {
             Back
           </Link>
           <div className="flex items-center gap-2">
+            <Link to={`/quotes/${id}/edit`}>
+              <Button variant="outline" size="icon">
+                <Pencil className="w-4 h-4" />
+              </Button>
+            </Link>
             <Select
               value={quote.status}
               onValueChange={(v) =>
