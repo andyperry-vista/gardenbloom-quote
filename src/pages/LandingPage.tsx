@@ -63,15 +63,15 @@ export default function LandingPage() {
     setSending(true);
     try {
       const id = crypto.randomUUID();
-      let photoUrl: string | undefined;
+      const photoUrls: string[] = [];
 
-      if (photo) {
-        const ext = photo.name.split(".").pop() || "jpg";
-        const path = `quotes/${id}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photo);
+      for (let i = 0; i < photos.length; i++) {
+        const ext = photos[i].name.split(".").pop() || "jpg";
+        const path = `quotes/${id}-${i}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photos[i]);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
-        photoUrl = urlData.publicUrl;
+        photoUrls.push(urlData.publicUrl);
       }
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
@@ -79,7 +79,7 @@ export default function LandingPage() {
           templateName: "quote-request",
           recipientEmail: form.email,
           idempotencyKey: `quote-req-${id}`,
-          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl },
+          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl: photoUrls[0], photoUrls },
         },
       });
       if (error) throw error;
