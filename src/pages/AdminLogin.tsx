@@ -4,23 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
-
-const ADMIN_PASSWORD = "mayura2026";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("mayura_admin", "true");
-      navigate("/admin");
+    setLoading(true);
+    setError("");
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
     } else {
-      setError(true);
+      navigate("/admin");
     }
   };
 
@@ -36,17 +45,31 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                placeholder="admin@example.com"
+                autoFocus
+                required
+              />
+            </div>
+            <div>
               <Label>Password</Label>
               <Input
                 type="password"
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(false); }}
-                placeholder="Enter admin password"
-                autoFocus
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                placeholder="Enter password"
+                required
               />
-              {error && <p className="text-sm text-destructive mt-1">Incorrect password</p>}
             </div>
-            <Button type="submit" className="w-full">Sign In</Button>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Sign In
+            </Button>
           </form>
         </CardContent>
       </Card>
