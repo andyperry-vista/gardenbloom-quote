@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FilePlus, Package, LogOut, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -14,8 +15,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("mayura_admin");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate("/");
   };
 
