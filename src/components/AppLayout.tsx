@@ -1,21 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, FilePlus, Package, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo.png";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/quotes/new", label: "New Quote", icon: FilePlus },
-  { to: "/materials", label: "Materials", icon: Package },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
+  { to: "/admin/materials", label: "Materials", icon: Package },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("mayura_admin");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-primary sticky top-0 z-50">
         <div className="container flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/admin" className="flex items-center gap-3">
             <img
               src={mayuraLogo}
               alt="Mayura Garden Service"
@@ -48,6 +55,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">Logout</span>
+            </Button>
           </nav>
         </div>
       </header>

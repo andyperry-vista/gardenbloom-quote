@@ -98,7 +98,7 @@ export default function QuoteEditor() {
         notes: notes || undefined,
       });
       toast.success("Quote updated");
-      navigate(`/quotes/${existingQuote.id}`);
+      navigate(`/admin/quotes/${existingQuote.id}`);
     } else {
       const quote: Quote = {
         id: `q-${Date.now()}`,
@@ -113,7 +113,7 @@ export default function QuoteEditor() {
       };
       addQuote(quote);
       toast.success("Quote created");
-      navigate(`/quotes/${quote.id}`);
+      navigate(`/admin/quotes/${quote.id}`);
     }
   };
 
@@ -122,7 +122,7 @@ export default function QuoteEditor() {
       <AppLayout>
         <div className="text-center py-20">
           <p className="text-muted-foreground">Quote not found</p>
-          <Button variant="outline" className="mt-4" onClick={() => navigate("/")}>
+          <Button variant="outline" className="mt-4" onClick={() => navigate("/admin")}>
             Back to Dashboard
           </Button>
         </div>
@@ -267,7 +267,7 @@ export default function QuoteEditor() {
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => navigate(isEditing ? `/quotes/${id}` : "/")}>Cancel</Button>
+          <Button variant="outline" onClick={() => navigate(isEditing ? `/admin/quotes/${id}` : "/admin")}>Cancel</Button>
           <Button onClick={handleSave} disabled={!client.name || items.length === 0}>
             <Save className="w-4 h-4 mr-2" />
             {isEditing ? "Update Quote" : "Save Quote"}
