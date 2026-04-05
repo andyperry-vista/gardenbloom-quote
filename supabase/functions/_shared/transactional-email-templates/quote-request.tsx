@@ -15,7 +15,7 @@ interface QuoteRequestProps {
   photoUrl?: string
 }
 
-const QuoteRequestEmail = ({ name, email, phone, address, message }: QuoteRequestProps) => (
+const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: QuoteRequestProps) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>New quote request from {name || 'a potential client'}</Preview>
