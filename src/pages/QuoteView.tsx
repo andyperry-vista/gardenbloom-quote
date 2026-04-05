@@ -35,7 +35,7 @@ export default function QuoteView() {
       <AppLayout>
         <div className="text-center py-20">
           <p className="text-muted-foreground mb-4">Quote not found</p>
-          <Link to="/">
+          <Link to="/admin">
             <Button variant="outline">Back to Dashboard</Button>
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default function QuoteView() {
 
   const handleDelete = () => {
     deleteQuote(quote.id);
-    navigate("/");
+    navigate("/admin");
     toast.success("Quote deleted");
   };
 
@@ -73,7 +73,7 @@ export default function QuoteView() {
             Back
           </Link>
           <div className="flex items-center gap-2">
-            <Link to={`/quotes/${id}/edit`}>
+            <Link to={`/admin/quotes/${id}/edit`}>
               <Button variant="outline" size="icon">
                 <Pencil className="w-4 h-4" />
               </Button>
