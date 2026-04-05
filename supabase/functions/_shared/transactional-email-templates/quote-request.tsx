@@ -46,10 +46,17 @@ const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: Q
               <Text style={label}>Message</Text>
               <Text style={value}>{message}</Text>
             </>
-          )}
-        </Section>
-        <Hr style={hr} />
-        <Text style={footer}>This email was sent from the {SITE_NAME} website contact form.</Text>
+           )}
+         </Section>
+         {photoUrl && (
+           <>
+             <Hr style={hr} />
+             <Text style={label}>Garden Photo</Text>
+             <Img src={photoUrl} alt="Garden photo" width="100%" style={{ borderRadius: '8px', marginTop: '8px' }} />
+           </>
+         )}
+         <Hr style={hr} />
+         <Text style={footer}>This email was sent from the {SITE_NAME} website contact form.</Text>
       </Container>
     </Body>
   </Html>
@@ -59,7 +66,7 @@ export const template = {
   component: QuoteRequestEmail,
   subject: (data: Record<string, any>) => `New Quote Request from ${data.name || 'Website Visitor'}`,
   displayName: 'Quote request notification',
-  previewData: { name: 'Jane Smith', email: 'jane@example.com', phone: '021 123 4567', address: '42 Garden Lane, Auckland', message: 'Looking to tidy up the front garden before listing.' },
+  previewData: { name: 'Jane Smith', email: 'jane@example.com', phone: '021 123 4567', address: '42 Garden Lane, Auckland', message: 'Looking to tidy up the front garden before listing.', photoUrl: 'https://placehold.co/600x400/2d5a3d/ffffff?text=Garden+Photo' },
 } satisfies TemplateEntry
 
 const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
