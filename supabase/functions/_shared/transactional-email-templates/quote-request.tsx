@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Hr, Section,
+  Body, Container, Head, Heading, Html, Preview, Text, Hr, Section, Button, Img,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -12,6 +12,7 @@ interface QuoteRequestProps {
   phone?: string
   address?: string
   message?: string
+  photoUrl?: string
 }
 
 const QuoteRequestEmail = ({ name, email, phone, address, message }: QuoteRequestProps) => (
