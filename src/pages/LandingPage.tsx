@@ -55,12 +55,23 @@ export default function LandingPage() {
     setSending(true);
     try {
       const id = crypto.randomUUID();
+      let photoUrl: string | undefined;
+
+      if (photo) {
+        const ext = photo.name.split(".").pop() || "jpg";
+        const path = `quotes/${id}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photo);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
+        photoUrl = urlData.publicUrl;
+      }
+
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "quote-request",
           recipientEmail: form.email,
           idempotencyKey: `quote-req-${id}`,
-          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message },
+          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl },
         },
       });
       if (error) throw error;
