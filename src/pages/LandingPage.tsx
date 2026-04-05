@@ -72,9 +72,14 @@ export default function LandingPage() {
                 <Send className="w-4 h-4" /> Request a Quote
               </Button>
             </a>
-            <a href="tel:+64211234567">
+            <a href="tel:0413806551">
               <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Phone className="w-4 h-4" /> Call Us
+                <Phone className="w-4 h-4" /> Call Nick
+              </Button>
+            </a>
+            <a href="mailto:nick@mayuragardenservices.com.au">
+              <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+                <Mail className="w-4 h-4" /> Email Us
               </Button>
             </a>
           </div>
