@@ -170,7 +170,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   We've received your request and will be in touch shortly.
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); removePhoto(); }}>
                   Submit Another Request
                 </Button>
               </CardContent>
