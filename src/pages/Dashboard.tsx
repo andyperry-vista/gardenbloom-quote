@@ -33,7 +33,7 @@ export default function Dashboard() {
               Garden Service — Quoting Dashboard
             </p>
           </div>
-          <Link to="/quotes/new">
+          <Link to="/admin/quotes/new">
             <Button>
               <FilePlus className="w-4 h-4 mr-2" />
               New Quote
@@ -87,7 +87,7 @@ export default function Dashboard() {
               <p className="text-muted-foreground mb-4">
                 No quotes yet. Create your first garden styling quote!
               </p>
-              <Link to="/quotes/new">
+              <Link to="/admin/quotes/new">
                 <Button>
                   <FilePlus className="w-4 h-4 mr-2" />
                   Create Quote
@@ -105,7 +105,7 @@ export default function Dashboard() {
                 {quotes.map((quote) => (
                   <Link
                     key={quote.id}
-                    to={`/quotes/${quote.id}`}
+                    to={`/admin/quotes/${quote.id}`}
                     className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                   >
                     <div>
