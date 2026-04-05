@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import mayuraLogo from "@/assets/mayura-logo.png";
-import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const services = [
   { icon: Flower2, title: "Garden Styling", desc: "Transform gardens to boost property appeal for marketing photos" },
@@ -20,6 +25,34 @@ const steps = [
 ];
 
 export default function LandingPage() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) return;
+    setSending(true);
+    try {
+      const id = crypto.randomUUID();
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "quote-request",
+          recipientEmail: form.email,
+          idempotencyKey: `quote-req-${id}`,
+          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message },
+        },
+      });
+      if (error) throw error;
+      setSent(true);
+      toast.success("Your request has been sent!");
+    } catch {
+      toast.error("Failed to send. Please try again or call us directly.");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -34,14 +67,14 @@ export default function LandingPage() {
             We transform gardens so homes sell faster and for more.
           </p>
           <div className="flex gap-4">
-            <a href="tel:+64211234567">
+            <a href="#quote-form">
               <Button size="lg" variant="secondary" className="gap-2">
-                <Phone className="w-4 h-4" /> Call Us
+                <Send className="w-4 h-4" /> Request a Quote
               </Button>
             </a>
-            <a href="mailto:hello@mayuragardenservices.com.au">
+            <a href="tel:+64211234567">
               <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Mail className="w-4 h-4" /> Get in Touch
+                <Phone className="w-4 h-4" /> Call Us
               </Button>
             </a>
           </div>
@@ -85,24 +118,92 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="container py-16 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Maximise Your Property's Value?</h2>
-        <p className="text-muted-foreground max-w-md mx-auto mb-8">
-          Get in touch today for a free consultation and quote. We'll make sure your garden 
-          looks picture-perfect for sale day.
-        </p>
-        <div className="flex justify-center gap-4">
-          <a href="tel:+64211234567">
-            <Button size="lg" className="gap-2">
-              <Phone className="w-4 h-4" /> Call Now
-            </Button>
-          </a>
-          <a href="mailto:hello@mayuragardenservices.com.au">
-            <Button size="lg" variant="outline" className="gap-2">
-              <Mail className="w-4 h-4" /> Email Us
-            </Button>
-          </a>
+      {/* Quote Request Form */}
+      <section id="quote-form" className="container py-16">
+        <div className="max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-2">Request a Quote</h2>
+          <p className="text-muted-foreground text-center mb-8">
+            Tell us about your property and we'll get back to you with a free quote.
+          </p>
+
+          {sent ? (
+            <Card>
+              <CardContent className="pt-8 pb-8 text-center space-y-4">
+                <CheckCircle className="w-12 h-12 text-primary mx-auto" />
+                <h3 className="text-xl font-semibold">Thank You!</h3>
+                <p className="text-muted-foreground">
+                  We've received your request and will be in touch shortly.
+                </p>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); }}>
+                  Submit Another Request
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="pt-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label>Full Name *</Label>
+                      <Input
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder="Jane Smith"
+                        required
+                        maxLength={100}
+                      />
+                    </div>
+                    <div>
+                      <Label>Email *</Label>
+                      <Input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder="jane@example.com"
+                        required
+                        maxLength={255}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label>Phone</Label>
+                      <Input
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="021 123 4567"
+                        maxLength={20}
+                      />
+                    </div>
+                    <div>
+                      <Label>Property Address</Label>
+                      <Input
+                        value={form.address}
+                        onChange={(e) => setForm({ ...form, address: e.target.value })}
+                        placeholder="123 Garden Lane, Auckland"
+                        maxLength={200}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Tell us about your project</Label>
+                    <Textarea
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      placeholder="What work are you looking to have done? Any timeline for photography?"
+                      rows={4}
+                      maxLength={1000}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={sending}>
+                    {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                    {sending ? "Sending…" : "Request a Quote"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </section>
 

@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import QuoteEditor from "./pages/QuoteEditor";
 import QuoteView from "./pages/QuoteView";
 import Materials from "./pages/Materials";
+import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
