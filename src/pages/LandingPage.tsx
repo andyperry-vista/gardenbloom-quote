@@ -77,7 +77,7 @@ export default function LandingPage() {
                 <Phone className="w-4 h-4" /> Call Nick
               </Button>
             </a>
-            <a href="mailto:nick@mayuragardenservices.com.au">
+            <a href="mailto:nicholas@mayuragardenservices.com.au">
               <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                 <Mail className="w-4 h-4" /> Email Us
               </Button>
