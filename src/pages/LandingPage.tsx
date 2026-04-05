@@ -232,6 +232,37 @@ export default function LandingPage() {
                       maxLength={1000}
                     />
                   </div>
+                  <div>
+                    <Label>Photo of your garden (optional)</Label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
+                    {photoPreview ? (
+                      <div className="relative mt-2">
+                        <img src={photoPreview} alt="Garden preview" className="w-full h-48 object-cover rounded-lg border" />
+                        <button
+                          type="button"
+                          onClick={removePhoto}
+                          className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-2 w-full border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 flex flex-col items-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                      >
+                        <Camera className="w-8 h-8" />
+                        <span className="text-sm">Tap to add a photo</span>
+                      </button>
+                    )}
                   <Button type="submit" className="w-full" disabled={sending}>
                     {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
                     {sending ? "Sending…" : "Request a Quote"}
