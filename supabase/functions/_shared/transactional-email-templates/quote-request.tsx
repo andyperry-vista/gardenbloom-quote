@@ -65,7 +65,8 @@ const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl, pho
       </Container>
     </Body>
   </Html>
-)
+  );
+}
 
 export const template = {
   component: QuoteRequestEmail,
