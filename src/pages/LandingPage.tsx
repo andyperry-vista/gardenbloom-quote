@@ -302,6 +302,9 @@ export default function LandingPage() {
           <p className="text-xs text-primary-foreground/50 mt-2">
             © {new Date().getFullYear()} Mayura Garden Services. All rights reserved.
           </p>
+          <a href="/admin/login" className="inline-block mt-3 text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
+            Admin
+          </a>
         </div>
       </footer>
     </div>
