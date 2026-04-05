@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo.png";
 
@@ -7,6 +7,7 @@ const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
   { to: "/admin/materials", label: "Materials", icon: Package },
+  { to: "/admin/tools", label: "Tools", icon: Wrench },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import QuoteEditor from "./pages/QuoteEditor";
 import QuoteView from "./pages/QuoteView";
 import Materials from "./pages/Materials";
+import BusinessTools from "./pages/BusinessTools";
 import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/admin/quotes/:id" element={<AdminGuard><QuoteView /></AdminGuard>} />
           <Route path="/admin/quotes/:id/edit" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
           <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
+          <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
