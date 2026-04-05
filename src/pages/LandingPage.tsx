@@ -26,26 +26,34 @@ const steps = [
 
 export default function LandingPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const MAX_PHOTOS = 5;
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image must be under 10MB");
-      return;
-    }
-    setPhoto(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    const remaining = MAX_PHOTOS - photos.length;
+    const toAdd = files.slice(0, remaining);
+    const valid = toAdd.filter(f => {
+      if (f.size > 10 * 1024 * 1024) { toast.error(`${f.name} is over 10MB`); return false; }
+      return true;
+    });
+    setPhotos(prev => [...prev, ...valid]);
+    setPhotoPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const removePhoto = () => {
-    setPhoto(null);
-    setPhotoPreview(null);
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearPhotos = () => {
+    setPhotos([]);
+    setPhotoPreviews([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -55,15 +63,15 @@ export default function LandingPage() {
     setSending(true);
     try {
       const id = crypto.randomUUID();
-      let photoUrl: string | undefined;
+      const photoUrls: string[] = [];
 
-      if (photo) {
-        const ext = photo.name.split(".").pop() || "jpg";
-        const path = `quotes/${id}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photo);
+      for (let i = 0; i < photos.length; i++) {
+        const ext = photos[i].name.split(".").pop() || "jpg";
+        const path = `quotes/${id}-${i}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photos[i]);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
-        photoUrl = urlData.publicUrl;
+        photoUrls.push(urlData.publicUrl);
       }
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
@@ -71,7 +79,7 @@ export default function LandingPage() {
           templateName: "quote-request",
           recipientEmail: form.email,
           idempotencyKey: `quote-req-${id}`,
-          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl },
+          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl: photoUrls[0], photoUrls },
         },
       });
       if (error) throw error;
@@ -170,7 +178,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   We've received your request and will be in touch shortly.
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); removePhoto(); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); clearPhotos(); }}>
                   Submit Another Request
                 </Button>
               </CardContent>
@@ -233,34 +241,39 @@ export default function LandingPage() {
                     />
                   </div>
                   <div>
-                    <Label>Photo of your garden (optional)</Label>
+                    <Label>Photos of your garden (optional, up to {MAX_PHOTOS})</Label>
                     <input
                       ref={fileInputRef}
                       type="file"
                       accept="image/*"
-                      capture="environment"
+                      multiple
                       onChange={handlePhotoChange}
                       className="hidden"
                     />
-                    {photoPreview ? (
-                      <div className="relative mt-2">
-                        <img src={photoPreview} alt="Garden preview" className="w-full h-48 object-cover rounded-lg border" />
-                        <button
-                          type="button"
-                          onClick={removePhoto}
-                          className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                    {photoPreviews.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                        {photoPreviews.map((preview, i) => (
+                          <div key={i} className="relative">
+                            <img src={preview} alt={`Garden photo ${i + 1}`} className="w-full h-32 object-cover rounded-lg border" />
+                            <button
+                              type="button"
+                              onClick={() => removePhoto(i)}
+                              className="absolute top-1 right-1 bg-background/80 rounded-full p-1 hover:bg-background"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ) : (
+                    )}
+                    {photos.length < MAX_PHOTOS && (
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="mt-2 w-full border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 flex flex-col items-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                        className="mt-2 w-full border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 flex flex-col items-center gap-1 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
                       >
-                        <Camera className="w-8 h-8" />
-                        <span className="text-sm">Tap to add a photo</span>
+                        <Camera className="w-6 h-6" />
+                        <span className="text-sm">{photos.length === 0 ? "Tap to add photos" : `Add more (${photos.length}/${MAX_PHOTOS})`}</span>
                       </button>
                     )}
                   </div>

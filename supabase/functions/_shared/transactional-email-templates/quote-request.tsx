@@ -13,9 +13,12 @@ interface QuoteRequestProps {
   address?: string
   message?: string
   photoUrl?: string
+  photoUrls?: string[]
 }
 
-const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: QuoteRequestProps) => (
+const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl, photoUrls }: QuoteRequestProps) => {
+  const allPhotos = photoUrls && photoUrls.length > 0 ? photoUrls : photoUrl ? [photoUrl] : [];
+  return (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>New quote request from {name || 'a potential client'}</Preview>
@@ -48,11 +51,13 @@ const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: Q
             </>
            )}
          </Section>
-         {photoUrl && (
+         {allPhotos.length > 0 && (
            <>
              <Hr style={hr} />
-             <Text style={label}>Garden Photo</Text>
-             <Img src={photoUrl} alt="Garden photo" width="100%" style={{ borderRadius: '8px', marginTop: '8px' }} />
+             <Text style={label}>Garden Photos ({allPhotos.length})</Text>
+             {allPhotos.map((url: string, i: number) => (
+               <Img key={i} src={url} alt={`Garden photo ${i + 1}`} width="100%" style={{ borderRadius: '8px', marginTop: '8px', marginBottom: '8px' }} />
+             ))}
            </>
          )}
          <Hr style={hr} />
@@ -60,7 +65,8 @@ const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: Q
       </Container>
     </Body>
   </Html>
-)
+  );
+}
 
 export const template = {
   component: QuoteRequestEmail,
