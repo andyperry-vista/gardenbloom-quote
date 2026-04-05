@@ -8,6 +8,7 @@ import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
+import GoldDivider from "@/components/GoldDivider";
 import { toast } from "sonner";
 
 const services = [
@@ -126,6 +127,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <GoldDivider />
+
       {/* Services */}
       <section className="container py-16">
         <h2 className="text-3xl font-bold text-center mb-2">Our Services</h2>
@@ -147,8 +150,12 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <GoldDivider />
+
       {/* Before/After Gallery */}
       <BeforeAfterGallery />
+
+      <GoldDivider />
 
       {/* How It Works */}
       <section className="bg-muted/50 py-16">
@@ -165,6 +172,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <GoldDivider />
 
       {/* Quote Request Form */}
       <section id="quote-form" className="container py-16">
