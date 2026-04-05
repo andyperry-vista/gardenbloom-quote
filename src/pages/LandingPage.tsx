@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
+import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import { toast } from "sonner";
 
 const services = [
@@ -145,6 +146,9 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* Before/After Gallery */}
+      <BeforeAfterGallery />
 
       {/* How It Works */}
       <section className="bg-muted/50 py-16">
