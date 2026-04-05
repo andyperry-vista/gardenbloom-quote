@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
-import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2 } from "lucide-react";
+import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import { toast } from "sonner";
 
 const services = [
@@ -26,8 +26,28 @@ const steps = [
 
 export default function LandingPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be under 10MB");
+      return;
+    }
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const removePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +55,23 @@ export default function LandingPage() {
     setSending(true);
     try {
       const id = crypto.randomUUID();
+      let photoUrl: string | undefined;
+
+      if (photo) {
+        const ext = photo.name.split(".").pop() || "jpg";
+        const path = `quotes/${id}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photo);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
+        photoUrl = urlData.publicUrl;
+      }
+
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "quote-request",
           recipientEmail: form.email,
           idempotencyKey: `quote-req-${id}`,
-          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message },
+          templateData: { name: form.name, email: form.email, phone: form.phone, address: form.address, message: form.message, photoUrl },
         },
       });
       if (error) throw error;
@@ -139,7 +170,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   We've received your request and will be in touch shortly.
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); removePhoto(); }}>
                   Submit Another Request
                 </Button>
               </CardContent>
@@ -200,6 +231,38 @@ export default function LandingPage() {
                       rows={4}
                       maxLength={1000}
                     />
+                  </div>
+                  <div>
+                    <Label>Photo of your garden (optional)</Label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
+                    {photoPreview ? (
+                      <div className="relative mt-2">
+                        <img src={photoPreview} alt="Garden preview" className="w-full h-48 object-cover rounded-lg border" />
+                        <button
+                          type="button"
+                          onClick={removePhoto}
+                          className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-2 w-full border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 flex flex-col items-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                      >
+                        <Camera className="w-8 h-8" />
+                        <span className="text-sm">Tap to add a photo</span>
+                      </button>
+                    )}
                   </div>
                   <Button type="submit" className="w-full" disabled={sending}>
                     {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
