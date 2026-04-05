@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, FilePlus, Package } from "lucide-react";
-import mayuraLogo from "@/assets/mayura-logo.jpeg";
+import mayuraLogo from "@/assets/mayura-logo.png";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -22,11 +22,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               className="h-10 w-auto rounded"
             />
             <div className="hidden sm:block">
-              <span className="font-display text-2xl text-primary-foreground leading-none">
+              <span className="text-lg font-semibold text-primary-foreground tracking-wider uppercase leading-none">
                 Mayura
               </span>
-              <span className="block text-xs text-primary-foreground/70 tracking-widest uppercase">
-                Garden Service
+              <span className="block text-[10px] text-primary-foreground/70 tracking-[0.2em] uppercase">
+                Pre-Sale Gardening
               </span>
             </div>
           </Link>
