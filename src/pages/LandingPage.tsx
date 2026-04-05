@@ -8,6 +8,7 @@ import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
+import GoldDivider from "@/components/GoldDivider";
 import { toast } from "sonner";
 
 const services = [
