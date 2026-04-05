@@ -13,6 +13,7 @@ interface QuoteRequestProps {
   address?: string
   message?: string
   photoUrl?: string
+  photoUrls?: string[]
 }
 
 const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl }: QuoteRequestProps) => (

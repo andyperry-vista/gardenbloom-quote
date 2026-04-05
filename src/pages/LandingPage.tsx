@@ -26,26 +26,34 @@ const steps = [
 
 export default function LandingPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const MAX_PHOTOS = 5;
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image must be under 10MB");
-      return;
-    }
-    setPhoto(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    const remaining = MAX_PHOTOS - photos.length;
+    const toAdd = files.slice(0, remaining);
+    const valid = toAdd.filter(f => {
+      if (f.size > 10 * 1024 * 1024) { toast.error(`${f.name} is over 10MB`); return false; }
+      return true;
+    });
+    setPhotos(prev => [...prev, ...valid]);
+    setPhotoPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const removePhoto = () => {
-    setPhoto(null);
-    setPhotoPreview(null);
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearPhotos = () => {
+    setPhotos([]);
+    setPhotoPreviews([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
