@@ -96,13 +96,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="relative bg-primary text-primary-foreground">
+      <section className="relative">
         <div className="container flex flex-col items-center py-20 text-center">
-          <img src={mayuraLogo} alt="Mayura Garden Services" className="h-28 w-auto rounded-lg mb-8" />
+          <img src={mayuraLogo} alt="Mayura Garden Services" className="h-[28rem] w-auto rounded-lg mb-8" />
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Maximising Property Value
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mb-8">
+          <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             Professional pre-sale garden styling that makes your property photos stand out. 
             We transform gardens so homes sell faster and for more.
           </p>
@@ -113,12 +113,12 @@ export default function LandingPage() {
               </Button>
             </a>
             <a href="tel:0413806551">
-              <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
                 <Phone className="w-4 h-4" /> Call Nick
               </Button>
             </a>
             <a href="mailto:nicholas@mayuragardenservices.com.au">
-              <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
                 <Mail className="w-4 h-4" /> Email Us
               </Button>
             </a>
@@ -293,16 +293,16 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-8">
+      <footer className="border-t border-border py-8">
         <div className="container text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-12 w-auto mx-auto rounded mb-3" />
-          <p className="text-sm text-primary-foreground/70">
+          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
+          <p className="text-sm text-foreground/70">
             Mayura Garden Services — Maximising Property Value
           </p>
-          <p className="text-xs text-primary-foreground/50 mt-2">
+          <p className="text-xs text-foreground/50 mt-2">
             © {new Date().getFullYear()} Mayura Garden Services. All rights reserved.
           </p>
-          <a href="/admin/login" className="inline-block mt-3 text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
+          <a href="/admin/login" className="inline-block mt-3 text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
             Admin
           </a>
         </div>
