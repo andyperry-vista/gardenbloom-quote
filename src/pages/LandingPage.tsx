@@ -263,6 +263,7 @@ export default function LandingPage() {
                         <span className="text-sm">Tap to add a photo</span>
                       </button>
                     )}
+                  </div>
                   <Button type="submit" className="w-full" disabled={sending}>
                     {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
                     {sending ? "Sending…" : "Request a Quote"}
