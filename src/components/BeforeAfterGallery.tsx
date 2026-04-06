@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { TranslationKey } from "@/i18n/translations";
 
 import before1 from "@/assets/gallery/before-1.jpg";
 import after1 from "@/assets/gallery/after-1.jpg";
@@ -10,21 +12,22 @@ import after2 from "@/assets/gallery/after-2.jpg";
 import before3 from "@/assets/gallery/before-3.jpg";
 import after3 from "@/assets/gallery/after-3.jpg";
 
-const projects = [
-  { before: before1, after: after1, title: "Front Garden Revamp", desc: "Full clean-up, hedge trim, fresh mulch & lawn care" },
-  { before: before2, after: after2, title: "Backyard Transformation", desc: "Overgrown yard turned into a photo-ready space" },
-  { before: before3, after: after3, title: "Pathway Restoration", desc: "Weeded pavers, trimmed hedges & new garden borders" },
+const projects: { before: string; after: string; titleKey: TranslationKey; descKey: TranslationKey }[] = [
+  { before: before1, after: after1, titleKey: "galleryProject1Title", descKey: "galleryProject1Desc" },
+  { before: before2, after: after2, titleKey: "galleryProject2Title", descKey: "galleryProject2Desc" },
+  { before: before3, after: after3, titleKey: "galleryProject3Title", descKey: "galleryProject3Desc" },
 ];
 
 export default function BeforeAfterGallery() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { t } = useLanguage();
 
   return (
     <section className="bg-muted/50 py-16">
       <div className="container">
-        <h2 className="text-3xl font-bold text-center mb-2">Our Transformations</h2>
+        <h2 className="text-3xl font-bold text-center mb-2">{t("galleryTitle")}</h2>
         <p className="text-muted-foreground text-center mb-10 max-w-lg mx-auto">
-          See the difference professional garden styling makes for property photos.
+          {t("gallerySubtitle")}
         </p>
         <div className="grid gap-8 md:grid-cols-3">
           {projects.map((project, i) => (
@@ -37,7 +40,7 @@ export default function BeforeAfterGallery() {
               >
                 <img
                   src={project.before}
-                  alt={`${project.title} - Before`}
+                  alt={`${t(project.titleKey)} - ${t("galleryBefore")}`}
                   loading="lazy"
                   width={768}
                   height={512}
@@ -48,7 +51,7 @@ export default function BeforeAfterGallery() {
                 />
                 <img
                   src={project.after}
-                  alt={`${project.title} - After`}
+                  alt={`${t(project.titleKey)} - ${t("galleryAfter")}`}
                   loading="lazy"
                   width={768}
                   height={512}
@@ -65,15 +68,15 @@ export default function BeforeAfterGallery() {
                       : "bg-destructive text-destructive-foreground"
                   )}
                 >
-                  {hoveredIndex === i ? "After" : "Before"}
+                  {hoveredIndex === i ? t("galleryAfter") : t("galleryBefore")}
                 </Badge>
                 <span className="absolute bottom-3 right-3 text-xs text-primary-foreground/70 bg-background/40 backdrop-blur-sm rounded px-2 py-1">
-                  Hover to reveal
+                  {t("galleryHoverHint")}
                 </span>
               </div>
               <div className="p-4">
-                <h3 className="font-semibold text-lg">{project.title}</h3>
-                <p className="text-sm text-muted-foreground">{project.desc}</p>
+                <h3 className="font-semibold text-lg">{t(project.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground">{t(project.descKey)}</p>
               </div>
             </Card>
           ))}

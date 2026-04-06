@@ -10,24 +10,28 @@ import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import GoldDivider from "@/components/GoldDivider";
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
+import { TranslationKey } from "@/i18n/translations";
 
-const services = [
-  { icon: Flower2, title: "Garden Styling", desc: "Transform gardens to boost property appeal for marketing photos" },
-  { icon: TreePine, title: "Planting", desc: "Strategic plant selection and placement for maximum visual impact" },
-  { icon: Shovel, title: "Mulching & Soil", desc: "Premium mulch and soil preparation for a polished finish" },
-  { icon: Leaf, title: "Lawn Care", desc: "Lush, green lawns that photograph beautifully" },
-  { icon: Scissors, title: "Hedge Trimming", desc: "Crisp, manicured hedges and topiary for clean lines" },
-  { icon: Sparkles, title: "Clean-Ups", desc: "Complete garden clean-ups to present properties at their best" },
+const services: { icon: typeof Flower2; titleKey: TranslationKey; descKey: TranslationKey }[] = [
+  { icon: Flower2, titleKey: "serviceGardenStyling", descKey: "serviceGardenStylingDesc" },
+  { icon: TreePine, titleKey: "servicePlanting", descKey: "servicePlantingDesc" },
+  { icon: Shovel, titleKey: "serviceMulching", descKey: "serviceMulchingDesc" },
+  { icon: Leaf, titleKey: "serviceLawnCare", descKey: "serviceLawnCareDesc" },
+  { icon: Scissors, titleKey: "serviceHedgeTrimming", descKey: "serviceHedgeTrimmingDesc" },
+  { icon: Sparkles, titleKey: "serviceCleanUps", descKey: "serviceCleanUpsDesc" },
 ];
 
-const steps = [
-  { num: "01", title: "Consultation", desc: "We visit the property and assess what's needed to make it shine" },
-  { num: "02", title: "Quote", desc: "You receive a detailed, transparent quote with no surprises" },
-  { num: "03", title: "Transformation", desc: "We transform the garden in time for the photographer" },
+const steps: { num: string; titleKey: TranslationKey; descKey: TranslationKey }[] = [
+  { num: "01", titleKey: "step1Title", descKey: "step1Desc" },
+  { num: "02", titleKey: "step2Title", descKey: "step2Desc" },
+  { num: "03", titleKey: "step3Title", descKey: "step3Desc" },
 ];
 
 export default function LandingPage() {
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -97,30 +101,31 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <LanguageToggle />
+
       {/* Hero */}
       <section className="relative">
         <div className="container flex flex-col items-center py-20 text-center">
           <img src={mayuraLogo} alt="Mayura Garden Services" className="h-[28rem] w-auto rounded-lg mb-8" />
           <h1 className="sr-only">Mayura Garden Services</h1>
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
-            Professional pre-sale garden styling that makes your property photos stand out. 
-            We transform gardens so homes sell faster and for more.
+            {t("heroTagline")}
           </p>
           <img src={heroGarden} alt="Beautifully landscaped garden with sold sign" className="w-full max-w-4xl rounded-2xl shadow-2xl mb-8" width={1920} height={960} />
           <div className="flex gap-4">
             <a href="#quote-form">
               <Button size="lg" variant="secondary" className="gap-2">
-                <Send className="w-4 h-4" /> Request a Quote
+                <Send className="w-4 h-4" /> {t("requestQuote")}
               </Button>
             </a>
             <a href="tel:0413806551">
               <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
-                <Phone className="w-4 h-4" /> Call Nick
+                <Phone className="w-4 h-4" /> {t("callNick")}
               </Button>
             </a>
             <a href="mailto:nicholas@mayuragardenservices.com.au">
               <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
-                <Mail className="w-4 h-4" /> Email Us
+                <Mail className="w-4 h-4" /> {t("emailUs")}
               </Button>
             </a>
           </div>
@@ -131,19 +136,19 @@ export default function LandingPage() {
 
       {/* Services */}
       <section className="container py-16">
-        <h2 className="text-3xl font-bold text-center mb-2">Our Services</h2>
+        <h2 className="text-3xl font-bold text-center mb-2">{t("servicesTitle")}</h2>
         <p className="text-muted-foreground text-center mb-10 max-w-lg mx-auto">
-          Everything your property needs to look its absolute best before the camera arrives.
+          {t("servicesSubtitle")}
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
-            <Card key={s.title} className="hover:shadow-md transition-shadow">
+            <Card key={s.titleKey} className="hover:shadow-md transition-shadow">
               <CardContent className="pt-6 flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <s.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-lg mb-1">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
+                <h3 className="font-semibold text-lg mb-1">{t(s.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground">{t(s.descKey)}</p>
               </CardContent>
             </Card>
           ))}
@@ -160,13 +165,13 @@ export default function LandingPage() {
       {/* How It Works */}
       <section className="bg-muted/50 py-16">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-10">How It Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-10">{t("howItWorksTitle")}</h2>
           <div className="grid gap-8 md:grid-cols-3 max-w-3xl mx-auto">
             {steps.map((step) => (
               <div key={step.num} className="text-center">
                 <div className="text-4xl font-bold text-primary/20 mb-2">{step.num}</div>
-                <h3 className="font-semibold text-lg mb-1">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.desc}</p>
+                <h3 className="font-semibold text-lg mb-1">{t(step.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground">{t(step.descKey)}</p>
               </div>
             ))}
           </div>
@@ -178,21 +183,21 @@ export default function LandingPage() {
       {/* Quote Request Form */}
       <section id="quote-form" className="container py-16">
         <div className="max-w-xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-2">Request a Quote</h2>
+          <h2 className="text-3xl font-bold text-center mb-2">{t("quoteFormTitle")}</h2>
           <p className="text-muted-foreground text-center mb-8">
-            Tell us about your property and we'll get back to you with a free quote.
+            {t("quoteFormSubtitle")}
           </p>
 
           {sent ? (
             <Card>
               <CardContent className="pt-8 pb-8 text-center space-y-4">
                 <CheckCircle className="w-12 h-12 text-primary mx-auto" />
-                <h3 className="text-xl font-semibold">Thank You!</h3>
+                <h3 className="text-xl font-semibold">{t("thankYouTitle")}</h3>
                 <p className="text-muted-foreground">
-                  We've received your request and will be in touch shortly.
+                  {t("thankYouMessage")}
                 </p>
                 <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); clearPhotos(); }}>
-                  Submit Another Request
+                  {t("submitAnother")}
                 </Button>
               </CardContent>
             </Card>
@@ -202,7 +207,7 @@ export default function LandingPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <Label>Full Name *</Label>
+                      <Label>{t("fullName")}</Label>
                       <Input
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -212,7 +217,7 @@ export default function LandingPage() {
                       />
                     </div>
                     <div>
-                      <Label>Email *</Label>
+                      <Label>{t("email")}</Label>
                       <Input
                         type="email"
                         value={form.email}
@@ -225,7 +230,7 @@ export default function LandingPage() {
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <Label>Phone</Label>
+                      <Label>{t("phone")}</Label>
                       <Input
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -234,7 +239,7 @@ export default function LandingPage() {
                       />
                     </div>
                     <div>
-                      <Label>Property Address</Label>
+                      <Label>{t("propertyAddress")}</Label>
                       <Input
                         value={form.address}
                         onChange={(e) => setForm({ ...form, address: e.target.value })}
@@ -244,17 +249,17 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div>
-                    <Label>Tell us about your project</Label>
+                    <Label>{t("projectDescription")}</Label>
                     <Textarea
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      placeholder="What work are you looking to have done? Any timeline for photography?"
+                      placeholder={t("projectPlaceholder")}
                       rows={4}
                       maxLength={1000}
                     />
                   </div>
                   <div>
-                    <Label>Photos of your garden (optional, up to {MAX_PHOTOS})</Label>
+                    <Label>{t("photosLabel", { max: MAX_PHOTOS })}</Label>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -286,13 +291,13 @@ export default function LandingPage() {
                         className="mt-2 w-full border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 flex flex-col items-center gap-1 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
                       >
                         <Camera className="w-6 h-6" />
-                        <span className="text-sm">{photos.length === 0 ? "Tap to add photos" : `Add more (${photos.length}/${MAX_PHOTOS})`}</span>
+                        <span className="text-sm">{photos.length === 0 ? t("tapToAddPhotos") : t("addMore", { count: photos.length, max: MAX_PHOTOS })}</span>
                       </button>
                     )}
                   </div>
                   <Button type="submit" className="w-full" disabled={sending}>
                     {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-                    {sending ? "Sending…" : "Request a Quote"}
+                    {sending ? t("sending") : t("requestQuote")}
                   </Button>
                 </form>
               </CardContent>
@@ -306,13 +311,13 @@ export default function LandingPage() {
         <div className="container text-center">
           <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
           <p className="text-sm text-foreground/70">
-            Mayura Garden Services — Maximising Property Value
+            {t("footerTagline")}
           </p>
           <p className="text-xs text-foreground/50 mt-2">
-            © {new Date().getFullYear()} Mayura Garden Services. All rights reserved.
+            {t("footerRights", { year: new Date().getFullYear() })}
           </p>
           <a href="/admin/login" className="inline-block mt-3 text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
-            Admin
+            {t("admin")}
           </a>
         </div>
       </footer>
