@@ -12,8 +12,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");
 
-  const t = (key: TranslationKey, vars?: Record<string, string | number>) => {
-    let text = translations[locale][key] || translations.en[key] || key;
+  const t = (key: TranslationKey, vars?: Record<string, string | number>): string => {
+    let text: string = translations[locale][key] || translations.en[key] || key;
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
         text = text.replace(`{${k}}`, String(v));
