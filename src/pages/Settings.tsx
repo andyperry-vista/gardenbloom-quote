@@ -59,21 +59,23 @@ export default function Settings() {
             <CardTitle>Quote Defaults</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Label className="whitespace-nowrap min-w-[160px]">
-                Material Markup %
-              </Label>
-              <Input
-                type="number"
-                className="w-28"
-                value={settings.defaultMarkupPercent}
-                onChange={(e) => handleMarkupChange(Number(e.target.value))}
-                min={0}
-                max={200}
-              />
-              <span className="text-sm text-muted-foreground">
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <Label className="whitespace-nowrap min-w-[160px]">
+                  Material Markup %
+                </Label>
+                <Input
+                  type="number"
+                  className="w-28"
+                  value={settings.defaultMarkupPercent}
+                  onChange={(e) => handleMarkupChange(Number(e.target.value))}
+                  min={0}
+                  max={200}
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
                 Applied to material costs only (not labour)
-              </span>
+              </p>
             </div>
           </CardContent>
         </Card>
