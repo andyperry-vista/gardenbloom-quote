@@ -12,6 +12,7 @@ import QuoteEditor from "./pages/QuoteEditor";
 import QuoteView from "./pages/QuoteView";
 import Materials from "./pages/Materials";
 import BusinessTools from "./pages/BusinessTools";
+import Settings from "./pages/Settings";
 import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 
