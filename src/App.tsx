@@ -34,6 +34,7 @@ const App = () => (
             <Route path="/admin/quotes/:id/edit" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
             <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
             <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
+            <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
