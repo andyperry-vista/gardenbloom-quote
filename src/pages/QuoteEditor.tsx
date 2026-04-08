@@ -45,7 +45,7 @@ export default function QuoteEditor() {
     }
   }, [existingQuote?.id]);
 
-  const addLineItem = (type: "material" | "labor") => {
+  const addLineItem = (type: "material" | "labor" | "misc") => {
     const markupPercent = type === "material" ? settings.defaultMarkupPercent : 0;
     setItems((prev) => [
       ...prev,
