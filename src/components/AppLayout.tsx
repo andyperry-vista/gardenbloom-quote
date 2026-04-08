@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
+  { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
+  { to: "/admin/invoices", label: "Invoices", icon: FileText },
+  { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/admin/materials", label: "Materials", icon: Package },
   { to: "/admin/tools", label: "Tools", icon: Wrench },
   { to: "/admin/settings", label: "Settings", icon: Settings },

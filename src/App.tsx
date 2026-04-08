@@ -14,6 +14,11 @@ import Materials from "./pages/Materials";
 import BusinessTools from "./pages/BusinessTools";
 import Settings from "./pages/Settings";
 import Unsubscribe from "./pages/Unsubscribe";
+import Jobs from "./pages/Jobs";
+import JobView from "./pages/JobView";
+import Invoices from "./pages/Invoices";
+import InvoiceView from "./pages/InvoiceView";
+import CalendarPage from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +37,11 @@ const App = () => (
             <Route path="/admin/quotes/new" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
             <Route path="/admin/quotes/:id" element={<AdminGuard><QuoteView /></AdminGuard>} />
             <Route path="/admin/quotes/:id/edit" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
+            <Route path="/admin/jobs" element={<AdminGuard><Jobs /></AdminGuard>} />
+            <Route path="/admin/jobs/:id" element={<AdminGuard><JobView /></AdminGuard>} />
+            <Route path="/admin/invoices" element={<AdminGuard><Invoices /></AdminGuard>} />
+            <Route path="/admin/invoices/:id" element={<AdminGuard><InvoiceView /></AdminGuard>} />
+            <Route path="/admin/calendar" element={<AdminGuard><CalendarPage /></AdminGuard>} />
             <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
             <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
             <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />

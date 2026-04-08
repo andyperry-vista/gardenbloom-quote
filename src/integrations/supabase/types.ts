@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -101,6 +134,223 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          due_date: string | null
+          gst_amount: number
+          id: string
+          invoice_number: string
+          job_id: string | null
+          notes: string | null
+          paid_date: string | null
+          sent_at: string | null
+          status: string
+          total_with_gst: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          due_date?: string | null
+          gst_amount?: number
+          id?: string
+          invoice_number?: string
+          job_id?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          sent_at?: string | null
+          status?: string
+          total_with_gst?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          due_date?: string | null
+          gst_amount?: number
+          id?: string
+          invoice_number?: string
+          job_id?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          sent_at?: string | null
+          status?: string
+          total_with_gst?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          client_id: string | null
+          completed_date: string | null
+          created_at: string
+          id: string
+          job_number: string
+          notes: string | null
+          quote_id: string | null
+          scheduled_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          completed_date?: string | null
+          created_at?: string
+          id?: string
+          job_number?: string
+          notes?: string | null
+          quote_id?: string | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          completed_date?: string | null
+          created_at?: string
+          id?: string
+          job_number?: string
+          notes?: string | null
+          quote_id?: string | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          grand_total: number
+          id: string
+          items: Json
+          markup_total: number
+          notes: string | null
+          status: string
+          subtotal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          grand_total?: number
+          id?: string
+          items?: Json
+          markup_total?: number
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          grand_total?: number
+          id?: string
+          items?: Json
+          markup_total?: number
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -125,6 +375,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          user_id: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          user_id: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          user_id?: string
+          value?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -138,6 +415,8 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      generate_invoice_number: { Args: never; Returns: string }
+      generate_job_number: { Args: never; Returns: string }
       move_to_dlq: {
         Args: {
           dlq_name: string
