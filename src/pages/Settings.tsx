@@ -25,6 +25,37 @@ export default function Settings() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Business Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Label className="whitespace-nowrap min-w-[160px]">Location</Label>
+              <Input
+                className="max-w-xs"
+                value={settings.businessLocation}
+                onChange={(e) => updateSettings({ businessLocation: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <Label className="whitespace-nowrap min-w-[160px]">Currency</Label>
+              <Input
+                className="w-28"
+                value={settings.currency}
+                onChange={(e) => updateSettings({ currency: e.target.value })}
+              />
+              <Input
+                className="w-20"
+                value={settings.currencySymbol}
+                onChange={(e) => updateSettings({ currencySymbol: e.target.value })}
+                placeholder="$"
+              />
+              <span className="text-sm text-muted-foreground">Symbol</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Quote Defaults</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
