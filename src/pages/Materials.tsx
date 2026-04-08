@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Search, Plus, MapPin, Package } from "lucide-react";
+import { Search, Plus, MapPin, Package, RefreshCw } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import type { Material } from "@/types/quote";
 
 export default function Materials() {
-  const { materials, addMaterial } = useMaterials();
+  const { materials, addMaterial, resetToDefaults } = useMaterials();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({
@@ -69,13 +69,18 @@ export default function Materials() {
               Wholesale prices, suppliers & stock
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Material
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={resetToDefaults}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reset to Defaults
+            </Button>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Material
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add New Material</DialogTitle>
@@ -120,7 +125,8 @@ export default function Materials() {
                 <Button onClick={handleAdd}>Add Material</Button>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
 
         <div className="relative max-w-md">
