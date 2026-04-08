@@ -9,7 +9,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 10.50,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -19,7 +19,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 12.99,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -29,7 +29,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 12.99,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -39,11 +39,11 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 12.99,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
 
-  // ── Landscaping – Decorative Stone ──
+  // ── Decorative Stone ──
   {
     id: "m5",
     name: "Tuscan Path 30-50mm 15kg White Pebbles",
@@ -51,7 +51,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 18.98,
     unit: "bag (15kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -61,7 +61,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 21.98,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -71,7 +71,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 17.98,
     unit: "bag (15kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -81,7 +81,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 12.99,
     unit: "bag (20kg)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
 
@@ -93,7 +93,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 27.62,
     unit: "each",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -103,11 +103,11 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 6.27,
     unit: "each",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
 
-  // ── Screening & Privacy ──
+  // ── Screening ──
   {
     id: "m11",
     name: "Ekodeck 1800 x 600mm Greystone Batten Panel",
@@ -115,7 +115,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 75.00,
     unit: "each",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
   {
@@ -125,7 +125,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 58.80,
     unit: "each",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
 
@@ -137,11 +137,11 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 9.99,
     unit: "pack (10)",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
   },
 
-  // ── Fertilisers ──
+  // ── Fertiliser ──
   {
     id: "m14",
     name: "Liquid & Soluble Fertiliser (generic)",
@@ -149,7 +149,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 12.00,
     unit: "bottle",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
     notes: "Various brands available in-store",
   },
@@ -160,7 +160,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 15.00,
     unit: "bag",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
     notes: "Various brands available in-store",
   },
@@ -171,7 +171,7 @@ export const defaultMaterials: Material[] = [
     wholesalePrice: 18.00,
     unit: "bag",
     supplier: "Bunnings",
-    supplierLocation: "bunnings.com.au",
+    supplierLocation: "Bunnings Doncaster, VIC",
     inStock: true,
     notes: "Various brands available in-store",
   },
