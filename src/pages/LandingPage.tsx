@@ -235,7 +235,7 @@ export default function LandingPage() {
                       <Input
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="021 123 4567"
+                        placeholder="0412 345 678"
                         maxLength={20}
                       />
                     </div>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                       <Input
                         value={form.address}
                         onChange={(e) => setForm({ ...form, address: e.target.value })}
-                        placeholder="123 Garden Lane, Auckland"
+                        placeholder="12 River Rd, Lower Templestowe VIC 3107"
                         maxLength={200}
                       />
                     </div>
