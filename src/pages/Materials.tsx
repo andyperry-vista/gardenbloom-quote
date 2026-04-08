@@ -286,37 +286,12 @@ export default function Materials() {
               </h2>
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {items.map((m) => (
-                  <Card key={m.id} className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base">{m.name}</CardTitle>
-                        <Badge variant={m.inStock ? "default" : "destructive"} className="text-xs">
-                          {m.inStock ? "In Stock" : "Out of Stock"}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-primary">
-                          ${m.wholesalePrice.toFixed(2)}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          per {m.unit}
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <Package className="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>{m.supplier}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>{m.supplierLocation}</span>
-                      </div>
-                      {m.notes && (
-                        <p className="text-xs text-accent italic">{m.notes}</p>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <MaterialCard
+                    key={m.id}
+                    material={m}
+                    onUpdate={updateMaterial}
+                    onDelete={deleteMaterial}
+                  />
                 ))}
               </div>
             </div>
