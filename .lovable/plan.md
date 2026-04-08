@@ -1,52 +1,88 @@
 
 
-## Plan: Landing Page + Admin-Protected Quote Tool
+## Plan: Full Business Management Backend
 
-### Overview
-Create a public-facing landing page for Mayura Garden Services at `/`, and move the existing quoting tool behind `/admin/*` routes protected by a simple password gate.
+This is a major expansion — moving from localStorage to a persistent database and adding job management, invoicing, payments, calendar, and forecasting.
 
-### 1. Update Logo Asset
-Copy the new uploaded logo (`IMG_3007.png`) to `src/assets/mayura-logo.png` (replacing the existing one). This logo includes the full branding with "Maximising Property Value" tagline.
+### Current State
+- Quotes stored in localStorage (lost on browser clear)
+- No job tracking, invoicing, or payment system
+- Email templates exist but quotes aren't persisted in the database
+- Settings also in localStorage
 
-### 2. Create Landing Page (`src/pages/LandingPage.tsx`)
-A professional marketing page with:
-- **Hero section**: Full-width dark green background with the Mayura logo, headline "Maximising Property Value", and a brief value proposition about pre-sale garden styling
-- **Services section**: Cards highlighting key services (garden styling, planting, mulching, lawn care, hedge trimming, clean-ups)
-- **How It Works**: 3-step process (Consultation → Quote → Transformation)
-- **Call to Action**: Contact details, phone number, email — encouraging potential clients to get in touch
-- **Footer**: Business name, tagline, copyright
-- Uses the existing forest green + gold color palette
+### What We Will Build
 
-### 3. Create Admin Login Gate (`src/pages/AdminLogin.tsx`)
-- Simple password input form (no username needed)
-- Checks against a hardcoded admin password stored as a constant (initially `"mayura2026"` — user can change it later)
-- On success, stores auth state in `sessionStorage` so it persists during the browser session
-- Styled to match the brand
+**Phase 1 — Database Tables & Migration**
 
-### 4. Create Auth Guard (`src/components/AdminGuard.tsx`)
-- Wrapper component that checks `sessionStorage` for admin auth
-- If not authenticated, redirects to `/admin/login`
-- Wraps all admin routes
+Create these tables (all linked to the authenticated user via `user_id`):
 
-### 5. Update Routing (`src/App.tsx`)
-```text
-/                    → LandingPage (public)
-/admin/login         → AdminLogin
-/admin               → Dashboard (protected)
-/admin/quotes/new    → QuoteEditor (protected)
-/admin/quotes/:id    → QuoteView (protected)
-/admin/quotes/:id/edit → QuoteEditor (protected)
-/admin/materials     → Materials (protected)
-```
+1. **clients** — name, email, phone, address
+2. **quotes** — client_id (FK), status (draft/sent/accepted/declined), items (JSONB), subtotal, markup_total, grand_total, notes, created_at
+3. **jobs** — quote_id (FK), client_id (FK), job_number (auto-generated, e.g. MGS-001), status (scheduled/in_progress/completed/invoiced), scheduled_date, completed_date, notes
+4. **invoices** — job_id (FK), client_id (FK), invoice_number (auto-generated), amount, gst_amount, total_with_gst, status (unpaid/sent/paid/overdue), due_date, paid_date, sent_at
+5. **payments** — invoice_id (FK), amount, payment_method, payment_date, notes
+6. **settings** — user_id, key, value (replaces localStorage settings)
 
-### 6. Update Internal Navigation
-- Update `AppLayout.tsx` nav links to use `/admin/` prefixed paths
-- Add a "Logout" button to the admin header
-- Update all internal `<Link>` references in Dashboard, QuoteView, QuoteEditor to use `/admin/` prefixes
+All tables get RLS policies scoped to the authenticated user.
+
+**Phase 2 — Quote-to-Job Workflow**
+
+- "Accept & Create Job" button on QuoteView when status is "accepted"
+- Auto-generates a job number (MGS-001, MGS-002, etc.)
+- Job detail page showing linked quote, scheduling, and status progression
+
+**Phase 3 — Invoicing**
+
+- Generate tax invoice from a completed job (auto-populates from job/quote data)
+- Invoice view page with ABN, GST breakdown, payment terms
+- Invoice status tracking (unpaid → sent → paid/overdue)
+- "Send Invoice" button using existing email infrastructure
+
+**Phase 4 — Payment Tracking**
+
+- Record payments against invoices (partial or full)
+- Payment history per invoice
+- "Request Payment" email using existing unpaid-invoice template
+- Overdue detection based on due_date
+
+**Phase 5 — Job History & Calendar**
+
+- Jobs list page with filters (status, date range, client)
+- Calendar view showing scheduled jobs and due invoices
+- Weather forecast widget for upcoming job dates (using free weather API)
+
+**Phase 6 — Dashboard Upgrade**
+
+- Revenue forecast based on accepted quotes and scheduled jobs
+- Overdue invoices alert
+- Upcoming jobs this week
+- Monthly revenue chart
+
+### New Pages & Routes
+
+| Route | Page |
+|-------|------|
+| `/admin/jobs` | Job list with filters |
+| `/admin/jobs/:id` | Job detail view |
+| `/admin/invoices` | Invoice list |
+| `/admin/invoices/:id` | Invoice detail/print view |
+| `/admin/calendar` | Job calendar |
+
+### Navigation Update
+
+Add to AppLayout nav: Jobs, Invoices, Calendar (alongside existing Dashboard, New Quote, Materials, Tools, Settings).
 
 ### Technical Details
-- Password auth uses `sessionStorage` — clears on browser close
-- No database tables needed for this simple admin gate
-- All existing quote tool functionality remains unchanged, just moved under `/admin`
-- Landing page is fully static, no data dependencies
+
+- **Database migration**: Single migration creating all 6 tables with RLS policies, auto-increment job/invoice number functions
+- **Data hooks**: Replace `useQuotes` localStorage with Supabase queries; create `useJobs`, `useInvoices`, `usePayments` hooks using React Query
+- **Job number generation**: Database function using a sequence (MGS-001 format)
+- **Invoice number generation**: Similar sequence (INV-001 format)
+- **GST handling**: 10% GST calculated and displayed separately on invoices
+- **Weather**: Free Open-Meteo API (no key needed) for 7-day forecast at business location
+- **Calendar**: Simple month/week view using existing UI components
+
+### Migration Strategy
+
+Data currently in localStorage will not be migrated automatically. New quotes will go directly to the database. The user can recreate any important existing quotes.
 
