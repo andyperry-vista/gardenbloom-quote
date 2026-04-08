@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Loader2, Calculator, FileText, Mail } from "lucide-react";
+import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 
 /* ─── Email Sender Helper ─── */
@@ -236,6 +237,7 @@ function BASSummary() {
 /* ─── Main Page ─── */
 export default function BusinessTools() {
   return (
+    <AppLayout>
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Business Tools</h1>
@@ -271,5 +273,6 @@ export default function BusinessTools() {
         </TabsContent>
       </Tabs>
     </div>
+    </AppLayout>
   );
 }
