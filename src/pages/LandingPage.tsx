@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
+import mayuraLogoHorizontal from "@/assets/mayura-logo-horizontal.png";
+import mayuraLogoStacked from "@/assets/mayura-logo-stacked.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
@@ -106,7 +107,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="relative">
         <div className="container flex flex-col items-center py-20 text-center">
-          <img src={mayuraLogo} alt="Mayura Garden Services" className="h-[28rem] w-auto rounded-lg mb-8" />
+          <img src={mayuraLogoStacked} alt="Mayura Garden Services" className="h-[28rem] w-auto rounded-lg mb-8" />
           <h1 className="sr-only">Mayura Garden Services</h1>
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             {t("heroTagline")}
@@ -309,7 +310,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
+          <img src={mayuraLogoHorizontal} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
           <p className="text-sm text-foreground/70">
             {t("footerTagline")}
           </p>
