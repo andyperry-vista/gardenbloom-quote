@@ -208,6 +208,9 @@ export default function InvoiceView() {
         </Card>
 
         <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={() => generateInvoicePdf(invoice, payments)}>
+            <Download className="w-4 h-4 mr-2" /> Download PDF
+          </Button>
           <Button onClick={handleSendInvoice}>
             <Send className="w-4 h-4 mr-2" /> Send Invoice
           </Button>
