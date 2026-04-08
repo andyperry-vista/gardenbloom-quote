@@ -37,5 +37,11 @@ export function useMaterials() {
     setMaterials((prev) => prev.filter((m) => m.id !== id));
   };
 
-  return { materials, addMaterial, updateMaterial, deleteMaterial };
+  const resetToDefaults = () => {
+    setMaterials(defaultMaterials);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultMaterials));
+    localStorage.setItem(MATERIALS_VERSION_KEY, CURRENT_VERSION);
+  };
+
+  return { materials, addMaterial, updateMaterial, deleteMaterial, resetToDefaults };
 }
