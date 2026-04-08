@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import AppLayout from "@/components/AppLayout";
 import type { Material } from "@/types/quote";
 import { supabase } from "@/integrations/supabase/client";
+import MaterialCard from "@/components/MaterialCard";
 
 interface BunningsProduct {
   name: string;
