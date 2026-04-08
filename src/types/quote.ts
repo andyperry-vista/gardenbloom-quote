@@ -20,7 +20,7 @@ export interface Material {
 
 export interface QuoteLineItem {
   id: string;
-  type: 'material' | 'labor';
+  type: 'material' | 'labor' | 'misc';
   description: string;
   materialId?: string;
   quantity: number;
