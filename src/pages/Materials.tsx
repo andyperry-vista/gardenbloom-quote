@@ -29,7 +29,7 @@ interface BunningsProduct {
 }
 
 export default function Materials() {
-  const { materials, addMaterial, resetToDefaults } = useMaterials();
+  const { materials, addMaterial, updateMaterial, deleteMaterial, resetToDefaults } = useMaterials();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
