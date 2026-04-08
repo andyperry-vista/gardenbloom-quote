@@ -19,6 +19,7 @@ import JobView from "./pages/JobView";
 import Invoices from "./pages/Invoices";
 import InvoiceView from "./pages/InvoiceView";
 import CalendarPage from "./pages/Calendar";
+import Clients from "./pages/Clients";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/admin/invoices" element={<AdminGuard><Invoices /></AdminGuard>} />
             <Route path="/admin/invoices/:id" element={<AdminGuard><InvoiceView /></AdminGuard>} />
             <Route path="/admin/calendar" element={<AdminGuard><CalendarPage /></AdminGuard>} />
+            <Route path="/admin/clients" element={<AdminGuard><Clients /></AdminGuard>} />
             <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
             <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
             <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />
