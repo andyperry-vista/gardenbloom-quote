@@ -190,6 +190,9 @@ export default function QuoteEditor() {
                 <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}>
                   <Plus className="w-4 h-4 mr-1" /> Labour
                 </Button>
+                <Button variant="outline" size="sm" onClick={() => addLineItem("misc")}>
+                  <Plus className="w-4 h-4 mr-1" /> Misc
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -223,7 +226,7 @@ export default function QuoteEditor() {
                   ) : (
                     <div className="sm:col-span-2">
                       <Label>Description</Label>
-                      <Input value={item.description} onChange={(e) => updateItem(item.id, { description: e.target.value })} placeholder="e.g. Garden bed prep & planting" />
+                      <Input value={item.description} onChange={(e) => updateItem(item.id, { description: e.target.value })} placeholder={item.type === "labor" ? "e.g. Garden bed prep & planting" : "e.g. Skip bin hire, delivery fee"} />
                     </div>
                   )}
                   <div>
