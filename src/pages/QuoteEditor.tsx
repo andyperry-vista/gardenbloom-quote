@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useMaterials } from "@/hooks/useMaterials";
+import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ export default function QuoteEditor() {
   const navigate = useNavigate();
   const { quotes, addQuote, updateQuote } = useQuotes();
   const { materials } = useMaterials();
+  const { settings } = useSettings();
 
   const existingQuote = id ? quotes.find((q) => q.id === id) : undefined;
   const isEditing = !!existingQuote;
@@ -34,7 +36,6 @@ export default function QuoteEditor() {
   );
   const [items, setItems] = useState<QuoteLineItem[]>(existingQuote?.items ?? []);
   const [notes, setNotes] = useState(existingQuote?.notes ?? "");
-  const [defaultMarkup, setDefaultMarkup] = useState(40);
 
   useEffect(() => {
     if (existingQuote) {
@@ -45,6 +46,7 @@ export default function QuoteEditor() {
   }, [existingQuote?.id]);
 
   const addLineItem = (type: "material" | "labor") => {
+    const markupPercent = type === "material" ? settings.defaultMarkupPercent : 0;
     setItems((prev) => [
       ...prev,
       {
@@ -53,7 +55,7 @@ export default function QuoteEditor() {
         description: "",
         quantity: 1,
         unitCost: 0,
-        markupPercent: defaultMarkup,
+        markupPercent,
         total: 0,
       },
     ]);
@@ -64,6 +66,8 @@ export default function QuoteEditor() {
       prev.map((item) => {
         if (item.id !== itemId) return item;
         const updated = { ...item, ...updates };
+        // Labour items never get markup
+        if (updated.type === "labor") updated.markupPercent = 0;
         const costWithMarkup = updated.unitCost * (1 + updated.markupPercent / 100);
         updated.total = updated.quantity * costWithMarkup;
         return updated;
@@ -78,7 +82,12 @@ export default function QuoteEditor() {
   const selectMaterial = (itemId: string, materialId: string) => {
     const mat = materials.find((m) => m.id === materialId);
     if (!mat) return;
-    updateItem(itemId, { materialId, description: mat.name, unitCost: mat.wholesalePrice });
+    updateItem(itemId, {
+      materialId,
+      description: mat.name,
+      unitCost: mat.wholesalePrice,
+      markupPercent: settings.defaultMarkupPercent,
+    });
   };
 
   const subtotal = items.reduce((s, i) => s + i.quantity * i.unitCost, 0);
@@ -169,17 +178,6 @@ export default function QuoteEditor() {
           </CardContent>
         </Card>
 
-        {/* Default Markup */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <Label className="whitespace-nowrap">Default Markup %</Label>
-              <Input type="number" className="w-24" value={defaultMarkup} onChange={(e) => setDefaultMarkup(Number(e.target.value))} />
-              <span className="text-sm text-muted-foreground">Applied to new line items</span>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Line Items */}
         <Card>
           <CardHeader>
@@ -207,7 +205,7 @@ export default function QuoteEditor() {
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   {item.type === "material" ? (
                     <div className="sm:col-span-2">
                       <Label>Material</Label>
@@ -233,15 +231,18 @@ export default function QuoteEditor() {
                     <Input type="number" min={1} value={item.quantity} onChange={(e) => updateItem(item.id, { quantity: Number(e.target.value) })} />
                   </div>
                   <div>
-                    <Label>Unit Cost ($)</Label>
+                    <Label>{item.type === "labor" ? "Rate ($)" : "Unit Cost ($)"}</Label>
                     <Input type="number" step="0.01" value={item.unitCost} onChange={(e) => updateItem(item.id, { unitCost: Number(e.target.value) })} />
                   </div>
-                  <div>
-                    <Label>Markup %</Label>
-                    <Input type="number" value={item.markupPercent} onChange={(e) => updateItem(item.id, { markupPercent: Number(e.target.value) })} />
-                  </div>
                 </div>
-                <div className="text-right font-semibold text-primary">Line Total: ${item.total.toFixed(2)}</div>
+                <div className="text-right font-semibold text-primary">
+                  Line Total: ${item.total.toFixed(2)}
+                  {item.type === "material" && item.markupPercent > 0 && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      (incl. {item.markupPercent}% markup)
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
 
