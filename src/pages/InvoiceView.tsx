@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Send, DollarSign } from "lucide-react";
+import { ArrowLeft, Send, DollarSign, Download } from "lucide-react";
+import { generateInvoicePdf } from "@/lib/generateInvoicePdf";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -207,6 +208,9 @@ export default function InvoiceView() {
         </Card>
 
         <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={() => generateInvoicePdf(invoice, payments)}>
+            <Download className="w-4 h-4 mr-2" /> Download PDF
+          </Button>
           <Button onClick={handleSendInvoice}>
             <Send className="w-4 h-4 mr-2" /> Send Invoice
           </Button>
