@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import mayuraLogo from "@/assets/mayura-logo.png";
+import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
@@ -33,11 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <header className="border-b bg-primary sticky top-0 z-50">
         <div className="container flex items-center justify-between h-14">
           <Link to="/admin" className="flex items-center gap-3 shrink-0">
-            <img src={mayuraLogo} alt="Mayura Garden Service" className="h-9 w-auto rounded" />
-            <div className="hidden md:block">
-              <span className="text-lg font-semibold text-primary-foreground tracking-wider uppercase leading-none">Mayura</span>
-              <span className="block text-[10px] text-primary-foreground/70 tracking-[0.2em] uppercase">Pre-Sale Gardening</span>
-            </div>
+            <img src={mayuraLogo} alt="Mayura Garden Services" className="h-9 w-auto" />
           </Link>
 
           {/* Desktop nav — scrollable row */}
