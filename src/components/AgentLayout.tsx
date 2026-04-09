@@ -1,25 +1,19 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 const navItems = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
-  { to: "/admin/clients", label: "Clients", icon: Users },
-  { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
-  { to: "/admin/invoices", label: "Invoices", icon: FileText },
-  { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
-  { to: "/admin/materials", label: "Materials", icon: Package },
-  { to: "/admin/tools", label: "Tools", icon: Wrench },
-  { to: "/admin/agents", label: "Agents", icon: UserCheck },
-  { to: "/admin/packages", label: "Packages", icon: PackageCheck },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
+  { to: "/agent", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/agent/request", label: "New Request", icon: FilePlus },
+  { to: "/agent/jobs", label: "My Jobs", icon: Briefcase },
+  { to: "/agent/gallery", label: "Gallery", icon: Image },
+  { to: "/agent/referrals", label: "Referrals", icon: DollarSign },
 ];
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AgentLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,15 +25,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top header bar — always visible & sticky */}
       <header className="border-b bg-primary sticky top-0 z-50">
         <div className="container flex items-center justify-between h-14">
-          <Link to="/admin" className="flex items-center gap-3 shrink-0">
+          <Link to="/agent" className="flex items-center gap-3 shrink-0">
             <img src={mayuraLogo} alt="Mayura Garden Services" className="h-9 w-auto" />
+            <span className="text-primary-foreground/70 text-xs font-medium hidden sm:block">Agent Portal</span>
           </Link>
 
-          {/* Desktop nav — scrollable row */}
-          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
+          <nav className="hidden lg:flex items-center gap-0.5">
             {navItems.map((item) => {
               const isActive = location.pathname === item.to;
               return (
@@ -63,13 +56,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Button>
           </nav>
 
-          {/* Mobile / tablet hamburger */}
           <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
 
-        {/* Mobile dropdown */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3">
             <nav className="container grid grid-cols-2 gap-1 pt-2">
