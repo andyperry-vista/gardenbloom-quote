@@ -317,9 +317,15 @@ export default function LandingPage() {
           <p className="text-xs text-foreground/50 mt-2">
             {t("footerRights", { year: new Date().getFullYear() })}
           </p>
-          <a href="/admin/login" className="inline-block mt-3 text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
-            {t("admin")}
-          </a>
+          <div className="flex items-center justify-center gap-4 mt-3">
+            <a href="/agent/login" className="text-xs text-foreground/40 hover:text-foreground/60 transition-colors">
+              Agent Portal
+            </a>
+            <span className="text-foreground/20">·</span>
+            <a href="/admin/login" className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
+              {t("admin")}
+            </a>
+          </div>
         </div>
       </footer>
     </div>
