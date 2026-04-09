@@ -97,12 +97,12 @@ export const translations = {
     galleryBefore: "改造前",
     galleryAfter: "改造后",
     galleryHoverHint: "悬停查看",
-    galleryProject1Title: "前院花园翻新",
-    galleryProject1Desc: "全面清理、绿篱修剪、新铺覆盖物和草坪护理",
-    galleryProject2Title: "后院改造",
-    galleryProject2Desc: "杂草丛生的院子变成拍照就绪的空间",
-    galleryProject3Title: "小径修复",
-    galleryProject3Desc: "除草铺路、修剪绿篱和新建花园边界",
+    galleryProject1Title: "前院花园清理",
+    galleryProject1Desc: "杂草丛生的花坛清理、覆盖物铺设及重新种植",
+    galleryProject2Title: "售前绿篱与花园整理",
+    galleryProject2Desc: "修剪杂乱灌木，刷新花坛以备拍摄上市照片",
+    galleryProject3Title: "前院岩石花园改造",
+    galleryProject3Desc: "修剪杂乱灌木，展现整洁的岩石花园",
 
     // How It Works
     howItWorksTitle: "服务流程",
