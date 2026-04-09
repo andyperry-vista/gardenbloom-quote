@@ -1,11 +1,50 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
-const navItems = [
+const navGroups = [
+  { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
+  {
+    label: "Work",
+    icon: Briefcase,
+    children: [
+      { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
+      { to: "/admin/clients", label: "Clients", icon: Users },
+      { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
+      { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
+    ],
+  },
+  {
+    label: "Finance",
+    icon: FileText,
+    children: [
+      { to: "/admin/invoices", label: "Invoices", icon: FileText },
+    ],
+  },
+  {
+    label: "Resources",
+    icon: Package,
+    children: [
+      { to: "/admin/materials", label: "Materials", icon: Package },
+      { to: "/admin/packages", label: "Packages", icon: PackageCheck },
+    ],
+  },
+  {
+    label: "Admin",
+    icon: Settings,
+    children: [
+      { to: "/admin/agents", label: "Agents", icon: UserCheck },
+      { to: "/admin/tools", label: "Tools", icon: Wrench },
+      { to: "/admin/settings", label: "Settings", icon: Settings },
+    ],
+  },
+];
+
+// All flat items for mobile
+const allNavItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
   { to: "/admin/clients", label: "Clients", icon: Users },
@@ -19,6 +58,60 @@ const navItems = [
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
+function NavDropdown({ group, pathname }: { group: typeof navGroups[1]; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const children = "children" in group ? group.children : [];
+  const isChildActive = children?.some((c) => pathname === c.to);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+          isChildActive
+            ? "bg-accent text-accent-foreground"
+            : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
+        }`}
+      >
+        <group.icon className="w-4 h-4 shrink-0" />
+        {group.label}
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 bg-popover border rounded-lg shadow-lg py-1 min-w-[180px] z-50">
+          {children?.map((item) => {
+            const isActive = pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+                  isActive
+                    ? "bg-accent text-accent-foreground font-medium"
+                    : "text-popover-foreground hover:bg-muted"
+                }`}
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,49 +124,47 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top header bar — always visible & sticky */}
       <header className="border-b bg-primary sticky top-0 z-50">
         <div className="container flex items-center justify-between h-14">
           <Link to="/admin" className="flex items-center gap-3 shrink-0">
             <img src={mayuraLogo} alt="Mayura Garden Services" className="h-9 w-auto" />
           </Link>
 
-          {/* Desktop nav — scrollable row */}
-          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-0.5">
+            {navGroups.map((group) =>
+              "to" in group ? (
                 <Link
-                  key={item.to}
-                  to={item.to}
+                  key={group.label}
+                  to={group.to}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    isActive
+                    location.pathname === group.to
                       ? "bg-accent text-accent-foreground"
                       : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
                   }`}
                 >
-                  <item.icon className="w-4 h-4 shrink-0" />
-                  {item.label}
+                  <group.icon className="w-4 h-4 shrink-0" />
+                  {group.label}
                 </Link>
-              );
-            })}
+              ) : (
+                <NavDropdown key={group.label} group={group} pathname={location.pathname} />
+              )
+            )}
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
               <LogOut className="w-4 h-4" />
               <span className="ml-1.5">Logout</span>
             </Button>
           </nav>
 
-          {/* Mobile / tablet hamburger */}
           <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
 
-        {/* Mobile dropdown */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3">
             <nav className="container grid grid-cols-2 gap-1 pt-2">
-              {navItems.map((item) => {
+              {allNavItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 return (
                   <Link
