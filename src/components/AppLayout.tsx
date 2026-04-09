@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
