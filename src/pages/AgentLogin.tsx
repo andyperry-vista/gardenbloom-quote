@@ -39,32 +39,24 @@ export default function AgentLogin() {
     setLoading(true);
     setError("");
 
-    const { data, error: signupError } = await supabase.auth.signUp({
+    const { error: signupError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin + "/agent/login" },
+      options: {
+        emailRedirectTo: window.location.origin + "/agent/login",
+        data: {
+          is_agent: "true",
+          agent_name: agentName,
+          agency_name: agencyName,
+          phone,
+        },
+      },
     });
 
     if (signupError) {
       setError(signupError.message);
       setLoading(false);
       return;
-    }
-
-    if (data.user) {
-      const { error: profileError } = await supabase.from("agent_profiles").insert({
-        user_id: data.user.id,
-        agent_name: agentName,
-        agency_name: agencyName,
-        phone,
-        email,
-      });
-
-      if (profileError) {
-        setError(profileError.message);
-        setLoading(false);
-        return;
-      }
     }
 
     setSignupSuccess(true);
