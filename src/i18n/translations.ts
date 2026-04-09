@@ -30,12 +30,12 @@ export const translations = {
     galleryBefore: "Before",
     galleryAfter: "After",
     galleryHoverHint: "Hover to reveal",
-    galleryProject1Title: "Front Garden Revamp",
-    galleryProject1Desc: "Full clean-up, hedge trim, fresh mulch & lawn care",
-    galleryProject2Title: "Backyard Transformation",
-    galleryProject2Desc: "Overgrown yard turned into a photo-ready space",
-    galleryProject3Title: "Pathway Restoration",
-    galleryProject3Desc: "Weeded pavers, trimmed hedges & new garden borders",
+    galleryProject1Title: "Front Garden Clean-Up",
+    galleryProject1Desc: "Overgrown garden bed cleared, mulched & freshly planted",
+    galleryProject2Title: "Pre-Sale Hedge & Garden Tidy",
+    galleryProject2Desc: "Overgrown shrubs shaped, garden beds refreshed for listing photos",
+    galleryProject3Title: "Front Yard Rockery Makeover",
+    galleryProject3Desc: "Unruly bushes trimmed back to reveal a neat rockery garden",
 
     // How It Works
     howItWorksTitle: "How It Works",
