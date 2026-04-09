@@ -14,6 +14,8 @@ const navItems = [
   { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/admin/materials", label: "Materials", icon: Package },
   { to: "/admin/tools", label: "Tools", icon: Wrench },
+  { to: "/admin/agents", label: "Agents", icon: UserCheck },
+  { to: "/admin/packages", label: "Packages", icon: PackageCheck },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

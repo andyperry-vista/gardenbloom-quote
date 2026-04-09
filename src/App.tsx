@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import LandingPage from "./pages/LandingPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminGuard from "./components/AdminGuard";
+import AgentGuard from "./components/AgentGuard";
 import Dashboard from "./pages/Dashboard";
 import QuoteEditor from "./pages/QuoteEditor";
 import QuoteView from "./pages/QuoteView";
@@ -21,6 +22,14 @@ import InvoiceView from "./pages/InvoiceView";
 import CalendarPage from "./pages/Calendar";
 import Clients from "./pages/Clients";
 import NotFound from "./pages/NotFound";
+import AgentLogin from "./pages/AgentLogin";
+import AgentDashboard from "./pages/AgentDashboard";
+import AgentQuoteRequest from "./pages/AgentQuoteRequest";
+import AgentJobs from "./pages/AgentJobs";
+import AgentGallery from "./pages/AgentGallery";
+import AgentReferrals from "./pages/AgentReferrals";
+import AdminAgents from "./pages/AdminAgents";
+import AdminPackages from "./pages/AdminPackages";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +56,14 @@ const App = () => (
             <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
             <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
             <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />
+            <Route path="/admin/agents" element={<AdminGuard><AdminAgents /></AdminGuard>} />
+            <Route path="/admin/packages" element={<AdminGuard><AdminPackages /></AdminGuard>} />
+            <Route path="/agent/login" element={<AgentLogin />} />
+            <Route path="/agent" element={<AgentGuard><AgentDashboard /></AgentGuard>} />
+            <Route path="/agent/request" element={<AgentGuard><AgentQuoteRequest /></AgentGuard>} />
+            <Route path="/agent/jobs" element={<AgentGuard><AgentJobs /></AgentGuard>} />
+            <Route path="/agent/gallery" element={<AgentGuard><AgentGallery /></AgentGuard>} />
+            <Route path="/agent/referrals" element={<AgentGuard><AgentReferrals /></AgentGuard>} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
