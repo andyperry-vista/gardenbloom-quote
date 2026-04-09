@@ -627,6 +627,7 @@ export type Database = {
       }
       generate_invoice_number: { Args: never; Returns: string }
       generate_job_number: { Args: never; Returns: string }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
