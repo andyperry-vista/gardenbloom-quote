@@ -54,9 +54,10 @@ export default function QuoteEditor() {
 
   const addLineItem = (type: "material" | "labor" | "misc") => {
     const markupPercent = type === "material" ? settings.defaultMarkupPercent : 0;
+    const defaultDesc = type === "misc" ? "" : "";
     setItems((prev) => [
       ...prev,
-      { id: `li-${Date.now()}`, type, description: "", quantity: 1, unitCost: 0, markupPercent, total: 0 },
+      { id: `li-${Date.now()}`, type, description: defaultDesc, quantity: 1, unitCost: 0, markupPercent, total: 0 },
     ]);
   };
 
@@ -144,6 +145,7 @@ export default function QuoteEditor() {
                 <Button variant="outline" size="sm" onClick={() => addLineItem("material")}><Plus className="w-4 h-4 mr-1" /> Material</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}><Plus className="w-4 h-4 mr-1" /> Labour</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("misc")}><Plus className="w-4 h-4 mr-1" /> Misc</Button>
+                <Button variant="outline" size="sm" onClick={() => { setItems((prev) => [...prev, { id: `li-${Date.now()}`, type: "misc" as const, description: "Green waste removal", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Green Waste</Button>
               </div>
             </div>
           </CardHeader>
