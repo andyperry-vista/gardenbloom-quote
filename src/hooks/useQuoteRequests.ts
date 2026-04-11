@@ -9,6 +9,7 @@ export interface QuoteRequest {
   address: string;
   message: string;
   photoUrls: string[];
+  referralCode: string;
   status: string;
   createdAt: string;
 }
@@ -32,6 +33,7 @@ export function useQuoteRequests() {
         address: r.address || "",
         message: r.message || "",
         photoUrls: (r.photo_urls as string[]) || [],
+        referralCode: r.referral_code || "",
         status: r.status,
         createdAt: r.created_at,
       })) as QuoteRequest[];

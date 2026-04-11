@@ -84,6 +84,9 @@ export default function QuoteRequests() {
                       <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
                         <span>{req.email}</span>
                         {req.phone && <span>· {req.phone}</span>}
+                        {req.referralCode && (
+                          <Badge variant="outline" className="text-xs">Ref: {req.referralCode}</Badge>
+                        )}
                       </div>
 
                       {req.address && (
