@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
@@ -174,7 +174,39 @@ export default function QuoteEditor() {
                       <Input value={item.description} onChange={(e) => updateItem(item.id, { description: e.target.value })} placeholder={item.type === "labor" ? "e.g. Garden bed prep & planting" : "e.g. Skip bin hire, delivery fee"} />
                     </div>
                   )}
-                  <div><Label>Qty</Label><Input type="number" min={1} value={item.quantity} onChange={(e) => updateItem(item.id, { quantity: Number(e.target.value) })} /></div>
+                  <div>
+                    <Label>Qty</Label>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => updateItem(item.id, { quantity: Math.max(0, item.quantity - 1) })}
+                      >
+                        <Minus className="w-3 h-3" />
+                      </Button>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={item.quantity === 0 ? "" : item.quantity}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateItem(item.id, { quantity: val === "" ? 0 : Number(val) });
+                        }}
+                        className="text-center"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => updateItem(item.id, { quantity: item.quantity + 1 })}
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
                   <div><Label>{item.type === "labor" ? "Rate ($)" : "Unit Cost ($)"}</Label><Input type="number" step="0.01" value={item.unitCost} onChange={(e) => updateItem(item.id, { unitCost: Number(e.target.value) })} /></div>
                 </div>
                 <div className="text-right font-semibold text-primary">
