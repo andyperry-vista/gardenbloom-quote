@@ -28,23 +28,21 @@ export async function generateQuotePdf(quote: Quote) {
   doc.setFillColor(...BRAND_GREEN);
   doc.rect(0, 0, pw, 40, "F");
 
-  // Horizontal logo (wider, shorter)
-  doc.addImage(logoDataUrl, "PNG", margin, 6, 70, 28);
+  // Horizontal logo (aspect ratio ~4.27:1)
+  doc.addImage(logoDataUrl, "PNG", margin, 6, 65, 15);
+
+  // Contact details in header
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  doc.text("Nicholas  •  0413 806 551  •  nicholas@mayuragardenservices.com.au", margin, 27);
 
   // Quote number & date on right
-  doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
   doc.text(`Quote #${quote.id.slice(-6)}`, pw - margin, 18, { align: "right" });
   doc.text(`Date: ${new Date(quote.createdAt).toLocaleDateString("en-AU")}`, pw - margin, 24, { align: "right" });
 
   y = 48;
-
-  // Contact details
-  doc.setFontSize(8);
-  doc.setTextColor(...GREY);
-  doc.text("Nicholas  •  0413 806 551  •  nicholas@mayuragardenservices.com.au", margin, y);
-  y += 8;
 
   // QUOTATION heading
   doc.setTextColor(...BRAND_GREEN);
