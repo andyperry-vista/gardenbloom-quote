@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useJobs } from "@/hooks/useJobs";
 import { useInvoices } from "@/hooks/useInvoices";
+import { useQuoteRequests } from "@/hooks/useQuoteRequests";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FilePlus, DollarSign, FileText, TrendingUp, Briefcase, AlertTriangle, CalendarDays } from "lucide-react";
+import { FilePlus, DollarSign, FileText, TrendingUp, Briefcase, AlertTriangle, CalendarDays, Inbox, CheckCircle, Eye } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 
 const statusColors: Record<string, string> = {
