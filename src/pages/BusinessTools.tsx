@@ -154,7 +154,50 @@ function EmailComposer() {
           )}
         </div>
 
-        {/* Step 3: Notes */}
+        {/* Step 3: Link Quote or Invoice */}
+        {showQuotePicker && (
+          <div>
+            <Label>Link Quote (optional)</Label>
+            <Select value={quoteId} onValueChange={setQuoteId}>
+              <SelectTrigger><SelectValue placeholder="Select a quote…" /></SelectTrigger>
+              <SelectContent>
+                {clientQuotes.map((q) => (
+                  <SelectItem key={q.id} value={q.id}>
+                    Quote #{q.id.slice(-6)} — ${q.grandTotal.toFixed(2)} ({q.status})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedQuote && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Ref #{selectedQuote.id.slice(-6)} • ${selectedQuote.grandTotal.toFixed(2)} will be auto-populated
+              </p>
+            )}
+          </div>
+        )}
+
+        {showInvoicePicker && (
+          <div>
+            <Label>Link Invoice (optional)</Label>
+            <Select value={invoiceId} onValueChange={setInvoiceId}>
+              <SelectTrigger><SelectValue placeholder="Select an invoice…" /></SelectTrigger>
+              <SelectContent>
+                {clientInvoices.map((inv) => (
+                  <SelectItem key={inv.id} value={inv.id}>
+                    {inv.invoiceNumber} — ${inv.totalWithGst.toFixed(2)} ({inv.status})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedInvoice && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {selectedInvoice.invoiceNumber} • ${selectedInvoice.totalWithGst.toFixed(2)} will be auto-populated
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Step 4: Notes */}
         <div>
           <Label>Additional Notes (optional)</Label>
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details to include in the email…" rows={3} />
