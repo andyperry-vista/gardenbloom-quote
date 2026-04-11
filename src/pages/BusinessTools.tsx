@@ -15,6 +15,9 @@ import { useQuotes } from "@/hooks/useQuotes";
 import { useInvoices } from "@/hooks/useInvoices";
 
 /* ─── Email Scenarios ─── */
+const QUOTE_SCENARIOS = ["quote-request", "quote-followup", "booking-confirmation"];
+const INVOICE_SCENARIOS = ["unpaid-invoice", "tax-invoice", "payment-remittance"];
+
 const EMAIL_SCENARIOS = [
   { value: "quote-request", label: "Send Quote", description: "Send a quote to the client" },
   { value: "booking-confirmation", label: "Booking Confirmation", description: "Confirm a scheduled job with the client" },
