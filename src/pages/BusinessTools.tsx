@@ -32,13 +32,40 @@ const EMAIL_SCENARIOS = [
 /* ─── Unified Email Composer ─── */
 function EmailComposer() {
   const { clients } = useClients();
+  const { quotes } = useQuotes();
+  const { invoices } = useInvoices();
   const [sending, setSending] = useState(false);
   const [scenario, setScenario] = useState("");
   const [clientId, setClientId] = useState("");
+  const [quoteId, setQuoteId] = useState("");
+  const [invoiceId, setInvoiceId] = useState("");
   const [notes, setNotes] = useState("");
 
   const selectedClient = clients.find((c) => c.id === clientId);
   const selectedScenario = EMAIL_SCENARIOS.find((s) => s.value === scenario);
+
+  const showQuotePicker = QUOTE_SCENARIOS.includes(scenario);
+  const showInvoicePicker = INVOICE_SCENARIOS.includes(scenario);
+
+  // Filter quotes/invoices by selected client
+  const clientQuotes = useMemo(() =>
+    clientId ? quotes.filter((q) => q.client.id === clientId) : quotes,
+    [quotes, clientId]
+  );
+  const clientInvoices = useMemo(() =>
+    clientId ? invoices.filter((inv) => inv.clientId === clientId) : invoices,
+    [invoices, clientId]
+  );
+
+  const selectedQuote = quotes.find((q) => q.id === quoteId);
+  const selectedInvoice = invoices.find((inv) => inv.id === invoiceId);
+
+  // Reset linked doc when scenario changes
+  const handleScenarioChange = (v: string) => {
+    setScenario(v);
+    setQuoteId("");
+    setInvoiceId("");
+  };
 
   const handleSend = async () => {
     if (!scenario) { toast.error("Please select an email type"); return; }
@@ -52,6 +79,17 @@ function EmailComposer() {
       };
       if (selectedClient.address) templateData.propertyAddress = selectedClient.address;
       if (notes) templateData.notes = notes;
+
+      // Auto-populate reference numbers from linked documents
+      if (selectedQuote) {
+        templateData.quoteNumber = selectedQuote.id.slice(-6);
+        templateData.amount = `$${selectedQuote.grandTotal.toFixed(2)}`;
+      }
+      if (selectedInvoice) {
+        templateData.invoiceNumber = selectedInvoice.invoiceNumber;
+        templateData.amount = `$${selectedInvoice.totalWithGst.toFixed(2)}`;
+        if (selectedInvoice.dueDate) templateData.dueDate = new Date(selectedInvoice.dueDate).toLocaleDateString("en-AU");
+      }
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
