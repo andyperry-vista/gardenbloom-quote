@@ -30,6 +30,7 @@ import AgentGallery from "./pages/AgentGallery";
 import AgentReferrals from "./pages/AgentReferrals";
 import AdminAgents from "./pages/AdminAgents";
 import AdminPackages from "./pages/AdminPackages";
+import QuoteRequests from "./pages/QuoteRequests";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />
             <Route path="/admin/agents" element={<AdminGuard><AdminAgents /></AdminGuard>} />
             <Route path="/admin/packages" element={<AdminGuard><AdminPackages /></AdminGuard>} />
+            <Route path="/admin/quote-requests" element={<AdminGuard><QuoteRequests /></AdminGuard>} />
             <Route path="/agent/login" element={<AgentLogin />} />
             <Route path="/agent" element={<AgentGuard><AgentDashboard /></AgentGuard>} />
             <Route path="/agent/request" element={<AgentGuard><AgentQuoteRequest /></AgentGuard>} />

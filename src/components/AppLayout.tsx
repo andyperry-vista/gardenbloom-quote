@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ const navGroups = [
     label: "Work",
     icon: Briefcase,
     children: [
+      { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
       { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
       { to: "/admin/clients", label: "Clients", icon: Users },
       { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
@@ -46,6 +47,7 @@ const navGroups = [
 // All flat items for mobile
 const allNavItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
   { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
   { to: "/admin/clients", label: "Clients", icon: Users },
   { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
