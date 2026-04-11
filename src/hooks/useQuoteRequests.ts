@@ -10,6 +10,8 @@ export interface QuoteRequest {
   message: string;
   photoUrls: string[];
   referralCode: string;
+  referralAgentName: string | null;
+  referralAgencyName: string | null;
   status: string;
   createdAt: string;
 }
