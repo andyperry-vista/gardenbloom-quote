@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Send, Loader2, Calculator, FileText, Mail } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { useClients } from "@/hooks/useClients";
+import { useQuotes } from "@/hooks/useQuotes";
+import { useInvoices } from "@/hooks/useInvoices";
 
 /* ─── Email Scenarios ─── */
 const EMAIL_SCENARIOS = [
