@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import heroGarden from "@/assets/hero-garden.jpg";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -112,7 +112,7 @@ export default function LandingPage() {
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             {t("heroTagline")}
           </p>
-          <img src={heroGarden} alt="Beautifully landscaped garden with sold sign" className="w-full max-w-4xl rounded-2xl shadow-2xl mb-8" width={1920} height={960} />
+          
           <div className="flex gap-4">
             <a href="#quote-form">
               <Button size="lg" variant="secondary" className="gap-2">
