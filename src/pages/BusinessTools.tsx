@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,13 @@ import { Send, Loader2, Calculator, FileText, Mail } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { useClients } from "@/hooks/useClients";
+import { useQuotes } from "@/hooks/useQuotes";
+import { useInvoices } from "@/hooks/useInvoices";
 
 /* ─── Email Scenarios ─── */
+const QUOTE_SCENARIOS = ["quote-request", "quote-followup", "booking-confirmation"];
+const INVOICE_SCENARIOS = ["unpaid-invoice", "tax-invoice", "payment-remittance"];
+
 const EMAIL_SCENARIOS = [
   { value: "quote-request", label: "Send Quote", description: "Send a quote to the client" },
   { value: "booking-confirmation", label: "Booking Confirmation", description: "Confirm a scheduled job with the client" },
@@ -27,13 +32,40 @@ const EMAIL_SCENARIOS = [
 /* ─── Unified Email Composer ─── */
 function EmailComposer() {
   const { clients } = useClients();
+  const { quotes } = useQuotes();
+  const { invoices } = useInvoices();
   const [sending, setSending] = useState(false);
   const [scenario, setScenario] = useState("");
   const [clientId, setClientId] = useState("");
+  const [quoteId, setQuoteId] = useState("");
+  const [invoiceId, setInvoiceId] = useState("");
   const [notes, setNotes] = useState("");
 
   const selectedClient = clients.find((c) => c.id === clientId);
   const selectedScenario = EMAIL_SCENARIOS.find((s) => s.value === scenario);
+
+  const showQuotePicker = QUOTE_SCENARIOS.includes(scenario);
+  const showInvoicePicker = INVOICE_SCENARIOS.includes(scenario);
+
+  // Filter quotes/invoices by selected client
+  const clientQuotes = useMemo(() =>
+    clientId ? quotes.filter((q) => q.client.id === clientId) : quotes,
+    [quotes, clientId]
+  );
+  const clientInvoices = useMemo(() =>
+    clientId ? invoices.filter((inv) => inv.clientId === clientId) : invoices,
+    [invoices, clientId]
+  );
+
+  const selectedQuote = quotes.find((q) => q.id === quoteId);
+  const selectedInvoice = invoices.find((inv) => inv.id === invoiceId);
+
+  // Reset linked doc when scenario changes
+  const handleScenarioChange = (v: string) => {
+    setScenario(v);
+    setQuoteId("");
+    setInvoiceId("");
+  };
 
   const handleSend = async () => {
     if (!scenario) { toast.error("Please select an email type"); return; }
@@ -47,6 +79,17 @@ function EmailComposer() {
       };
       if (selectedClient.address) templateData.propertyAddress = selectedClient.address;
       if (notes) templateData.notes = notes;
+
+      // Auto-populate reference numbers from linked documents
+      if (selectedQuote) {
+        templateData.quoteNumber = selectedQuote.id.slice(-6);
+        templateData.amount = `$${selectedQuote.grandTotal.toFixed(2)}`;
+      }
+      if (selectedInvoice) {
+        templateData.invoiceNumber = selectedInvoice.invoiceNumber;
+        templateData.amount = `$${selectedInvoice.totalWithGst.toFixed(2)}`;
+        if (selectedInvoice.dueDate) templateData.dueDate = new Date(selectedInvoice.dueDate).toLocaleDateString("en-AU");
+      }
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
@@ -76,7 +119,7 @@ function EmailComposer() {
         {/* Step 1: Scenario */}
         <div>
           <Label>Email Type</Label>
-          <Select value={scenario} onValueChange={setScenario}>
+          <Select value={scenario} onValueChange={handleScenarioChange}>
             <SelectTrigger><SelectValue placeholder="Select email type…" /></SelectTrigger>
             <SelectContent>
               {EMAIL_SCENARIOS.map((s) => (
@@ -111,7 +154,50 @@ function EmailComposer() {
           )}
         </div>
 
-        {/* Step 3: Notes */}
+        {/* Step 3: Link Quote or Invoice */}
+        {showQuotePicker && (
+          <div>
+            <Label>Link Quote (optional)</Label>
+            <Select value={quoteId} onValueChange={setQuoteId}>
+              <SelectTrigger><SelectValue placeholder="Select a quote…" /></SelectTrigger>
+              <SelectContent>
+                {clientQuotes.map((q) => (
+                  <SelectItem key={q.id} value={q.id}>
+                    Quote #{q.id.slice(-6)} — ${q.grandTotal.toFixed(2)} ({q.status})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedQuote && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Ref #{selectedQuote.id.slice(-6)} • ${selectedQuote.grandTotal.toFixed(2)} will be auto-populated
+              </p>
+            )}
+          </div>
+        )}
+
+        {showInvoicePicker && (
+          <div>
+            <Label>Link Invoice (optional)</Label>
+            <Select value={invoiceId} onValueChange={setInvoiceId}>
+              <SelectTrigger><SelectValue placeholder="Select an invoice…" /></SelectTrigger>
+              <SelectContent>
+                {clientInvoices.map((inv) => (
+                  <SelectItem key={inv.id} value={inv.id}>
+                    {inv.invoiceNumber} — ${inv.totalWithGst.toFixed(2)} ({inv.status})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedInvoice && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {selectedInvoice.invoiceNumber} • ${selectedInvoice.totalWithGst.toFixed(2)} will be auto-populated
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Step 4: Notes */}
         <div>
           <Label>Additional Notes (optional)</Label>
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details to include in the email…" rows={3} />
