@@ -119,7 +119,7 @@ function EmailComposer() {
         {/* Step 1: Scenario */}
         <div>
           <Label>Email Type</Label>
-          <Select value={scenario} onValueChange={setScenario}>
+          <Select value={scenario} onValueChange={handleScenarioChange}>
             <SelectTrigger><SelectValue placeholder="Select email type…" /></SelectTrigger>
             <SelectContent>
               {EMAIL_SCENARIOS.map((s) => (
