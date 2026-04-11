@@ -28,13 +28,17 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   doc.setFillColor(...BRAND_GREEN);
   doc.rect(0, 0, pw, 40, "F");
 
-  // Horizontal logo
-  doc.addImage(logoDataUrl, "PNG", margin, 6, 70, 28);
+  // Horizontal logo (aspect ratio ~4.27:1)
+  doc.addImage(logoDataUrl, "PNG", margin, 6, 65, 15);
+
+  // Contact details in header
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  doc.text("Nicholas  •  0413 806 551  •  nicholas@mayuragardenservices.com.au", margin, 27);
 
   // Invoice number & date — right side
-  doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
   doc.text(invoice.invoiceNumber, pw - margin, 18, { align: "right" });
   doc.text(`Issued: ${new Date(invoice.createdAt).toLocaleDateString("en-AU")}`, pw - margin, 24, { align: "right" });
   if (invoice.dueDate) {
@@ -42,12 +46,6 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   }
 
   y = 48;
-
-  // Contact details
-  doc.setFontSize(8);
-  doc.setTextColor(...GREY);
-  doc.text("Nicholas  •  0413 806 551  •  nicholas@mayuragardenservices.com.au", margin, y);
-  y += 8;
 
   // TAX INVOICE heading
   doc.setTextColor(...BRAND_GREEN);
