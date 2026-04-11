@@ -4,6 +4,17 @@ const BRAND_GREEN = [5, 42, 29] as const; // #052A1D
 const BRAND_GOLD = [191, 163, 88] as const; // approx gold from palette
 const GREY = [100, 100, 100] as const;
 
+async function loadLogoDataUrl(): Promise<string> {
+  const { default: logoUrl } = await import("@/assets/mayura-logo.png");
+  const res = await fetch(logoUrl);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -11,18 +22,24 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   const margin = 20;
   let y = 0;
 
+  // Load logo
+  const logoDataUrl = await loadLogoDataUrl();
+
   // Header bar
   doc.setFillColor(...BRAND_GREEN);
   doc.rect(0, 0, pw, 40, "F");
+
+  // Logo
+  doc.addImage(logoDataUrl, "PNG", margin, 4, 32, 32);
 
   // Company name
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.text("Mayura Garden Service", margin, 18);
+  doc.text("Mayura Garden Service", margin + 35, 18);
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text("Pre-Sale Gardening • Lower Templestowe, VIC", margin, 26);
+  doc.text("Pre-Sale Gardening • Lower Templestowe, VIC", margin + 35, 26);
 
   // Invoice number & date — right side
   doc.setFontSize(10);
@@ -151,7 +168,7 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   doc.line(margin, footerY - 5, pw - margin, footerY - 5);
   doc.setFontSize(7);
   doc.setTextColor(...GREY);
-  doc.text("Mayura Garden Service • Lower Templestowe, VIC • ABN: [Your ABN]", pw / 2, footerY, { align: "center" });
+  doc.text("Mayura Garden Service • Lower Templestowe, VIC • ABN: 22 046 912 532", pw / 2, footerY, { align: "center" });
 
   // Save / download
   doc.save(`${invoice.invoiceNumber}.pdf`);
