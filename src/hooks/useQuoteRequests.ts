@@ -10,6 +10,8 @@ export interface QuoteRequest {
   message: string;
   photoUrls: string[];
   referralCode: string;
+  referralAgentName: string | null;
+  referralAgencyName: string | null;
   status: string;
   createdAt: string;
 }
@@ -25,18 +27,33 @@ export function useQuoteRequests() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data || []).map((r: any) => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        phone: r.phone || "",
-        address: r.address || "",
-        message: r.message || "",
-        photoUrls: (r.photo_urls as string[]) || [],
-        referralCode: r.referral_code || "",
-        status: r.status,
-        createdAt: r.created_at,
-      })) as QuoteRequest[];
+
+      // Fetch agent profiles to match referral codes
+      const { data: agents } = await supabase
+        .from("agent_profiles")
+        .select("referral_code, agent_name, agency_name");
+      const agentMap = new Map(
+        (agents || []).map((a: any) => [a.referral_code, { agentName: a.agent_name, agencyName: a.agency_name }])
+      );
+
+      return (data || []).map((r: any) => {
+        const code = r.referral_code || "";
+        const agent = code ? agentMap.get(code) : null;
+        return {
+          id: r.id,
+          name: r.name,
+          email: r.email,
+          phone: r.phone || "",
+          address: r.address || "",
+          message: r.message || "",
+          photoUrls: (r.photo_urls as string[]) || [],
+          referralCode: code,
+          referralAgentName: agent?.agentName || null,
+          referralAgencyName: agent?.agencyName || null,
+          status: r.status,
+          createdAt: r.created_at,
+        };
+      }) as QuoteRequest[];
     },
   });
 
