@@ -107,7 +107,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="relative">
         <div className="container flex flex-col items-center py-20 text-center">
-          <img src={mayuraLogoStacked} alt="Mayura Garden Services" className="h-[28rem] w-auto rounded-lg mb-8" />
+          <img src={mayuraLogoStacked} alt="Mayura Garden Services" className="w-full max-w-2xl h-auto mb-8" />
           <h1 className="sr-only">Mayura Garden Services</h1>
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             {t("heroTagline")}
