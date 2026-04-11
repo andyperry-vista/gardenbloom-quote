@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   {t("thankYouMessage")}
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); clearPhotos(); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "", referralCode: "" }); clearPhotos(); }}>
                   {t("submitAnother")}
                 </Button>
               </CardContent>
