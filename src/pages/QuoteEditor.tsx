@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useSettings } from "@/hooks/useSettings";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 export default function QuoteEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { quotes, addQuote, updateQuote } = useQuotes();
   const { materials } = useMaterials();
   const { settings } = useSettings();
@@ -27,11 +28,20 @@ export default function QuoteEditor() {
   const existingQuote = id ? quotes.find((q) => q.id === id) : undefined;
   const isEditing = !!existingQuote;
 
+  // Support pre-filling from quote request navigation state
+  const prefill = (location.state as { prefillClient?: Partial<Client>; prefillNotes?: string } | null);
+
   const [client, setClient] = useState<Client>(
-    existingQuote?.client ?? { id: "", name: "", email: "", phone: "", address: "" }
+    existingQuote?.client ?? {
+      id: "",
+      name: prefill?.prefillClient?.name ?? "",
+      email: prefill?.prefillClient?.email ?? "",
+      phone: prefill?.prefillClient?.phone ?? "",
+      address: prefill?.prefillClient?.address ?? "",
+    }
   );
   const [items, setItems] = useState<QuoteLineItem[]>(existingQuote?.items ?? []);
-  const [notes, setNotes] = useState(existingQuote?.notes ?? "");
+  const [notes, setNotes] = useState(existingQuote?.notes ?? prefill?.prefillNotes ?? "");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
