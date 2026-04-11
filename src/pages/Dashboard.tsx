@@ -20,7 +20,9 @@ export default function Dashboard() {
   const { quotes } = useQuotes();
   const { jobs } = useJobs();
   const { invoices } = useInvoices();
+  const { requests: quoteRequests, updateStatus } = useQuoteRequests();
 
+  const newRequests = quoteRequests.filter((r) => r.status === "new");
   const totalQuoted = quotes.reduce((sum, q) => sum + q.grandTotal, 0);
   const acceptedTotal = quotes.filter((q) => q.status === "accepted").reduce((sum, q) => sum + q.grandTotal, 0);
   const overdueInvoices = invoices.filter((i) => i.status === "overdue" || (i.status !== "paid" && i.dueDate && new Date(i.dueDate) < new Date()));
