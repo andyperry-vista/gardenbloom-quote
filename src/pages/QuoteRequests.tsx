@@ -85,7 +85,14 @@ export default function QuoteRequests() {
                         <span>{req.email}</span>
                         {req.phone && <span>· {req.phone}</span>}
                         {req.referralCode && (
-                          <Badge variant="outline" className="text-xs">Ref: {req.referralCode}</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Ref: {req.referralCode}
+                            {req.referralAgentName && (
+                              <span className="ml-1 font-semibold">
+                                — {req.referralAgentName}{req.referralAgencyName ? ` (${req.referralAgencyName})` : ""}
+                              </span>
+                            )}
+                          </Badge>
                         )}
                       </div>
 
