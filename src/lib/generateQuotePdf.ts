@@ -101,8 +101,9 @@ export async function generateQuotePdf(quote: Quote) {
   doc.setFontSize(9);
   for (const item of quote.items) {
     const clientPrice = item.unitCost * (1 + item.markupPercent / 100);
+    const desc = item.type === "labor" ? `${item.description} (per hour)` : item.description;
     doc.setTextColor(0, 0, 0);
-    doc.text(item.description, margin, y, { maxWidth: 80 });
+    doc.text(desc, margin, y, { maxWidth: 80 });
     doc.text(String(item.quantity), 115, y, { align: "right" });
     doc.text(`$${clientPrice.toFixed(2)}`, 145, y, { align: "right" });
     doc.setFont("helvetica", "bold");
