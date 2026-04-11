@@ -5,7 +5,7 @@ const BRAND_GOLD = [191, 163, 88] as const;
 const GREY = [100, 100, 100] as const;
 
 async function loadLogoDataUrl(): Promise<string> {
-  const { default: logoUrl } = await import("@/assets/mayura-logo.png");
+  const { default: logoUrl } = await import("@/assets/mayura-logo-horizontal.png");
   const res = await fetch(logoUrl);
   const blob = await res.blob();
   return new Promise((resolve) => {
@@ -22,30 +22,29 @@ export async function generateQuotePdf(quote: Quote) {
   const margin = 20;
   let y = 0;
 
-  // Load logo
   const logoDataUrl = await loadLogoDataUrl();
 
   // Header bar
   doc.setFillColor(...BRAND_GREEN);
   doc.rect(0, 0, pw, 40, "F");
 
-  // Logo
-  doc.addImage(logoDataUrl, "PNG", margin, 4, 32, 32);
+  // Horizontal logo (wider, shorter)
+  doc.addImage(logoDataUrl, "PNG", margin, 6, 70, 28);
 
+  // Quote number & date on right
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.text("Mayura Garden Service", margin + 35, 18);
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.text("Pre-Sale Gardening • Lower Templestowe, VIC", margin + 35, 26);
-
-  // Quote number & date
   doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
   doc.text(`Quote #${quote.id.slice(-6)}`, pw - margin, 18, { align: "right" });
   doc.text(`Date: ${new Date(quote.createdAt).toLocaleDateString("en-AU")}`, pw - margin, 24, { align: "right" });
 
-  y = 52;
+  y = 48;
+
+  // Contact details
+  doc.setFontSize(8);
+  doc.setTextColor(...GREY);
+  doc.text("Nicholas  •  0413 806 551  •  nicholas@mayuragardenservices.com.au", margin, y);
+  y += 8;
 
   // QUOTATION heading
   doc.setTextColor(...BRAND_GREEN);
@@ -161,7 +160,7 @@ export async function generateQuotePdf(quote: Quote) {
   doc.line(margin, footerY - 5, pw - margin, footerY - 5);
   doc.setFontSize(7);
   doc.setTextColor(...GREY);
-  doc.text("Mayura Garden Service • Lower Templestowe, VIC • ABN: 22 046 912 532", pw / 2, footerY, { align: "center" });
+  doc.text("Mayura Garden Services • Lower Templestowe, VIC • ABN: 22 046 912 532", pw / 2, footerY, { align: "center" });
 
   doc.save(`Quote-${quote.id.slice(-6)}.pdf`);
 }
