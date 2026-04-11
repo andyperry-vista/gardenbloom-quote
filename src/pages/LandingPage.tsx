@@ -82,6 +82,16 @@ export default function LandingPage() {
         photoUrls.push(urlData.publicUrl);
       }
 
+      // Save to quote_requests table
+      await supabase.from("quote_requests").insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        message: form.message,
+        photo_urls: photoUrls,
+      });
+
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "quote-request",

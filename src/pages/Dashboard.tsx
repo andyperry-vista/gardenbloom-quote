@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useJobs } from "@/hooks/useJobs";
 import { useInvoices } from "@/hooks/useInvoices";
+import { useQuoteRequests } from "@/hooks/useQuoteRequests";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FilePlus, DollarSign, FileText, TrendingUp, Briefcase, AlertTriangle, CalendarDays } from "lucide-react";
+import { FilePlus, DollarSign, FileText, TrendingUp, Briefcase, AlertTriangle, CalendarDays, Inbox, CheckCircle, Eye } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 
 const statusColors: Record<string, string> = {
@@ -19,7 +20,9 @@ export default function Dashboard() {
   const { quotes } = useQuotes();
   const { jobs } = useJobs();
   const { invoices } = useInvoices();
+  const { requests: quoteRequests, updateStatus } = useQuoteRequests();
 
+  const newRequests = quoteRequests.filter((r) => r.status === "new");
   const totalQuoted = quotes.reduce((sum, q) => sum + q.grandTotal, 0);
   const acceptedTotal = quotes.filter((q) => q.status === "accepted").reduce((sum, q) => sum + q.grandTotal, 0);
   const overdueInvoices = invoices.filter((i) => i.status === "overdue" || (i.status !== "paid" && i.dueDate && new Date(i.dueDate) < new Date()));
@@ -69,6 +72,43 @@ export default function Dashboard() {
             <CardContent><div className="text-2xl font-bold">${paidTotal.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
           </Card>
         </div>
+
+        {newRequests.length > 0 && (
+          <Card className="border-primary/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Inbox className="w-4 h-4" /> New Quote Requests
+                <Badge variant="secondary" className="ml-2">{newRequests.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {newRequests.map((req) => (
+                  <div key={req.id} className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{req.name}</span>
+                        <span className="text-sm text-muted-foreground">{req.email}</span>
+                        {req.phone && <span className="text-sm text-muted-foreground">· {req.phone}</span>}
+                      </div>
+                      {req.address && <p className="text-sm text-muted-foreground">{req.address}</p>}
+                      {req.message && <p className="text-sm text-foreground/80 line-clamp-2">{req.message}</p>}
+                      <p className="text-xs text-muted-foreground">{new Date(req.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                    </div>
+                    <div className="flex gap-2 ml-4 shrink-0">
+                      <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
+                        <Eye className="w-3 h-3 mr-1" /> Contacted
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "converted")}>
+                        <CheckCircle className="w-3 h-3 mr-1" /> Done
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {overdueInvoices.length > 0 && (
           <Card className="border-destructive/50">
