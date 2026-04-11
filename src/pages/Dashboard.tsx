@@ -93,6 +93,20 @@ export default function Dashboard() {
                       </div>
                       {req.address && <p className="text-sm text-muted-foreground">{req.address}</p>}
                       {req.message && <p className="text-sm text-foreground/80 line-clamp-2">{req.message}</p>}
+                      {req.photoUrls && req.photoUrls.length > 0 && (
+                        <div className="flex gap-2 mt-2">
+                          {req.photoUrls.slice(0, 4).map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="relative block w-14 h-14 rounded-md overflow-hidden border hover:ring-2 hover:ring-primary transition-all">
+                              <img src={url} alt={`Garden photo ${i + 1}`} className="w-full h-full object-cover" />
+                            </a>
+                          ))}
+                          {req.photoUrls.length > 4 && (
+                            <div className="w-14 h-14 rounded-md border flex items-center justify-center bg-muted text-xs text-muted-foreground font-medium">
+                              +{req.photoUrls.length - 4}
+                            </div>
+                          )}
+                        </div>
+                      )}
                       <p className="text-xs text-muted-foreground">{new Date(req.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     </div>
                     <div className="flex gap-2 ml-4 shrink-0">
