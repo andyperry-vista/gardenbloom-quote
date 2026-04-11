@@ -8,9 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Send, Trash2, Pencil, Briefcase } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Pencil, Briefcase, Download } from "lucide-react";
+import { generateQuotePdf } from "@/lib/generateQuotePdf";
 import AppLayout from "@/components/AppLayout";
-import mayuraLogo from "@/assets/mayura-logo.jpeg";
+import mayuraLogo from "@/assets/mayura-logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -166,8 +167,11 @@ export default function QuoteView() {
         </Card>
 
         <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={() => generateQuotePdf(quote)}>
+            <Download className="w-4 h-4 mr-2" /> Download PDF
+          </Button>
           {(quote.status === "sent" || quote.status === "draft") && (
-            <Button variant="outline" onClick={handleCreateJob} disabled={creatingJob}>
+            <Button variant="secondary" onClick={handleCreateJob} disabled={creatingJob}>
               <Briefcase className="w-4 h-4 mr-2" /> Accept & Create Job
             </Button>
           )}
