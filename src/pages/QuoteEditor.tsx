@@ -153,30 +153,34 @@ export default function QuoteEditor() {
           <CardContent className="space-y-4">
             {items.length === 0 && <p className="text-center text-muted-foreground py-8">Add materials or labour to build the quote</p>}
             {items.map((item) => (
-              <div key={item.id} className="grid gap-3 p-4 rounded-lg border bg-muted/30">
+              <div key={item.id} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{item.type}</span>
                   <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {item.type === "material" ? (
-                    <div className="sm:col-span-2">
-                      <Label>Material</Label>
-                      <Select value={item.materialId} onValueChange={(v) => selectMaterial(item.id, v)}>
-                        <SelectTrigger><SelectValue placeholder="Choose material" /></SelectTrigger>
-                        <SelectContent>
-                          {materials.map((m) => (
-                            <SelectItem key={m.id} value={m.id}>{m.name} – ${m.wholesalePrice.toFixed(2)}/{m.unit}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ) : (
-                    <div className="sm:col-span-2">
-                      <Label>Description</Label>
-                      <Input value={item.description} onChange={(e) => updateItem(item.id, { description: e.target.value })} placeholder={item.type === "labor" ? "e.g. Garden bed prep & planting" : "e.g. Skip bin hire, delivery fee"} />
-                    </div>
-                  )}
+
+                {/* Description / Material selector — always full width */}
+                {item.type === "material" ? (
+                  <div>
+                    <Label>Material</Label>
+                    <Select value={item.materialId} onValueChange={(v) => selectMaterial(item.id, v)}>
+                      <SelectTrigger><SelectValue placeholder="Choose material" /></SelectTrigger>
+                      <SelectContent>
+                        {materials.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>{m.name} – ${m.wholesalePrice.toFixed(2)}/{m.unit}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div>
+                    <Label>Description</Label>
+                    <Input value={item.description} onChange={(e) => updateItem(item.id, { description: e.target.value })} placeholder={item.type === "labor" ? "e.g. Garden bed prep & planting" : "e.g. Skip bin hire, delivery fee"} />
+                  </div>
+                )}
+
+                {/* Qty + Cost side by side */}
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Qty</Label>
                     <div className="flex items-center gap-1">
@@ -210,8 +214,12 @@ export default function QuoteEditor() {
                       </Button>
                     </div>
                   </div>
-                  <div><Label>{item.type === "labor" ? "Rate ($)" : "Unit Cost ($)"}</Label><Input type="number" step="0.01" value={item.unitCost} onChange={(e) => updateItem(item.id, { unitCost: Number(e.target.value) })} /></div>
+                  <div>
+                    <Label>{item.type === "labor" ? "Rate ($)" : "Unit Cost ($)"}</Label>
+                    <Input type="number" step="0.01" value={item.unitCost} onChange={(e) => updateItem(item.id, { unitCost: Number(e.target.value) })} />
+                  </div>
                 </div>
+
                 <div className="text-right font-semibold text-primary">
                   Line Total: ${item.total.toFixed(2)}
                   {item.type === "material" && item.markupPercent > 0 && (
