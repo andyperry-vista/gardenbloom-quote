@@ -10,149 +10,118 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, Loader2, Calculator, FileText, Mail } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
+import { useClients } from "@/hooks/useClients";
 
-/* ─── Email Sender Helper ─── */
-function useEmailSender() {
+/* ─── Email Scenarios ─── */
+const EMAIL_SCENARIOS = [
+  { value: "quote-request", label: "Send Quote", description: "Send a quote to the client" },
+  { value: "booking-confirmation", label: "Booking Confirmation", description: "Confirm a scheduled job with the client" },
+  { value: "unpaid-invoice", label: "Payment Request", description: "Request payment for an invoice" },
+  { value: "quote-followup", label: "Payment Follow-Up", description: "Follow up on an unanswered quote" },
+  { value: "job-completion", label: "Job Completion", description: "Notify client that work is finished" },
+  { value: "rate-review", label: "Rate & Review", description: "Ask client for a review after completion" },
+  { value: "tax-invoice", label: "Tax Invoice", description: "Send a tax invoice to the client" },
+  { value: "payment-remittance", label: "Payment Remittance", description: "Send payment advice to a supplier" },
+] as const;
+
+/* ─── Unified Email Composer ─── */
+function EmailComposer() {
+  const { clients } = useClients();
   const [sending, setSending] = useState(false);
-  const send = async (templateName: string, recipientEmail: string, templateData: Record<string, string>) => {
-    if (!recipientEmail.trim()) { toast.error("Recipient email is required"); return false; }
+  const [scenario, setScenario] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const selectedClient = clients.find((c) => c.id === clientId);
+  const selectedScenario = EMAIL_SCENARIOS.find((s) => s.value === scenario);
+
+  const handleSend = async () => {
+    if (!scenario) { toast.error("Please select an email type"); return; }
+    if (!selectedClient?.email) { toast.error("Please select a client with an email address"); return; }
+
     setSending(true);
     try {
       const id = crypto.randomUUID();
+      const templateData: Record<string, string> = {
+        clientName: selectedClient.name,
+      };
+      if (selectedClient.address) templateData.propertyAddress = selectedClient.address;
+      if (notes) templateData.notes = notes;
+
       const { error } = await supabase.functions.invoke("send-transactional-email", {
-        body: { templateName, recipientEmail, idempotencyKey: `${templateName}-${id}`, templateData },
+        body: {
+          templateName: scenario,
+          recipientEmail: selectedClient.email,
+          idempotencyKey: `${scenario}-${id}`,
+          templateData,
+        },
       });
       if (error) throw error;
-      toast.success("Email sent!");
-      return true;
-    } catch { toast.error("Failed to send email"); return false; }
-    finally { setSending(false); }
+      toast.success(`${selectedScenario?.label || "Email"} sent to ${selectedClient.name}`);
+      setNotes("");
+    } catch {
+      toast.error("Failed to send email");
+    } finally {
+      setSending(false);
+    }
   };
-  return { send, sending };
-}
 
-/* ─── Payment Remittance Tab ─── */
-function PaymentRemittanceForm() {
-  const { send, sending } = useEmailSender();
-  const [f, setF] = useState({ recipientEmail: "", recipientName: "", invoiceNumber: "", amount: "", paymentDate: new Date().toLocaleDateString("en-AU"), paymentMethod: "Bank Transfer", notes: "" });
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (await send("payment-remittance", f.recipientEmail, f)) setF({ ...f, recipientEmail: "", recipientName: "", invoiceNumber: "", amount: "", notes: "" });
-  };
   return (
     <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><Send className="w-5 h-5" />Payment Remittance</CardTitle><CardDescription>Send a payment advice to a supplier confirming your payment</CardDescription></CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Supplier Email *</Label><Input type="email" value={f.recipientEmail} onChange={e => setF({...f, recipientEmail: e.target.value})} placeholder="accounts@supplier.com" required /></div>
-            <div><Label>Supplier Name</Label><Input value={f.recipientName} onChange={e => setF({...f, recipientName: e.target.value})} placeholder="Bunnings Trade" /></div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div><Label>Invoice Number</Label><Input value={f.invoiceNumber} onChange={e => setF({...f, invoiceNumber: e.target.value})} placeholder="INV-2026-042" /></div>
-            <div><Label>Amount Paid *</Label><Input value={f.amount} onChange={e => setF({...f, amount: e.target.value})} placeholder="$385.00" required /></div>
-            <div><Label>Payment Date</Label><Input value={f.paymentDate} onChange={e => setF({...f, paymentDate: e.target.value})} /></div>
-          </div>
-          <div><Label>Payment Method</Label>
-            <Select value={f.paymentMethod} onValueChange={v => setF({...f, paymentMethod: v})}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="Bank Transfer">Bank Transfer</SelectItem><SelectItem value="Cash">Cash</SelectItem><SelectItem value="Card">Card</SelectItem><SelectItem value="PayPal">PayPal</SelectItem></SelectContent>
-            </Select>
-          </div>
-          <div><Label>Notes</Label><Textarea value={f.notes} onChange={e => setF({...f, notes: e.target.value})} placeholder="Additional notes..." rows={2} /></div>
-          <Button type="submit" disabled={sending} className="w-full">{sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}{sending ? "Sending…" : "Send Remittance"}</Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Mail className="w-5 h-5" />Send Email</CardTitle>
+        <CardDescription>Pick a scenario, choose a client, and send</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {/* Step 1: Scenario */}
+        <div>
+          <Label>Email Type</Label>
+          <Select value={scenario} onValueChange={setScenario}>
+            <SelectTrigger><SelectValue placeholder="Select email type…" /></SelectTrigger>
+            <SelectContent>
+              {EMAIL_SCENARIOS.map((s) => (
+                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedScenario && (
+            <p className="text-xs text-muted-foreground mt-1">{selectedScenario.description}</p>
+          )}
+        </div>
 
-/* ─── Unpaid Invoice Tab ─── */
-function UnpaidInvoiceForm() {
-  const { send, sending } = useEmailSender();
-  const [f, setF] = useState({ recipientEmail: "", clientName: "", invoiceNumber: "", amount: "", dueDate: "", daysPastDue: "", notes: "" });
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (await send("unpaid-invoice", f.recipientEmail, f)) setF({ recipientEmail: "", clientName: "", invoiceNumber: "", amount: "", dueDate: "", daysPastDue: "", notes: "" });
-  };
-  return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5" />Invoice Follow-Up</CardTitle><CardDescription>Send a friendly payment reminder for an overdue invoice</CardDescription></CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Client Email *</Label><Input type="email" value={f.recipientEmail} onChange={e => setF({...f, recipientEmail: e.target.value})} placeholder="client@example.com" required /></div>
-            <div><Label>Client Name</Label><Input value={f.clientName} onChange={e => setF({...f, clientName: e.target.value})} placeholder="Sarah Johnson" /></div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div><Label>Invoice Number</Label><Input value={f.invoiceNumber} onChange={e => setF({...f, invoiceNumber: e.target.value})} placeholder="MGS-2026-015" /></div>
-            <div><Label>Amount Due *</Label><Input value={f.amount} onChange={e => setF({...f, amount: e.target.value})} placeholder="$1,250.00" required /></div>
-            <div><Label>Due Date</Label><Input value={f.dueDate} onChange={e => setF({...f, dueDate: e.target.value})} placeholder="20 March 2026" /></div>
-            <div><Label>Days Past Due</Label><Input value={f.daysPastDue} onChange={e => setF({...f, daysPastDue: e.target.value})} placeholder="16" /></div>
-          </div>
-          <div><Label>Additional Notes</Label><Textarea value={f.notes} onChange={e => setF({...f, notes: e.target.value})} placeholder="Any extra context..." rows={2} /></div>
-          <Button type="submit" disabled={sending} className="w-full">{sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}{sending ? "Sending…" : "Send Reminder"}</Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
+        {/* Step 2: Client */}
+        <div>
+          <Label>Client</Label>
+          <Select value={clientId} onValueChange={setClientId}>
+            <SelectTrigger><SelectValue placeholder="Select client…" /></SelectTrigger>
+            <SelectContent>
+              {clients.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}{c.email ? ` — ${c.email}` : " (no email)"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedClient && (
+            <div className="mt-2 bg-muted rounded-lg p-3 text-sm space-y-1">
+              <div className="flex justify-between"><span className="text-muted-foreground">Name</span><span>{selectedClient.name}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span>{selectedClient.email || "—"}</span></div>
+              {selectedClient.address && <div className="flex justify-between"><span className="text-muted-foreground">Address</span><span>{selectedClient.address}</span></div>}
+            </div>
+          )}
+        </div>
 
-/* ─── Quote Follow-Up Tab ─── */
-function QuoteFollowupForm() {
-  const { send, sending } = useEmailSender();
-  const [f, setF] = useState({ recipientEmail: "", clientName: "", quoteNumber: "", quoteDate: "", propertyAddress: "", notes: "" });
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (await send("quote-followup", f.recipientEmail, f)) setF({ recipientEmail: "", clientName: "", quoteNumber: "", quoteDate: "", propertyAddress: "", notes: "" });
-  };
-  return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><Mail className="w-5 h-5" />Quote Follow-Up</CardTitle><CardDescription>Follow up with a client who hasn't responded to a quote</CardDescription></CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Client Email *</Label><Input type="email" value={f.recipientEmail} onChange={e => setF({...f, recipientEmail: e.target.value})} placeholder="client@example.com" required /></div>
-            <div><Label>Client Name</Label><Input value={f.clientName} onChange={e => setF({...f, clientName: e.target.value})} placeholder="David Chen" /></div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div><Label>Quote Number</Label><Input value={f.quoteNumber} onChange={e => setF({...f, quoteNumber: e.target.value})} placeholder="Q-042" /></div>
-            <div><Label>Quote Date</Label><Input value={f.quoteDate} onChange={e => setF({...f, quoteDate: e.target.value})} placeholder="28 March 2026" /></div>
-            <div><Label>Property Address</Label><Input value={f.propertyAddress} onChange={e => setF({...f, propertyAddress: e.target.value})} placeholder="15 Rose St, Kew" /></div>
-          </div>
-          <div><Label>Additional Notes</Label><Textarea value={f.notes} onChange={e => setF({...f, notes: e.target.value})} placeholder="Anything specific to mention..." rows={2} /></div>
-          <Button type="submit" disabled={sending} className="w-full">{sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}{sending ? "Sending…" : "Send Follow-Up"}</Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
+        {/* Step 3: Notes */}
+        <div>
+          <Label>Additional Notes (optional)</Label>
+          <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details to include in the email…" rows={3} />
+        </div>
 
-/* ─── Job Completion Tab ─── */
-function JobCompletionForm() {
-  const { send, sending } = useEmailSender();
-  const [f, setF] = useState({ recipientEmail: "", clientName: "", propertyAddress: "", workCompleted: "", invoiceAmount: "", notes: "" });
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (await send("job-completion", f.recipientEmail, f)) setF({ recipientEmail: "", clientName: "", propertyAddress: "", workCompleted: "", invoiceAmount: "", notes: "" });
-  };
-  return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><Send className="w-5 h-5" />Job Completion</CardTitle><CardDescription>Notify the client that their garden work is finished</CardDescription></CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Client Email *</Label><Input type="email" value={f.recipientEmail} onChange={e => setF({...f, recipientEmail: e.target.value})} placeholder="client@example.com" required /></div>
-            <div><Label>Client Name</Label><Input value={f.clientName} onChange={e => setF({...f, clientName: e.target.value})} placeholder="Lisa Wang" /></div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Property Address</Label><Input value={f.propertyAddress} onChange={e => setF({...f, propertyAddress: e.target.value})} placeholder="8 Elm Ave, Richmond" /></div>
-            <div><Label>Invoice Amount</Label><Input value={f.invoiceAmount} onChange={e => setF({...f, invoiceAmount: e.target.value})} placeholder="$980.00 (inc GST)" /></div>
-          </div>
-          <div><Label>Work Completed</Label><Textarea value={f.workCompleted} onChange={e => setF({...f, workCompleted: e.target.value})} placeholder="Full garden clean-up, hedge trimming, mulching..." rows={2} /></div>
-          <div><Label>Additional Notes</Label><Textarea value={f.notes} onChange={e => setF({...f, notes: e.target.value})} placeholder="Any follow-up info..." rows={2} /></div>
-          <Button type="submit" disabled={sending} className="w-full">{sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}{sending ? "Sending…" : "Send Completion Notice"}</Button>
-        </form>
+        {/* Step 4: Send */}
+        <Button onClick={handleSend} disabled={sending || !scenario || !clientId} className="w-full">
+          {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+          {sending ? "Sending…" : `Send ${selectedScenario?.label || "Email"}`}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -241,28 +210,17 @@ export default function BusinessTools() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Business Tools</h1>
-        <p className="text-muted-foreground">Email templates, GST calculator & BAS helper</p>
+        <p className="text-muted-foreground">Email composer, GST calculator & BAS helper</p>
       </div>
 
       <Tabs defaultValue="emails" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="emails" className="gap-2"><Mail className="w-4 h-4" />Email Templates</TabsTrigger>
+          <TabsTrigger value="emails" className="gap-2"><Mail className="w-4 h-4" />Email Composer</TabsTrigger>
           <TabsTrigger value="gst" className="gap-2"><Calculator className="w-4 h-4" />GST & BAS</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="emails" className="space-y-4">
-          <Tabs defaultValue="remittance">
-            <TabsList className="flex flex-wrap h-auto gap-1">
-              <TabsTrigger value="remittance">Payment Remittance</TabsTrigger>
-              <TabsTrigger value="unpaid">Unpaid Invoice</TabsTrigger>
-              <TabsTrigger value="followup">Quote Follow-Up</TabsTrigger>
-              <TabsTrigger value="completion">Job Completion</TabsTrigger>
-            </TabsList>
-            <TabsContent value="remittance"><PaymentRemittanceForm /></TabsContent>
-            <TabsContent value="unpaid"><UnpaidInvoiceForm /></TabsContent>
-            <TabsContent value="followup"><QuoteFollowupForm /></TabsContent>
-            <TabsContent value="completion"><JobCompletionForm /></TabsContent>
-          </Tabs>
+        <TabsContent value="emails">
+          <EmailComposer />
         </TabsContent>
 
         <TabsContent value="gst" className="space-y-4">
