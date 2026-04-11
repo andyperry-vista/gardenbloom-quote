@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuoteRequests } from "@/hooks/useQuoteRequests";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Inbox, Eye, CheckCircle, Trash2, Filter } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -20,6 +21,7 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function QuoteRequests() {
+  const navigate = useNavigate();
   const { requests, isLoading, updateStatus } = useQuoteRequests();
   const [filter, setFilter] = useState("all");
 
@@ -132,7 +134,26 @@ export default function QuoteRequests() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-2 shrink-0 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() =>
+                          navigate("/admin/quotes/new", {
+                            state: {
+                              prefillClient: {
+                                name: req.name,
+                                email: req.email,
+                                phone: req.phone,
+                                address: req.address,
+                              },
+                              prefillNotes: req.message || "",
+                            },
+                          })
+                        }
+                      >
+                        <FileText className="w-3 h-3 mr-1" /> Create Quote
+                      </Button>
                       {req.status === "new" && (
                         <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
                           <Eye className="w-3 h-3 mr-1" /> Contacted
