@@ -475,6 +475,7 @@ export type Database = {
           name: string
           phone: string | null
           photo_urls: Json | null
+          referral_code: string | null
           status: string
           updated_at: string
         }
@@ -487,6 +488,7 @@ export type Database = {
           name: string
           phone?: string | null
           photo_urls?: Json | null
+          referral_code?: string | null
           status?: string
           updated_at?: string
         }
@@ -499,6 +501,7 @@ export type Database = {
           name?: string
           phone?: string | null
           photo_urls?: Json | null
+          referral_code?: string | null
           status?: string
           updated_at?: string
         }
