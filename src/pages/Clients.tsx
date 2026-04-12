@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Users, Mail, Phone, MapPin, ChevronDown, ChevronUp, FileText, Briefcase, Receipt } from "lucide-react";
+import { Search, Users, Mail, Phone, MapPin, ChevronDown, ChevronUp, FileText, Briefcase, Receipt, Loader2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { format } from "date-fns";
 import { useSettings } from "@/hooks/useSettings";
@@ -72,7 +72,7 @@ export default function Clients() {
           </div>
         </div>
 
-        {isLoading && <p className="text-muted-foreground">Loading…</p>}
+        {isLoading && <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto my-8" />}
 
         {!isLoading && filtered.length === 0 && (
           <Card>

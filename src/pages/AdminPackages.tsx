@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useServicePackages } from "@/hooks/useServicePackages";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,7 +43,10 @@ export default function AdminPackages() {
               <Button><Plus className="w-4 h-4 mr-1" /> New Package</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Create Service Package</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Create Service Package</DialogTitle>
+                <DialogDescription className="sr-only">Form to create a new service package</DialogDescription>
+              </DialogHeader>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Front Yard Tidy" required /></div>
                 <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Mow, edge, blow, weed & mulch front garden" /></div>
