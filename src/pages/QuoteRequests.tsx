@@ -5,7 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2 } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -24,6 +24,7 @@ export default function QuoteRequests() {
   const navigate = useNavigate();
   const { requests, isLoading, updateStatus } = useQuoteRequests();
   const [filter, setFilter] = useState("all");
+  const [siteViewedMap, setSiteViewedMap] = useState<Record<string, boolean>>({});
 
   const filtered = filter === "all" ? requests : requests.filter((r) => r.status === filter);
 
@@ -59,7 +60,7 @@ export default function QuoteRequests() {
         </div>
 
         {isLoading ? (
-          <p className="text-muted-foreground py-8 text-center">Loading…</p>
+          <div className="py-8"><Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" /></div>
         ) : filtered.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
@@ -134,36 +135,57 @@ export default function QuoteRequests() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 shrink-0 flex-wrap">
-                      <Button
-                        size="sm"
-                        variant="default"
-                        onClick={() =>
-                          navigate("/admin/quotes/new", {
-                            state: {
-                              prefillClient: {
-                                name: req.name,
-                                email: req.email,
-                                phone: req.phone,
-                                address: req.address,
+                    <div className="flex gap-2 shrink-0 flex-wrap mt-4 sm:mt-0 flex-col sm:flex-row items-end">
+                      <div className="mb-2 w-full sm:w-auto p-3 bg-muted/40 rounded-md border flex flex-col gap-2">
+                        <span className="text-sm font-medium text-foreground">Has site been viewed?</span>
+                        <div className="flex gap-2 justify-end">
+                          <Button 
+                            size="sm" 
+                            variant={siteViewedMap[req.id] === true ? "default" : "outline"} 
+                            onClick={() => setSiteViewedMap(prev => ({ ...prev, [req.id]: true }))}
+                          >Yes</Button>
+                          <Button 
+                            size="sm" 
+                            variant={siteViewedMap[req.id] === false ? "default" : "outline"} 
+                            onClick={() => setSiteViewedMap(prev => ({ ...prev, [req.id]: false }))}
+                          >No</Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => {
+                            const isViewed = siteViewedMap[req.id];
+                            const disclaimer = isViewed === false ? "\n\nQuote is subject to viewing by Mayura Garden Services (site inspection)." : "";
+                            
+                            navigate("/admin/quotes/new", {
+                              state: {
+                                prefillClient: {
+                                  name: req.name,
+                                  email: req.email,
+                                  phone: req.phone,
+                                  address: req.address,
+                                },
+                                prefillNotes: (req.message || "") + disclaimer,
                               },
-                              prefillNotes: req.message || "",
-                            },
-                          })
-                        }
-                      >
-                        <FileText className="w-3 h-3 mr-1" /> Create Quote
-                      </Button>
-                      {req.status === "new" && (
-                        <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
-                          <Eye className="w-3 h-3 mr-1" /> Contacted
+                            });
+                          }}
+                        >
+                          <FileText className="w-3 h-3 mr-1" /> Create Quote
                         </Button>
-                      )}
-                      {(req.status === "new" || req.status === "contacted") && (
-                        <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "converted")}>
-                          <CheckCircle className="w-3 h-3 mr-1" /> Converted
-                        </Button>
-                      )}
+                        {req.status === "new" && (
+                          <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
+                            <Eye className="w-3 h-3 mr-1" /> Contacted
+                          </Button>
+                        )}
+                        {(req.status === "new" || req.status === "contacted") && (
+                          <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "converted")}>
+                            <CheckCircle className="w-3 h-3 mr-1" /> Converted
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

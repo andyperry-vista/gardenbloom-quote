@@ -67,6 +67,64 @@ function EmailComposer() {
     setInvoiceId("");
   };
 
+  const getEmailPreview = () => {
+    if (!scenario || !selectedClient) return null;
+    let subject = "Message from Mayura Gardening";
+    const firstName = selectedClient.name.split(' ')[0] || "there";
+    let body = `Hi ${firstName},\n\n`;
+
+    const qNum = selectedQuote ? selectedQuote.id.slice(-6) : "[Quote ID]";
+    const qAmt = selectedQuote ? `$${selectedQuote.grandTotal.toFixed(2)}` : "[$0.00]";
+    const iNum = selectedInvoice ? selectedInvoice.invoiceNumber : "[Invoice #]";
+    const iAmt = selectedInvoice ? `$${selectedInvoice.totalWithGst.toFixed(2)}` : "[$0.00]";
+    const iDue = selectedInvoice?.dueDate ? new Date(selectedInvoice.dueDate).toLocaleDateString("en-AU") : "[Due Date]";
+
+    switch (scenario) {
+      case "quote-request":
+        subject = `Your Quote from Mayura Gardening`;
+        body += `Thank you for the opportunity to provide an estimate. Please find Quote #${qNum} for ${qAmt} attached.\n\n`;
+        break;
+      case "booking-confirmation":
+        subject = "Booking Confirmation - Mayura Gardening";
+        body += `Your job has been successfully scheduled. We look forward to seeing you soon.\n\n`;
+        break;
+      case "unpaid-invoice":
+        subject = `Payment Reminder: Invoice ${iNum}`;
+        body += `This is a friendly reminder that Invoice ${iNum} for ${iAmt} is due on ${iDue}. Please let us know if you have any questions or need a copy of the invoice.\n\n`;
+        break;
+      case "quote-followup":
+        subject = `Following up on Quote #${qNum}`;
+        body += `We are following up on Quote #${qNum} for ${qAmt}. Please let us know if you'd like to proceed or if you need any adjustments to the scope.\n\n`;
+        break;
+      case "job-completion":
+        subject = "Your Garden Job is Complete!";
+        body += `We have completed the work at ${selectedClient.address || "your property"}. Let us know if everything is to your satisfaction.\n\n`;
+        break;
+      case "rate-review":
+        subject = "How did we do? - Mayura Gardening";
+        body += `Thank you for choosing Mayura Gardening. We’d love it if you could leave us a quick review online to share your experience!\n\n`;
+        break;
+      case "tax-invoice":
+        subject = `Tax Invoice ${iNum} from Mayura Gardening`;
+        body += `Please find attached Tax Invoice ${iNum} for ${iAmt}.\n\n`;
+        break;
+      case "payment-remittance":
+        subject = "Payment Remittance Advice";
+        body += `Please be advised that payment has been processed for your most recent invoice.\n\n`;
+        break;
+    }
+
+    if (notes) {
+      body += `${notes}\n\n`;
+    }
+
+    body += "Best regards,\nThe Mayura Gardening Team";
+
+    return { subject, body };
+  };
+
+  const preview = getEmailPreview();
+
   const handleSend = async () => {
     if (!scenario) { toast.error("Please select an email type"); return; }
     if (!selectedClient?.email) { toast.error("Please select a client with an email address"); return; }
@@ -203,7 +261,24 @@ function EmailComposer() {
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details to include in the email…" rows={3} />
         </div>
 
-        {/* Step 4: Send */}
+        {/* Email Preview */}
+        {preview && (
+          <div className="bg-muted/30 border rounded-lg p-4 space-y-3 mt-4">
+            <div className="flex items-center gap-2 border-b border-border pb-2">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-semibold text-foreground">Email Preview</span>
+            </div>
+            <div className="space-y-1">
+              <div className="text-sm"><span className="text-muted-foreground font-medium w-16 inline-block">To:</span> {selectedClient.email || <span className="text-destructive italic">Missing Email</span>}</div>
+              <div className="text-sm"><span className="text-muted-foreground font-medium w-16 inline-block">Subject:</span> <span className="font-medium">{preview.subject}</span></div>
+            </div>
+            <div className="whitespace-pre-wrap text-sm border-t pt-3 mt-2 bg-background/50 p-3 rounded font-serif italic text-foreground/80 leading-relaxed">
+              {preview.body}
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Send */}
         <Button onClick={handleSend} disabled={sending || !scenario || !clientId} className="w-full">
           {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
           {sending ? "Sending…" : `Send ${selectedScenario?.label || "Email"}`}
