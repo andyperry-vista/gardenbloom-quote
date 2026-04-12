@@ -117,26 +117,26 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative">
-        <div className="container flex flex-col items-center py-20 text-center">
-          <img src={mayuraLogoStacked} alt="Mayura Garden Services" className="w-full max-w-2xl h-auto mb-8" />
+        <div className="container flex flex-col items-center py-12 md:py-20 text-center">
+          <img src={mayuraLogoStacked} alt="Mayura Garden Services" className="w-full max-w-2xl h-auto mb-8 px-4 sm:px-0" />
           <h1 className="sr-only">Mayura Garden Services</h1>
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             {t("heroTagline")}
           </p>
           
-          <div className="flex gap-4">
-            <a href="#quote-form">
-              <Button size="lg" variant="secondary" className="gap-2">
+          <div className="flex flex-col sm:flex-row gap-4 w-full px-6 sm:w-auto sm:px-0">
+            <a href="#quote-form" className="w-full sm:w-auto">
+              <Button size="lg" variant="secondary" className="gap-2 w-full">
                 <Send className="w-4 h-4" /> {t("requestQuote")}
               </Button>
             </a>
-            <a href="tel:0413806551">
-              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
+            <a href="tel:0413806551" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10 w-full">
                 <Phone className="w-4 h-4" /> {t("callNick")}
               </Button>
             </a>
-            <a href="mailto:nicholas@mayuragardenservices.com.au">
-              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10">
+            <a href="mailto:nicholas@mayuragardenservices.com.au" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="gap-2 border-foreground/30 text-foreground hover:bg-foreground/10 w-full">
                 <Mail className="w-4 h-4" /> {t("emailUs")}
               </Button>
             </a>
@@ -147,7 +147,7 @@ export default function LandingPage() {
       <GoldDivider />
 
       {/* Services */}
-      <section className="container py-16">
+      <section className="container py-12 md:py-16">
         <h2 className="text-3xl font-bold text-center mb-2">{t("servicesTitle")}</h2>
         <p className="text-muted-foreground text-center mb-10 max-w-lg mx-auto">
           {t("servicesSubtitle")}
@@ -175,7 +175,7 @@ export default function LandingPage() {
       <GoldDivider />
 
       {/* How It Works */}
-      <section className="bg-muted/50 py-16">
+      <section className="bg-muted/50 py-12 md:py-16">
         <div className="container">
           <h2 className="text-3xl font-bold text-center mb-10">{t("howItWorksTitle")}</h2>
           <div className="grid gap-8 md:grid-cols-3 max-w-3xl mx-auto">
@@ -193,7 +193,7 @@ export default function LandingPage() {
       <GoldDivider />
 
       {/* Quote Request Form */}
-      <section id="quote-form" className="container py-16">
+      <section id="quote-form" className="container py-12 md:py-16">
         <div className="max-w-xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-2">{t("quoteFormTitle")}</h2>
           <p className="text-muted-foreground text-center mb-8">
@@ -288,6 +288,7 @@ export default function LandingPage() {
                       multiple
                       onChange={handlePhotoChange}
                       className="hidden"
+                      title="Upload photos"
                     />
                     {photoPreviews.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
@@ -298,6 +299,8 @@ export default function LandingPage() {
                               type="button"
                               onClick={() => removePhoto(i)}
                               className="absolute top-1 right-1 bg-background/80 rounded-full p-1 hover:bg-background"
+                              title="Remove photo"
+                              aria-label="Remove photo"
                             >
                               <X className="w-3 h-3" />
                             </button>

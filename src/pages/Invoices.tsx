@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { useInvoices } from "@/hooks/useInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,7 @@ export default function Invoices() {
         </div>
 
         {isLoading ? (
-          <p className="text-muted-foreground">Loading…</p>
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto my-8" />
         ) : invoices.length === 0 ? (
           <Card className="py-16 text-center">
             <CardContent>

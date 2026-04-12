@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -113,6 +114,7 @@ export default function MaterialCard({ material: m, onUpdate, onDelete }: Materi
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Material</DialogTitle>
+            <DialogDescription className="sr-only">Form to edit an existing material</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
@@ -161,6 +163,7 @@ export default function MaterialCard({ material: m, onUpdate, onDelete }: Materi
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Delete Material</DialogTitle>
+            <DialogDescription className="sr-only">Confirm deletion of material</DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             Are you sure you want to delete <strong>{m.name}</strong>? This cannot be undone.

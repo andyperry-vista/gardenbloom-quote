@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -154,6 +155,7 @@ export default function Materials() {
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Material</DialogTitle>
+                <DialogDescription className="sr-only">Form to add a new material or search via Bunnings.</DialogDescription>
               </DialogHeader>
 
               {/* Bunnings Search Section */}

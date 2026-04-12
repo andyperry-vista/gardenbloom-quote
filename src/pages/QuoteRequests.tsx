@@ -5,7 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2 } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -59,7 +59,7 @@ export default function QuoteRequests() {
         </div>
 
         {isLoading ? (
-          <p className="text-muted-foreground py-8 text-center">Loading…</p>
+          <div className="py-8"><Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" /></div>
         ) : filtered.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
