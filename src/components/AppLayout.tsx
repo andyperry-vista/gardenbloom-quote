@@ -5,6 +5,7 @@ import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import NotificationBell from "@/components/NotificationBell";
 
 const navGroups = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
@@ -153,6 +154,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <NavDropdown key={group.label} group={group} pathname={location.pathname} />
               )
             )}
+            <NotificationBell />
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
               <LogOut className="w-4 h-4" />
               <span className="ml-1.5">Logout</span>
