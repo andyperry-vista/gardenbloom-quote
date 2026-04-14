@@ -1,6 +1,10 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import webpush from "https://esm.sh/web-push@3.6.7";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -43,7 +47,6 @@ Deno.serve(async (req) => {
       url = `/admin/jobs/${record.id}`;
       tag = `job-${record.id}`;
     } else {
-      // Ignore other events
       return new Response(JSON.stringify({ ignored: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -51,7 +54,6 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Get admin subscriptions
     const { data: adminRoles } = await supabase
       .from("user_roles")
       .select("user_id")
