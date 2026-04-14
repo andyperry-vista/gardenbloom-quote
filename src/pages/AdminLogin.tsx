@@ -21,7 +21,7 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -29,9 +29,25 @@ export default function AdminLogin() {
     if (authError) {
       setError(authError.message);
       setLoading(false);
-    } else {
-      navigate("/admin");
+      return;
     }
+
+    // Verify admin role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", authData.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!roleData) {
+      await supabase.auth.signOut();
+      setError("Access denied. Admin privileges required.");
+      setLoading(false);
+      return;
+    }
+
+    navigate("/admin");
   };
 
   return (
