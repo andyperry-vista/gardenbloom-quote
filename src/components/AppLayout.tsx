@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const navGroups = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
@@ -192,7 +193,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <main className="container py-8 animate-fade-in">{children}</main>
+      <main className="container py-6 pb-24 md:pb-8 animate-fade-in">{children}</main>
+      <MobileBottomNav />
     </div>
   );
 }
