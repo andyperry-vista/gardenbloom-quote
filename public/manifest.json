@@ -1,0 +1,22 @@
+{
+  "name": "Mayura Garden Services",
+  "short_name": "Mayura Admin",
+  "description": "Manage your garden services business on the go",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#0f2918",
+  "theme_color": "#0f2918",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
