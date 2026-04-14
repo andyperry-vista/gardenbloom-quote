@@ -1,9 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(1319, ctx.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+  } catch (e) {
+    console.warn("Could not play notification sound:", e);
+  }
+}
+
+function showBrowserNotification(name: string) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("New Quote Request", {
+      body: `${name} has submitted a quote request`,
+      icon: "/plugins/situ-design/assets/icons/square-logo.svg",
+    });
+  }
+}
 
 interface ActivityItem {
   id: string;
@@ -92,19 +121,35 @@ export default function NotificationBell() {
     setActivities(items.slice(0, 10));
   };
 
-  useEffect(() => {
-    fetchActivity();
+  const initialLoadDone = useRef(false);
 
-    // Subscribe to realtime changes on quote_requests
+  const handleNewQuoteRequest = useCallback((payload: any) => {
+    if (payload.eventType === "INSERT" && initialLoadDone.current) {
+      const name = payload.new?.name || "Someone";
+      playNotificationSound();
+      showBrowserNotification(name);
+      toast.info(`New quote request from ${name}`, {
+        description: "Tap to view quote requests",
+        action: { label: "View", onClick: () => window.location.assign("/admin/quote-requests") },
+      });
+    }
+    fetchActivity();
+  }, []);
+
+  useEffect(() => {
+    fetchActivity().then(() => {
+      initialLoadDone.current = true;
+    });
+
     const channel = supabase
       .channel("notification-bell")
-      .on("postgres_changes", { event: "*", schema: "public", table: "quote_requests" }, () => fetchActivity())
+      .on("postgres_changes", { event: "*", schema: "public", table: "quote_requests" }, handleNewQuoteRequest)
       .on("postgres_changes", { event: "*", schema: "public", table: "jobs" }, () => fetchActivity())
       .on("postgres_changes", { event: "*", schema: "public", table: "invoices" }, () => fetchActivity())
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [handleNewQuoteRequest]);
 
   const unreadCount = activities.filter((a) => !a.read).length;
 
