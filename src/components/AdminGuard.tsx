@@ -5,17 +5,32 @@ import { Loader2 } from "lucide-react";
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthenticated(!!session);
+    const checkAdmin = async (userId: string | undefined) => {
+      if (!userId) {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
       setLoading(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoading(true);
+      checkAdmin(session?.user?.id);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthenticated(!!session);
-      setLoading(false);
+      checkAdmin(session?.user?.id);
     });
 
     return () => subscription.unsubscribe();
@@ -29,6 +44,6 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     );
   }
 
-  if (!authenticated) return <Navigate to="/admin/login" replace />;
+  if (!isAdmin) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }

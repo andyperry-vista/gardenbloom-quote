@@ -12,6 +12,48 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    // Verify caller is an admin
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(
+      authHeader.replace("Bearer ", "")
+    );
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: roleData } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!roleData) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: admin role required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { title, body, url, tag } = await req.json();
 
     if (!title || !body) {
@@ -23,8 +65,6 @@ Deno.serve(async (req) => {
 
     const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY")!;
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY")!;
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     webpush.setVapidDetails(
       `mailto:admin@mayuragardenservices.com.au`,
@@ -32,9 +72,7 @@ Deno.serve(async (req) => {
       vapidPrivateKey
     );
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    const { data: adminRoles } = await supabase
+    const { data: adminRoles } = await adminClient
       .from("user_roles")
       .select("user_id")
       .eq("role", "admin");
@@ -48,7 +86,7 @@ Deno.serve(async (req) => {
 
     const adminUserIds = adminRoles.map((r: { user_id: string }) => r.user_id);
 
-    const { data: subscriptions } = await supabase
+    const { data: subscriptions } = await adminClient
       .from("push_subscriptions")
       .select("*")
       .in("user_id", adminUserIds);
@@ -78,7 +116,7 @@ Deno.serve(async (req) => {
       } catch (err: unknown) {
         const error = err as { statusCode?: number; message?: string };
         if (error.statusCode === 404 || error.statusCode === 410) {
-          await supabase.from("push_subscriptions").delete().eq("id", sub.id);
+          await adminClient.from("push_subscriptions").delete().eq("id", sub.id);
         }
         errors.push(error.message || "Unknown error");
       }
