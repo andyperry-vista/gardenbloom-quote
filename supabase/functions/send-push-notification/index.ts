@@ -1,8 +1,10 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-// Web Push library for Deno
 import webpush from "https://esm.sh/web-push@3.6.7";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -32,7 +34,6 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Get all admin push subscriptions
     const { data: adminRoles } = await supabase
       .from("user_roles")
       .select("user_id")
@@ -76,7 +77,6 @@ Deno.serve(async (req) => {
         sent++;
       } catch (err: unknown) {
         const error = err as { statusCode?: number; message?: string };
-        // Remove expired/invalid subscriptions
         if (error.statusCode === 404 || error.statusCode === 410) {
           await supabase.from("push_subscriptions").delete().eq("id", sub.id);
         }
