@@ -121,19 +121,35 @@ export default function NotificationBell() {
     setActivities(items.slice(0, 10));
   };
 
-  useEffect(() => {
-    fetchActivity();
+  const initialLoadDone = useRef(false);
 
-    // Subscribe to realtime changes on quote_requests
+  const handleNewQuoteRequest = useCallback((payload: any) => {
+    if (payload.eventType === "INSERT" && initialLoadDone.current) {
+      const name = payload.new?.name || "Someone";
+      playNotificationSound();
+      showBrowserNotification(name);
+      toast.info(`New quote request from ${name}`, {
+        description: "Tap to view quote requests",
+        action: { label: "View", onClick: () => window.location.assign("/admin/quote-requests") },
+      });
+    }
+    fetchActivity();
+  }, []);
+
+  useEffect(() => {
+    fetchActivity().then(() => {
+      initialLoadDone.current = true;
+    });
+
     const channel = supabase
       .channel("notification-bell")
-      .on("postgres_changes", { event: "*", schema: "public", table: "quote_requests" }, () => fetchActivity())
+      .on("postgres_changes", { event: "*", schema: "public", table: "quote_requests" }, handleNewQuoteRequest)
       .on("postgres_changes", { event: "*", schema: "public", table: "jobs" }, () => fetchActivity())
       .on("postgres_changes", { event: "*", schema: "public", table: "invoices" }, () => fetchActivity())
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [handleNewQuoteRequest]);
 
   const unreadCount = activities.filter((a) => !a.read).length;
 
