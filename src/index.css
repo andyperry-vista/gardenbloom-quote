@@ -99,3 +99,7 @@
     font-family: 'DM Sans', sans-serif;
   }
 }
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
