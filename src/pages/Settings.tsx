@@ -1,12 +1,16 @@
 import { useSettings } from "@/hooks/useSettings";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Bell, BellOff } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 
 export default function Settings() {
   const { settings, updateSettings } = useSettings();
+  const { isSupported, isSubscribed, permission, subscribe, unsubscribe } = usePushNotifications();
 
   const handleMarkupChange = (value: number) => {
     updateSettings({ defaultMarkupPercent: value });
@@ -79,6 +83,40 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+
+        {isSupported && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="w-5 h-5" />
+                Push Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Get notified instantly when new quote requests come in or jobs are updated.
+              </p>
+              {permission === "denied" ? (
+                <p className="text-sm text-destructive">
+                  Notifications are blocked. Please enable them in your browser/device settings.
+                </p>
+              ) : isSubscribed ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-success flex items-center gap-1.5">
+                    <Bell className="w-4 h-4" /> Notifications enabled
+                  </span>
+                  <Button variant="outline" size="sm" onClick={() => { unsubscribe(); toast.success("Notifications disabled"); }}>
+                    <BellOff className="w-4 h-4 mr-1.5" /> Disable
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={() => { subscribe().then(() => toast.success("Notifications enabled!")); }}>
+                  <Bell className="w-4 h-4 mr-1.5" /> Enable Notifications
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AppLayout>
   );
