@@ -5,7 +5,8 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -125,6 +126,27 @@ export default function QuoteRequests() {
                               +{req.photoUrls.length - 6}
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {req.analyzerResult && (
+                        <div className="mt-3">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="secondary" size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">
+                                <Sparkles className="w-3.5 h-3.5 mr-1.5" /> View AI Analysis
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-primary"/> Garden AI Analysis Report</DialogTitle>
+                                <DialogDescription className="sr-only">AI analysis of the provided garden photos.</DialogDescription>
+                              </DialogHeader>
+                              <div className="whitespace-pre-wrap text-sm border-t pt-4 mt-2 bg-muted/30 p-4 rounded-lg font-serif italic text-foreground/90 leading-relaxed shadow-inner">
+                                {req.analyzerResult}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       )}
 

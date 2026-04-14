@@ -150,9 +150,24 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   // Payment terms
   doc.setFontSize(8);
   doc.setTextColor(...GREY);
+  doc.setFont("helvetica", "normal");
   doc.text("Payment is due within 14 days of the invoice date.", margin, y);
+  y += 6;
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...BRAND_GREEN);
+  doc.text("Bank Transfer Details", margin, y);
   y += 4;
-  doc.text("Please transfer to: Mayura Garden Services", margin, y);
+
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(0, 0, 0); // Black for readability
+  doc.text("Account Name: Nicholas Dipietro", margin, y);
+  y += 4;
+  doc.text("BSB: 013148", margin, y);
+  y += 4;
+  doc.text("Account Number: 183858375", margin, y);
   y += 10;
 
   // Footer

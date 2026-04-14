@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import { Lock, Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -51,7 +51,14 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-primary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-primary flex items-center justify-center p-4 relative">
+      <Button 
+        variant="ghost" 
+        className="absolute top-4 left-4 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground transition-colors"
+        onClick={() => navigate("/")}
+      >
+        <ChevronLeft className="w-4 h-4 mr-1" /> Return to Homepage
+      </Button>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />

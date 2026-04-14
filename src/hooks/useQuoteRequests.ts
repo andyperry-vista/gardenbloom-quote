@@ -14,6 +14,7 @@ export interface QuoteRequest {
   referralAgencyName: string | null;
   status: string;
   createdAt: string;
+  analyzerResult?: string;
 }
 
 export function useQuoteRequests() {
@@ -52,6 +53,7 @@ export function useQuoteRequests() {
           referralAgencyName: agent?.agencyName || null,
           status: r.status,
           createdAt: r.created_at,
+          analyzerResult: r.analyzer_result,
         };
       }) as QuoteRequest[];
     },

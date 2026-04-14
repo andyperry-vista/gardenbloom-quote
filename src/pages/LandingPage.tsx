@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import GoldDivider from "@/components/GoldDivider";
+import BeforeAfterReveal from "@/components/BeforeAfterReveal";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
@@ -102,6 +103,13 @@ export default function LandingPage() {
         },
       });
       if (error) throw error;
+
+      // Automatically fire garden value analyzer AI if photos exist! (Runs asynchronously so client doesn't wait)
+      if (photoUrls.length > 0) {
+        supabase.functions.invoke("garden-value-analyzer", {
+          body: { quoteRequestId: id, photoUrls }
+        }).catch(err => console.error("Analyzer failed to fire:", err));
+      }
       setSent(true);
       toast.success("Your request has been sent!");
     } catch {
@@ -143,6 +151,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Stunning Reveal Component added here */}
+      <BeforeAfterReveal />
 
       <GoldDivider />
 
