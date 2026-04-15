@@ -28,6 +28,8 @@ function mapDbToQuote(row: DbQuote): Quote {
     subtotal: Number(row.subtotal),
     markupTotal: Number(row.markup_total),
     grandTotal: Number(row.grand_total),
+    discountType: (row.discount_type as Quote["discountType"]) ?? "none",
+    discountValue: Number(row.discount_value ?? 0),
     status: row.status as Quote["status"],
     createdAt: row.created_at,
     notes: row.notes || undefined,
@@ -50,7 +52,7 @@ export function useQuotes() {
   });
 
   const addQuoteMut = useMutation({
-    mutationFn: async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; notes?: string }) => {
+    mutationFn: async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; discountType?: string; discountValue?: number; notes?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
