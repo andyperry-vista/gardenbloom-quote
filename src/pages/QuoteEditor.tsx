@@ -192,10 +192,14 @@ export default function QuoteEditor() {
           </CardHeader>
           <CardContent className="space-y-4">
             {items.length === 0 && <p className="text-center text-muted-foreground py-8">Add materials or labour to build the quote</p>}
-            {items.map((item) => (
+            {items.map((item, index) => (
               <div key={item.id} ref={(el) => { itemRefs.current[item.id] = el; }} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{item.type}</span>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" disabled={index === 0} onClick={() => moveItem(index, "up")}><ChevronUp className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" disabled={index === items.length - 1} onClick={() => moveItem(index, "down")}><ChevronDown className="w-4 h-4" /></Button>
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground ml-1">{item.type}</span>
+                  </div>
                   <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
 
