@@ -215,8 +215,8 @@ export default function QuoteEditor() {
                     </div>
                   </div>
                   <div>
-                    <Label>{item.type === "labor" ? "Rate ($)" : "Unit Cost ($)"}</Label>
-                    <Input type="number" step="0.01" value={item.unitCost} onChange={(e) => updateItem(item.id, { unitCost: Number(e.target.value) })} />
+                    <Label>{item.type === "labor" ? "Rate ($/hr)" : "Unit Cost ($)"}</Label>
+                    <Input type="number" step="0.01" value={item.unitCost === 0 ? "" : item.unitCost} onChange={(e) => { const val = e.target.value; updateItem(item.id, { unitCost: val === "" ? 0 : Number(val) }); }} />
                   </div>
                 </div>
 
