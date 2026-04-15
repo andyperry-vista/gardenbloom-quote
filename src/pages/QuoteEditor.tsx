@@ -54,14 +54,34 @@ export default function QuoteEditor() {
     }
   }, [existingQuote?.id]);
 
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const pendingScrollId = useRef<string | null>(null);
+
+  const scrollToItem = useCallback((itemId: string) => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        itemRefs.current[itemId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+    });
+  }, []);
+
   const addLineItem = (type: "material" | "labor" | "misc") => {
     const markupPercent = type === "material" ? settings.defaultMarkupPercent : 0;
-    const defaultDesc = type === "misc" ? "" : "";
+    const newId = `li-${Date.now()}`;
+    pendingScrollId.current = newId;
     setItems((prev) => [
       ...prev,
-      { id: `li-${Date.now()}`, type, description: defaultDesc, quantity: 1, unitCost: 0, markupPercent, total: 0 },
+      { id: newId, type, description: "", quantity: 1, unitCost: 0, markupPercent, total: 0 },
     ]);
   };
+
+  // Scroll to newly added items
+  useEffect(() => {
+    if (pendingScrollId.current) {
+      scrollToItem(pendingScrollId.current);
+      pendingScrollId.current = null;
+    }
+  }, [items.length, scrollToItem]);
 
   const updateItem = (itemId: string, updates: Partial<QuoteLineItem>) => {
     setItems((prev) =>
@@ -82,6 +102,8 @@ export default function QuoteEditor() {
     const mat = materials.find((m) => m.id === materialId);
     if (!mat) return;
     updateItem(itemId, { materialId, description: mat.name, unitCost: mat.wholesalePrice, markupPercent: settings.defaultMarkupPercent });
+    // After selecting material, scroll to its quantity/cost fields
+    scrollToItem(itemId);
   };
 
   const subtotal = items.reduce((s, i) => s + i.quantity * i.unitCost, 0);
