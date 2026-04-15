@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
@@ -15,8 +15,19 @@ const statusColors: Record<string, string> = {
   invoiced: "bg-muted text-muted-foreground",
 };
 
+const filters = [
+  { value: "all", label: "All" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "completed", label: "Completed" },
+  { value: "invoiced", label: "Invoiced" },
+] as const;
+
 export default function Jobs() {
   const { jobs, isLoading, updateJob } = useJobs();
+  const [filter, setFilter] = useState("all");
+
+  const filteredJobs = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
 
   const handleStatusChange = (jobId: string, status: string) => {
     const updates: any = { status };
@@ -33,20 +44,47 @@ export default function Jobs() {
           <p className="text-muted-foreground mt-1">Manage your active and completed jobs</p>
         </div>
 
+        <div className="flex gap-2 flex-wrap">
+          {filters.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                filter === f.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {f.label}
+              <span className="ml-1.5 opacity-70">
+                {f.value === "all" ? jobs.length : jobs.filter((j) => j.status === f.value).length}
+              </span>
+            </button>
+          ))}
+        </div>
+
         {isLoading ? (
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto my-8" />
-        ) : jobs.length === 0 ? (
+        ) : filteredJobs.length === 0 ? (
           <Card className="py-16 text-center">
             <CardContent>
-              <p className="text-muted-foreground">No jobs yet. Accept a quote to create your first job.</p>
+              <p className="text-muted-foreground">
+                {jobs.length === 0
+                  ? "No jobs yet. Accept a quote to create your first job."
+                  : "No jobs match this filter."}
+              </p>
             </CardContent>
           </Card>
         ) : (
           <Card>
-            <CardHeader><CardTitle>All Jobs</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>
+                {filter === "all" ? "All Jobs" : filters.find((f) => f.value === filter)?.label} ({filteredJobs.length})
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {jobs.map((job) => (
+                {filteredJobs.map((job) => (
                   <div
                     key={job.id}
                     className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
