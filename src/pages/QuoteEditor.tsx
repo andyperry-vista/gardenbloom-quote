@@ -183,7 +183,7 @@ export default function QuoteEditor() {
           <CardContent className="space-y-4">
             {items.length === 0 && <p className="text-center text-muted-foreground py-8">Add materials or labour to build the quote</p>}
             {items.map((item) => (
-              <div key={item.id} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
+              <div key={item.id} ref={(el) => { itemRefs.current[item.id] = el; }} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{item.type}</span>
                   <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
