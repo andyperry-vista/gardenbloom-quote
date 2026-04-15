@@ -3,7 +3,10 @@ import { Loader2 } from "lucide-react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AppLayout from "@/components/AppLayout";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-primary/10 text-primary",
@@ -13,7 +16,14 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Jobs() {
-  const { jobs, isLoading } = useJobs();
+  const { jobs, isLoading, updateJob } = useJobs();
+
+  const handleStatusChange = (jobId: string, status: string) => {
+    const updates: any = { status };
+    if (status === "completed") updates.completedDate = format(new Date(), "yyyy-MM-dd");
+    updateJob(jobId, updates);
+    toast.success(`Status updated to ${status.replace("_", " ")}`);
+  };
 
   return (
     <AppLayout>
@@ -37,21 +47,30 @@ export default function Jobs() {
             <CardContent>
               <div className="space-y-3">
                 {jobs.map((job) => (
-                  <Link
+                  <div
                     key={job.id}
-                    to={`/admin/jobs/${job.id}`}
                     className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                   >
-                    <div>
+                    <Link to={`/admin/jobs/${job.id}`} className="flex-1 min-w-0">
                       <p className="font-medium">{job.jobNumber}</p>
                       <p className="text-sm text-muted-foreground">{job.client?.name ?? "Unknown client"} — {job.client?.address ?? ""}</p>
                       {job.scheduledDate && <p className="text-xs text-muted-foreground">Scheduled: {new Date(job.scheduledDate).toLocaleDateString("en-AU")}</p>}
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-4">
                       {job.quoteTotal && <span className="font-semibold">${job.quoteTotal.toFixed(2)}</span>}
-                      <Badge className={statusColors[job.status]} variant="secondary">{job.status.replace("_", " ")}</Badge>
+                      <Select value={job.status} onValueChange={(val) => handleStatusChange(job.id, val)}>
+                        <SelectTrigger className={`w-32 text-xs h-8 ${statusColors[job.status]}`} onClick={(e) => e.stopPropagation()}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="scheduled">Scheduled</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="invoiced">Invoiced</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </CardContent>
