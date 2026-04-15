@@ -239,9 +239,43 @@ export default function QuoteEditor() {
             {items.length > 0 && (
               <>
                 <Separator />
+                {/* Discount */}
+                <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+                  <div className="w-40">
+                    <Label>Discount</Label>
+                    <Select value={discountType} onValueChange={(v) => { setDiscountType(v as any); if (v === "none") setDiscountValue(0); }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Discount</SelectItem>
+                        <SelectItem value="percentage">Percentage (%)</SelectItem>
+                        <SelectItem value="fixed">Fixed ($)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {discountType !== "none" && (
+                    <div className="w-32">
+                      <Label>{discountType === "percentage" ? "Discount %" : "Discount $"}</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={discountType === "percentage" ? 100 : undefined}
+                        step={discountType === "percentage" ? 1 : 0.01}
+                        value={discountValue === 0 ? "" : discountValue}
+                        onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))}
+                      />
+                    </div>
+                  )}
+                  {discountType !== "none" && discountAmount > 0 && (
+                    <span className="text-sm text-destructive font-medium">−${discountAmount.toFixed(2)}</span>
+                  )}
+                </div>
+                <Separator />
                 <div className="space-y-2 text-right">
                   <p className="text-muted-foreground">Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span></p>
                   <p className="text-muted-foreground">Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span></p>
+                  {discountAmount > 0 && (
+                    <p className="text-muted-foreground">Discount: <span className="font-medium text-destructive">−${discountAmount.toFixed(2)}</span></p>
+                  )}
                   <p className="text-xl font-bold text-foreground">Total: ${grandTotal.toFixed(2)}</p>
                 </div>
               </>
