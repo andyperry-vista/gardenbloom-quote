@@ -175,8 +175,8 @@ export default function QuoteEditor() {
                 <Button variant="outline" size="sm" onClick={() => addLineItem("material")}><Plus className="w-4 h-4 mr-1" /> Material</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}><Plus className="w-4 h-4 mr-1" /> Labour</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("misc")}><Plus className="w-4 h-4 mr-1" /> Misc</Button>
-                <Button variant="outline" size="sm" onClick={() => { setItems((prev) => [...prev, { id: `li-${Date.now()}`, type: "misc" as const, description: "Green waste removal", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Green Waste</Button>
-                <Button variant="outline" size="sm" onClick={() => { setItems((prev) => [...prev, { id: `li-${Date.now()}`, type: "misc" as const, description: "Delivery", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Delivery</Button>
+                <Button variant="outline" size="sm" onClick={() => { const newId = `li-${Date.now()}`; pendingScrollId.current = newId; setItems((prev) => [...prev, { id: newId, type: "misc" as const, description: "Green waste removal", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Green Waste</Button>
+                <Button variant="outline" size="sm" onClick={() => { const newId = `li-${Date.now()}`; pendingScrollId.current = newId; setItems((prev) => [...prev, { id: newId, type: "misc" as const, description: "Delivery", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Delivery</Button>
               </div>
             </div>
           </CardHeader>
