@@ -146,7 +146,13 @@ export default function QuoteView() {
             </div>
             <div className="flex justify-end">
               <div className="w-64 space-y-2">
-                <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>${quote.grandTotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>${(quote.grandTotal + (quote.discountType !== 'none' ? (quote.discountType === 'percentage' ? quote.grandTotal / (1 - quote.discountValue / 100) * quote.discountValue / 100 : quote.discountValue) : 0)).toFixed(2)}</span></div>
+                {quote.discountType !== 'none' && quote.discountValue > 0 && (
+                  <div className="flex justify-between text-sm text-destructive">
+                    <span>Discount {quote.discountType === 'percentage' ? `(${quote.discountValue}%)` : ''}</span>
+                    <span>−${quote.discountType === 'percentage' ? ((quote.grandTotal / (1 - quote.discountValue / 100)) * quote.discountValue / 100).toFixed(2) : quote.discountValue.toFixed(2)}</span>
+                  </div>
+                )}
                 <Separator />
                 <div className="flex justify-between text-lg font-bold"><span>Total (incl. GST)</span><span>${quote.grandTotal.toFixed(2)}</span></div>
               </div>

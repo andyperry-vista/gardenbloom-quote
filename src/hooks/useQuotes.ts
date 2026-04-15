@@ -11,6 +11,8 @@ interface DbQuote {
   subtotal: number;
   markup_total: number;
   grand_total: number;
+  discount_type: string;
+  discount_value: number;
   notes: string;
   created_at: string;
   updated_at: string;
@@ -26,6 +28,8 @@ function mapDbToQuote(row: DbQuote): Quote {
     subtotal: Number(row.subtotal),
     markupTotal: Number(row.markup_total),
     grandTotal: Number(row.grand_total),
+    discountType: (row.discount_type as Quote["discountType"]) ?? "none",
+    discountValue: Number(row.discount_value ?? 0),
     status: row.status as Quote["status"],
     createdAt: row.created_at,
     notes: row.notes || undefined,
@@ -48,7 +52,7 @@ export function useQuotes() {
   });
 
   const addQuoteMut = useMutation({
-    mutationFn: async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; notes?: string }) => {
+    mutationFn: async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; discountType?: string; discountValue?: number; notes?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -89,6 +93,8 @@ export function useQuotes() {
           subtotal: quote.subtotal,
           markup_total: quote.markupTotal,
           grand_total: quote.grandTotal,
+          discount_type: quote.discountType ?? "none",
+          discount_value: quote.discountValue ?? 0,
           notes: quote.notes ?? "",
         })
         .select("id")
@@ -107,6 +113,8 @@ export function useQuotes() {
       if (updates.subtotal !== undefined) dbUpdates.subtotal = updates.subtotal;
       if (updates.markupTotal !== undefined) dbUpdates.markup_total = updates.markupTotal;
       if (updates.grandTotal !== undefined) dbUpdates.grand_total = updates.grandTotal;
+      if (updates.discountType !== undefined) dbUpdates.discount_type = updates.discountType;
+      if (updates.discountValue !== undefined) dbUpdates.discount_value = updates.discountValue;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
 
       // Update client if provided
@@ -137,7 +145,7 @@ export function useQuotes() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["quotes"] }),
   });
 
-  const addQuote = async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; notes?: string }) => {
+  const addQuote = async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; discountType?: string; discountValue?: number; notes?: string }) => {
     return addQuoteMut.mutateAsync(quote);
   };
 

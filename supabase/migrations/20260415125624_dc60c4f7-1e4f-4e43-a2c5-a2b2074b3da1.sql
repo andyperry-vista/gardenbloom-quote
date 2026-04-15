@@ -1,0 +1,1 @@
+ALTER TABLE public.quotes ADD COLUMN discount_type text NOT NULL DEFAULT 'none', ADD COLUMN discount_value numeric NOT NULL DEFAULT 0;
