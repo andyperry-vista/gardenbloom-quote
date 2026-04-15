@@ -98,6 +98,16 @@ export default function QuoteEditor() {
 
   const removeItem = (itemId: string) => setItems((prev) => prev.filter((i) => i.id !== itemId));
 
+  const moveItem = (index: number, direction: "up" | "down") => {
+    setItems((prev) => {
+      const newItems = [...prev];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= newItems.length) return prev;
+      [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+      return newItems;
+    });
+  };
+
   const selectMaterial = (itemId: string, materialId: string) => {
     const mat = materials.find((m) => m.id === materialId);
     if (!mat) return;
