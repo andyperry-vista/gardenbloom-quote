@@ -539,6 +539,8 @@ export type Database = {
           agent_request_id: string | null
           client_id: string | null
           created_at: string
+          discount_type: string
+          discount_value: number
           grand_total: number
           id: string
           items: Json
@@ -553,6 +555,8 @@ export type Database = {
           agent_request_id?: string | null
           client_id?: string | null
           created_at?: string
+          discount_type?: string
+          discount_value?: number
           grand_total?: number
           id?: string
           items?: Json
@@ -567,6 +571,8 @@ export type Database = {
           agent_request_id?: string | null
           client_id?: string | null
           created_at?: string
+          discount_type?: string
+          discount_value?: number
           grand_total?: number
           id?: string
           items?: Json
