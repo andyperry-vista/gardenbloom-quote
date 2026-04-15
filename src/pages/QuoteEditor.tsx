@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useMaterials } from "@/hooks/useMaterials";
@@ -54,14 +54,34 @@ export default function QuoteEditor() {
     }
   }, [existingQuote?.id]);
 
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const pendingScrollId = useRef<string | null>(null);
+
+  const scrollToItem = useCallback((itemId: string) => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        itemRefs.current[itemId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+    });
+  }, []);
+
   const addLineItem = (type: "material" | "labor" | "misc") => {
     const markupPercent = type === "material" ? settings.defaultMarkupPercent : 0;
-    const defaultDesc = type === "misc" ? "" : "";
+    const newId = `li-${Date.now()}`;
+    pendingScrollId.current = newId;
     setItems((prev) => [
       ...prev,
-      { id: `li-${Date.now()}`, type, description: defaultDesc, quantity: 1, unitCost: 0, markupPercent, total: 0 },
+      { id: newId, type, description: "", quantity: 1, unitCost: 0, markupPercent, total: 0 },
     ]);
   };
+
+  // Scroll to newly added items
+  useEffect(() => {
+    if (pendingScrollId.current) {
+      scrollToItem(pendingScrollId.current);
+      pendingScrollId.current = null;
+    }
+  }, [items.length, scrollToItem]);
 
   const updateItem = (itemId: string, updates: Partial<QuoteLineItem>) => {
     setItems((prev) =>
@@ -82,6 +102,8 @@ export default function QuoteEditor() {
     const mat = materials.find((m) => m.id === materialId);
     if (!mat) return;
     updateItem(itemId, { materialId, description: mat.name, unitCost: mat.wholesalePrice, markupPercent: settings.defaultMarkupPercent });
+    // After selecting material, scroll to its quantity/cost fields
+    scrollToItem(itemId);
   };
 
   const subtotal = items.reduce((s, i) => s + i.quantity * i.unitCost, 0);
@@ -153,15 +175,15 @@ export default function QuoteEditor() {
                 <Button variant="outline" size="sm" onClick={() => addLineItem("material")}><Plus className="w-4 h-4 mr-1" /> Material</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}><Plus className="w-4 h-4 mr-1" /> Labour</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("misc")}><Plus className="w-4 h-4 mr-1" /> Misc</Button>
-                <Button variant="outline" size="sm" onClick={() => { setItems((prev) => [...prev, { id: `li-${Date.now()}`, type: "misc" as const, description: "Green waste removal", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Green Waste</Button>
-                <Button variant="outline" size="sm" onClick={() => { setItems((prev) => [...prev, { id: `li-${Date.now()}`, type: "misc" as const, description: "Delivery", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Delivery</Button>
+                <Button variant="outline" size="sm" onClick={() => { const newId = `li-${Date.now()}`; pendingScrollId.current = newId; setItems((prev) => [...prev, { id: newId, type: "misc" as const, description: "Green waste removal", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Green Waste</Button>
+                <Button variant="outline" size="sm" onClick={() => { const newId = `li-${Date.now()}`; pendingScrollId.current = newId; setItems((prev) => [...prev, { id: newId, type: "misc" as const, description: "Delivery", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Delivery</Button>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {items.length === 0 && <p className="text-center text-muted-foreground py-8">Add materials or labour to build the quote</p>}
             {items.map((item) => (
-              <div key={item.id} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
+              <div key={item.id} ref={(el) => { itemRefs.current[item.id] = el; }} className="grid gap-3 p-3 sm:p-4 rounded-lg border bg-muted/30">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{item.type}</span>
                   <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
