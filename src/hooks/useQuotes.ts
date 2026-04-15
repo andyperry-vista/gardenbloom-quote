@@ -93,6 +93,8 @@ export function useQuotes() {
           subtotal: quote.subtotal,
           markup_total: quote.markupTotal,
           grand_total: quote.grandTotal,
+          discount_type: quote.discountType ?? "none",
+          discount_value: quote.discountValue ?? 0,
           notes: quote.notes ?? "",
         })
         .select("id")
@@ -111,6 +113,8 @@ export function useQuotes() {
       if (updates.subtotal !== undefined) dbUpdates.subtotal = updates.subtotal;
       if (updates.markupTotal !== undefined) dbUpdates.markup_total = updates.markupTotal;
       if (updates.grandTotal !== undefined) dbUpdates.grand_total = updates.grandTotal;
+      if (updates.discountType !== undefined) dbUpdates.discount_type = updates.discountType;
+      if (updates.discountValue !== undefined) dbUpdates.discount_value = updates.discountValue;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
 
       // Update client if provided
@@ -141,7 +145,7 @@ export function useQuotes() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["quotes"] }),
   });
 
-  const addQuote = async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; notes?: string }) => {
+  const addQuote = async (quote: { client: Client; items: QuoteLineItem[]; subtotal: number; markupTotal: number; grandTotal: number; discountType?: string; discountValue?: number; notes?: string }) => {
     return addQuoteMut.mutateAsync(quote);
   };
 
