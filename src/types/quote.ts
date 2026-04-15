@@ -36,6 +36,8 @@ export interface Quote {
   subtotal: number;
   markupTotal: number;
   grandTotal: number;
+  discountType: 'none' | 'percentage' | 'fixed';
+  discountValue: number;
   status: 'draft' | 'sent' | 'accepted' | 'declined';
   createdAt: string;
   notes?: string;

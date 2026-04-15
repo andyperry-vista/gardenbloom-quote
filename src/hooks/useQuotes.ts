@@ -11,6 +11,8 @@ interface DbQuote {
   subtotal: number;
   markup_total: number;
   grand_total: number;
+  discount_type: string;
+  discount_value: number;
   notes: string;
   created_at: string;
   updated_at: string;
