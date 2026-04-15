@@ -42,6 +42,8 @@ export default function QuoteEditor() {
   );
   const [items, setItems] = useState<QuoteLineItem[]>(existingQuote?.items ?? []);
   const [notes, setNotes] = useState(existingQuote?.notes ?? prefill?.prefillNotes ?? "");
+  const [discountType, setDiscountType] = useState<'none' | 'percentage' | 'fixed'>(existingQuote?.discountType ?? "none");
+  const [discountValue, setDiscountValue] = useState(existingQuote?.discountValue ?? 0);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -83,19 +85,25 @@ export default function QuoteEditor() {
   };
 
   const subtotal = items.reduce((s, i) => s + i.quantity * i.unitCost, 0);
-  const grandTotal = items.reduce((s, i) => s + i.total, 0);
-  const markupTotal = grandTotal - subtotal;
+  const preTotalBeforeDiscount = items.reduce((s, i) => s + i.total, 0);
+  const discountAmount = discountType === "percentage"
+    ? preTotalBeforeDiscount * (discountValue / 100)
+    : discountType === "fixed"
+    ? discountValue
+    : 0;
+  const grandTotal = Math.max(0, preTotalBeforeDiscount - discountAmount);
+  const markupTotal = preTotalBeforeDiscount - subtotal;
 
   const handleSave = async () => {
     if (!client.name || saving) return;
     setSaving(true);
     try {
       if (isEditing) {
-        updateQuote(existingQuote.id, { client, items, subtotal, markupTotal, grandTotal, notes: notes || undefined });
+        updateQuote(existingQuote.id, { client, items, subtotal, markupTotal, grandTotal, discountType, discountValue, notes: notes || undefined });
         toast.success("Quote updated");
         navigate(`/admin/quotes/${existingQuote.id}`);
       } else {
-        const newId = await addQuote({ client, items, subtotal, markupTotal, grandTotal, notes: notes || undefined });
+        const newId = await addQuote({ client, items, subtotal, markupTotal, grandTotal, discountType, discountValue, notes: notes || undefined });
         toast.success("Quote created");
         navigate(`/admin/quotes/${newId}`);
       }
