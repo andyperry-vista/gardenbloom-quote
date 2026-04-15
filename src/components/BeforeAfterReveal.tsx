@@ -21,15 +21,8 @@ export default function BeforeAfterReveal() {
   }, []);
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-6 my-12 md:my-20">
-      <div className="mb-4 text-center pb-2">
-        <Badge variant="secondary" className="mb-2 bg-primary/10 text-primary uppercase tracking-[0.2em] px-4 py-1 text-xs md:text-sm font-semibold border-primary/20">
-          The Mayura Focus
-        </Badge>
-        <h2 className="text-xl md:text-3xl font-display font-bold mt-2 text-foreground">See the Transformation</h2>
-      </div>
-
-      <div className="relative w-full aspect-[4/3] sm:aspect-video lg:aspect-[21/9] lg:h-[550px] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-secondary">
+    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-6 mt-4 md:mt-6 mb-8 md:mb-12">
+      <div className="relative w-full aspect-video lg:aspect-[2/1] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-secondary">
         {slides.map((slide, i) => (
           <img
             key={i}
