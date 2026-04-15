@@ -118,16 +118,32 @@ export async function generateQuotePdf(quote: Quote) {
   y += 6;
 
   // Totals
-  const drawRow = (label: string, value: string, bold = false) => {
+  const drawRow = (label: string, value: string, bold = false, color?: 'red') => {
     doc.setFont("helvetica", bold ? "bold" : "normal");
     doc.setFontSize(10);
-    doc.setTextColor(bold ? 0 : 80, bold ? 0 : 80, bold ? 0 : 80);
+    if (color === 'red') {
+      doc.setTextColor(200, 50, 50);
+    } else {
+      doc.setTextColor(bold ? 0 : 80, bold ? 0 : 80, bold ? 0 : 80);
+    }
     doc.text(label, 120, y);
     doc.text(value, pw - margin, y, { align: "right" });
     y += 6;
   };
 
-  drawRow("Subtotal", `$${quote.grandTotal.toFixed(2)}`);
+  // Calculate pre-discount total from items
+  const itemsTotal = quote.items.reduce((s, i) => s + i.total, 0);
+  const discountAmt = quote.discountType === 'percentage'
+    ? itemsTotal * (quote.discountValue / 100)
+    : quote.discountType === 'fixed'
+    ? quote.discountValue
+    : 0;
+
+  drawRow("Subtotal", `$${itemsTotal.toFixed(2)}`);
+  if (discountAmt > 0) {
+    const discountLabel = quote.discountType === 'percentage' ? `Discount (${quote.discountValue}%)` : 'Discount';
+    drawRow(discountLabel, `-$${discountAmt.toFixed(2)}`, false, 'red');
+  }
   drawRow("GST", "Included");
   doc.setDrawColor(...BRAND_GOLD);
   doc.line(120, y, pw - margin, y);
