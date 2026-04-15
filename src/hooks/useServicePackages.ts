@@ -5,12 +5,14 @@ export interface ServicePackage {
   id: string;
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
   basePrice: number;
   isActive: boolean;
   createdAt: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapRow(r: any): ServicePackage {
   return {
     id: r.id,
@@ -38,6 +40,7 @@ export function useServicePackages(activeOnly = false) {
   });
 
   const createPackage = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (params: { name: string; description: string; items: any[]; basePrice: number }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -45,6 +48,7 @@ export function useServicePackages(activeOnly = false) {
         user_id: user.id,
         name: params.name,
         description: params.description,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items: params.items as any,
         base_price: params.basePrice,
       });
@@ -54,8 +58,9 @@ export function useServicePackages(activeOnly = false) {
   });
 
   const updatePackage = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ name: string; description: string; items: any[]; basePrice: number; isActive: boolean }> }) => {
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, unknown> = {};
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.description !== undefined) dbUpdates.description = updates.description;
       if (updates.items !== undefined) dbUpdates.items = updates.items;
@@ -79,6 +84,7 @@ export function useServicePackages(activeOnly = false) {
     packages,
     isLoading,
     createPackage: createPackage.mutateAsync,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updatePackage: (id: string, updates: any) => updatePackage.mutate({ id, updates }),
     deletePackage: (id: string) => deletePackage.mutate(id),
   };

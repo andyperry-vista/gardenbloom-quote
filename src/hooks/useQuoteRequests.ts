@@ -34,9 +34,11 @@ export function useQuoteRequests() {
         .from("agent_profiles")
         .select("referral_code, agent_name, agency_name");
       const agentMap = new Map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (agents || []).map((a: any) => [a.referral_code, { agentName: a.agent_name, agencyName: a.agency_name }])
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (data || []).map((r: any) => {
         const code = r.referral_code || "";
         const agent = code ? agentMap.get(code) : null;

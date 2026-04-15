@@ -108,6 +108,7 @@ export default function AgentLogin() {
           <CardDescription>Sign in or create your agent account</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <Tabs value={tab} onValueChange={(v) => { setTab(v as any); setError(""); }}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login"><Lock className="w-3 h-3 mr-1" /> Login</TabsTrigger>

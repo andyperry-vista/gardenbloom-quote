@@ -59,7 +59,7 @@ export function useClients() {
   return {
     clients,
     isLoading,
-    updateClient: (id: string, updates: any) => updateClientMut.mutate({ id, updates }),
+    updateClient: (id: string, updates: Partial<{ name: string; email: string; phone: string; address: string }>) => updateClientMut.mutate({ id, updates }),
     deleteClient: (id: string) => deleteClientMut.mutate(id),
   };
 }

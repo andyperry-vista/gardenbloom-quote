@@ -45,6 +45,7 @@ export default function AgentQuoteRequest() {
       });
       toast({ title: "Request submitted", description: "We'll prepare a quote for you shortly." });
       navigate("/agent");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     }

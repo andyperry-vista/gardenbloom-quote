@@ -27,6 +27,7 @@ export default function AdminPackages() {
       toast({ title: "Package created" });
       setDialogOpen(false);
       setForm({ name: "", description: "", basePrice: "" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     }

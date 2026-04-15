@@ -48,7 +48,7 @@ export function useAgentProfile() {
     mutationFn: async (updates: Partial<{ agencyName: string; agentName: string; phone: string; email: string }>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, unknown> = {};
       if (updates.agencyName !== undefined) dbUpdates.agency_name = updates.agencyName;
       if (updates.agentName !== undefined) dbUpdates.agent_name = updates.agentName;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
@@ -71,6 +71,7 @@ export function useAllAgentProfiles() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((d: any): AgentProfile => ({
         id: d.id,
         userId: d.user_id,

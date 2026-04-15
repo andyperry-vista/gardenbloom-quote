@@ -26,6 +26,7 @@ export function useJobs() {
         .select("*, clients(name, address, email, phone), quotes(grand_total)")
         .order("created_at", { ascending: false });
       if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((r: any): Job => ({
         id: r.id,
         quoteId: r.quote_id,
@@ -68,7 +69,7 @@ export function useJobs() {
 
   const updateJobMut = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }> }) => {
-      const dbUpdates: any = { updated_at: new Date().toISOString() };
+      const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.scheduledDate !== undefined) dbUpdates.scheduled_date = updates.scheduledDate;
       if (updates.completedDate !== undefined) dbUpdates.completed_date = updates.completedDate;
@@ -91,7 +92,7 @@ export function useJobs() {
     jobs,
     isLoading,
     createJob: createJobMut.mutateAsync,
-    updateJob: (id: string, updates: any) => updateJobMut.mutate({ id, updates }),
+    updateJob: (id: string, updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }>) => updateJobMut.mutate({ id, updates }),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
   };
 }

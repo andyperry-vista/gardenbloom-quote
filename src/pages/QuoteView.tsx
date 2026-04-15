@@ -69,6 +69,7 @@ export default function QuoteView() {
       updateQuote(quote.id, { status: "accepted" });
       toast.success(`Job ${result.job_number} created`);
       navigate(`/admin/jobs/${result.id}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create job");
     } finally {

@@ -40,7 +40,7 @@ export default function JobView() {
   }
 
   const handleStatusChange = (status: string) => {
-    const updates: any = { status };
+    const updates: Partial<{ status: string; completedDate: string }> = { status };
     if (status === "completed") updates.completedDate = format(new Date(), "yyyy-MM-dd");
     updateJob(job.id, updates);
     toast.success(`Status updated to ${status.replace("_", " ")}`);

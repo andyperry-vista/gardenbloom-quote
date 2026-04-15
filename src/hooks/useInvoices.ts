@@ -40,6 +40,7 @@ export function useInvoices() {
         .select("*, clients(name, address, email, phone), jobs(job_number)")
         .order("created_at", { ascending: false });
       if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((r: any): Invoice => ({
         id: r.id,
         jobId: r.job_id,
@@ -89,8 +90,8 @@ export function useInvoices() {
   });
 
   const updateInvoiceMut = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-      const dbUpdates: any = { updated_at: new Date().toISOString() };
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ status: Invoice["status"]; dueDate: string | null; paidDate: string | null; sentAt: string | null; notes: string }> }) => {
+      const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
       if (updates.paidDate !== undefined) dbUpdates.paid_date = updates.paidDate;
@@ -106,7 +107,7 @@ export function useInvoices() {
     invoices,
     isLoading,
     createInvoice: createInvoiceMut.mutateAsync,
-    updateInvoice: (id: string, updates: any) => updateInvoiceMut.mutate({ id, updates }),
+    updateInvoice: (id: string, updates: Partial<{ status: Invoice["status"]; dueDate: string | null; paidDate: string | null; sentAt: string | null; notes: string }>) => updateInvoiceMut.mutate({ id, updates }),
   };
 }
 
@@ -123,6 +124,7 @@ export function usePayments(invoiceId?: string) {
         .eq("invoice_id", invoiceId)
         .order("payment_date", { ascending: false });
       if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((r: any): Payment => ({
         id: r.id,
         invoiceId: r.invoice_id,

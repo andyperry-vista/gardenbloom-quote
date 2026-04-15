@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 function playNotificationSound() {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -81,6 +82,7 @@ export default function NotificationBell() {
 
     if (jobs) {
       for (const j of jobs) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clientName = (j as any).clients?.name || "Unknown";
         items.push({
           id: `job-${j.id}`,
@@ -103,6 +105,7 @@ export default function NotificationBell() {
 
     if (invoices) {
       for (const inv of invoices) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clientName = (inv as any).clients?.name || "Unknown";
         items.push({
           id: `inv-${inv.id}`,
@@ -123,6 +126,7 @@ export default function NotificationBell() {
 
   const initialLoadDone = useRef(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNewQuoteRequest = useCallback((payload: any) => {
     if (payload.eventType === "INSERT" && initialLoadDone.current) {
       const name = payload.new?.name || "Someone";

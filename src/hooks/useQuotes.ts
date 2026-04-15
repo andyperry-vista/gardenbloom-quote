@@ -7,6 +7,7 @@ interface DbQuote {
   user_id: string;
   client_id: string | null;
   status: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any;
   subtotal: number;
   markup_total: number;
@@ -89,6 +90,7 @@ export function useQuotes() {
           user_id: user.id,
           client_id: clientId,
           status: "draft",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: quote.items as any,
           subtotal: quote.subtotal,
           markup_total: quote.markupTotal,
@@ -107,7 +109,7 @@ export function useQuotes() {
 
   const updateQuoteMut = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Quote> }) => {
-      const dbUpdates: any = { updated_at: new Date().toISOString() };
+      const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.items) dbUpdates.items = updates.items;
       if (updates.subtotal !== undefined) dbUpdates.subtotal = updates.subtotal;

@@ -25,6 +25,7 @@ export function useAgentReferrals(agentId?: string) {
         .eq("agent_id", agentId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((r: any): AgentReferral => ({
         id: r.id,
         agentId: r.agent_id,

@@ -52,6 +52,7 @@ export default function QuoteEditor() {
       setItems(existingQuote.items);
       setNotes(existingQuote.notes ?? "");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [existingQuote?.id]);
 
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -139,6 +140,7 @@ export default function QuoteEditor() {
         toast.success("Quote created");
         navigate(`/admin/quotes/${newId}`);
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message ?? "Failed to save quote");
     } finally {

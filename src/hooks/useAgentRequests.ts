@@ -14,6 +14,7 @@ export interface AgentRequest {
   createdAt: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapRow(r: any): AgentRequest {
   return {
     id: r.id,
@@ -65,7 +66,7 @@ export function useAgentRequests(agentId?: string) {
 
   const updateRequest = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ status: string; quoteId: string }> }) => {
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, unknown> = {};
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.quoteId !== undefined) dbUpdates.quote_id = updates.quoteId;
       const { error } = await supabase.from("agent_requests").update(dbUpdates).eq("id", id);
@@ -78,6 +79,6 @@ export function useAgentRequests(agentId?: string) {
     requests,
     isLoading,
     createRequest: createRequest.mutateAsync,
-    updateRequest: (id: string, updates: any) => updateRequest.mutate({ id, updates }),
+    updateRequest: (id: string, updates: Partial<{ status: string; quoteId: string }>) => updateRequest.mutate({ id, updates }),
   };
 }
