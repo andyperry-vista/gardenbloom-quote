@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface QuoteRequest {
@@ -80,7 +81,13 @@ export function useQuoteRequests() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["quote_requests"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quote_requests"] });
+      toast.success("AI analysis complete");
+    },
+    onError: (err: Error) => {
+      toast.error("AI analysis failed", { description: err.message });
+    },
   });
 
   return {
