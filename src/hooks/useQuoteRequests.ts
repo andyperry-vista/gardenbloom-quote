@@ -72,5 +72,23 @@ export function useQuoteRequests() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["quote_requests"] }),
   });
 
-  return { requests, isLoading, updateStatus: (id: string, status: string) => updateStatus.mutateAsync({ id, status }) };
+  const runAnalyzer = useMutation({
+    mutationFn: async ({ id, photoUrls }: { id: string; photoUrls: string[] }) => {
+      const { data, error } = await supabase.functions.invoke("garden-value-analyzer", {
+        body: { quoteRequestId: id, photoUrls },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["quote_requests"] }),
+  });
+
+  return {
+    requests,
+    isLoading,
+    updateStatus: (id: string, status: string) => updateStatus.mutateAsync({ id, status }),
+    runAnalyzer: (id: string, photoUrls: string[]) => runAnalyzer.mutateAsync({ id, photoUrls }),
+    isAnalyzing: runAnalyzer.isPending,
+    analyzingId: runAnalyzer.variables?.id,
+  };
 }

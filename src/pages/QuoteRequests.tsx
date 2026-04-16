@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles, Wand2 } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -23,7 +23,7 @@ const statusBadge: Record<string, string> = {
 
 export default function QuoteRequests() {
   const navigate = useNavigate();
-  const { requests, isLoading, updateStatus } = useQuoteRequests();
+  const { requests, isLoading, updateStatus, runAnalyzer, isAnalyzing, analyzingId } = useQuoteRequests();
   const [filter, setFilter] = useState("all");
   const [siteViewedMap, setSiteViewedMap] = useState<Record<string, boolean>>({});
 
@@ -129,24 +129,38 @@ export default function QuoteRequests() {
                         </div>
                       )}
 
-                      {req.analyzerResult && (
-                        <div className="mt-3">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="secondary" size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">
-                                <Sparkles className="w-3.5 h-3.5 mr-1.5" /> View AI Analysis
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-primary"/> Garden AI Analysis Report</DialogTitle>
-                                <DialogDescription className="sr-only">AI analysis of the provided garden photos.</DialogDescription>
-                              </DialogHeader>
-                              <div className="whitespace-pre-wrap text-sm border-t pt-4 mt-2 bg-muted/30 p-4 rounded-lg font-serif italic text-foreground/90 leading-relaxed shadow-inner">
-                                {req.analyzerResult}
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                      {req.photoUrls && req.photoUrls.length > 0 && (
+                        <div className="mt-3 flex items-center gap-2 flex-wrap">
+                          {req.analyzerResult && (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="secondary" size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">
+                                  <Sparkles className="w-3.5 h-3.5 mr-1.5" /> View AI Analysis
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-primary"/> Garden AI Analysis Report</DialogTitle>
+                                  <DialogDescription className="sr-only">AI analysis of the provided garden photos.</DialogDescription>
+                                </DialogHeader>
+                                <div className="whitespace-pre-wrap text-sm border-t pt-4 mt-2 bg-muted/30 p-4 rounded-lg font-serif italic text-foreground/90 leading-relaxed shadow-inner">
+                                  {req.analyzerResult}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={isAnalyzing && analyzingId === req.id}
+                            onClick={() => runAnalyzer(req.id, req.photoUrls)}
+                          >
+                            {isAnalyzing && analyzingId === req.id ? (
+                              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Analyzing…</>
+                            ) : (
+                              <><Wand2 className="w-3.5 h-3.5 mr-1.5" /> {req.analyzerResult ? "Re-run" : "Run"} AI Analysis</>
+                            )}
+                          </Button>
                         </div>
                       )}
 
