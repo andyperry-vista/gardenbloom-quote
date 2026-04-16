@@ -23,7 +23,7 @@ const statusBadge: Record<string, string> = {
 
 export default function QuoteRequests() {
   const navigate = useNavigate();
-  const { requests, isLoading, updateStatus } = useQuoteRequests();
+  const { requests, isLoading, updateStatus, runAnalyzer, isAnalyzing, analyzingId } = useQuoteRequests();
   const [filter, setFilter] = useState("all");
   const [siteViewedMap, setSiteViewedMap] = useState<Record<string, boolean>>({});
 
