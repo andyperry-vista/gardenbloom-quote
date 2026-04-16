@@ -66,7 +66,8 @@ export function useServicePackages(activeOnly = false) {
       if (updates.items !== undefined) dbUpdates.items = updates.items;
       if (updates.basePrice !== undefined) dbUpdates.base_price = updates.basePrice;
       if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
-      const { error } = await supabase.from("service_packages").update(dbUpdates).eq("id", id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabase.from("service_packages").update(dbUpdates as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["servicePackages"] }),

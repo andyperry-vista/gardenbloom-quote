@@ -97,7 +97,8 @@ export function useInvoices() {
       if (updates.paidDate !== undefined) dbUpdates.paid_date = updates.paidDate;
       if (updates.sentAt !== undefined) dbUpdates.sent_at = updates.sentAt;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
-      const { error } = await supabase.from("invoices").update(dbUpdates).eq("id", id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabase.from("invoices").update(dbUpdates as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["invoices"] }),
