@@ -77,6 +77,31 @@ export function useJobs() {
       const { error } = await supabase.from("jobs").update(dbUpdates).eq("id", id);
       if (error) throw error;
     },
+    onMutate: async ({ id, updates }) => {
+      // Cancel any in-flight refetches so they don't overwrite our optimistic update
+      await qc.cancelQueries({ queryKey: ["jobs"] });
+      // Snapshot the previous value for rollback
+      const previous = qc.getQueryData<Job[]>(["jobs"]);
+      // Optimistically update the cache immediately so the UI reflects the change
+      qc.setQueryData<Job[]>(["jobs"], (old) =>
+        old?.map((j) =>
+          j.id === id
+            ? {
+                ...j,
+                ...(updates.status !== undefined && { status: updates.status as Job["status"] }),
+                ...(updates.scheduledDate !== undefined && { scheduledDate: updates.scheduledDate }),
+                ...(updates.completedDate !== undefined && { completedDate: updates.completedDate }),
+                ...(updates.notes !== undefined && { notes: updates.notes }),
+              }
+            : j
+        ) ?? []
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      // Roll back to previous data if the mutation fails
+      if (ctx?.previous) qc.setQueryData(["jobs"], ctx.previous);
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
   });
 
@@ -92,7 +117,7 @@ export function useJobs() {
     jobs,
     isLoading,
     createJob: createJobMut.mutateAsync,
-    updateJob: (id: string, updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }>) => updateJobMut.mutate({ id, updates }),
+    updateJob: (id: string, updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }>, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
   };
 }

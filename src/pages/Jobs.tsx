@@ -32,8 +32,10 @@ export default function Jobs() {
   const handleStatusChange = (jobId: string, status: string) => {
     const updates: Partial<{ status: string; completedDate: string }> = { status };
     if (status === "completed") updates.completedDate = format(new Date(), "yyyy-MM-dd");
-    updateJob(jobId, updates);
-    toast.success(`Status updated to ${status.replace("_", " ")}`);
+    updateJob(jobId, updates, {
+      onSuccess: () => toast.success(`Status updated to ${status.replace(/_/g, " ")}`),
+      onError: () => toast.error("Failed to update job status"),
+    });
   };
 
   return (
