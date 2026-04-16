@@ -1,0 +1,1 @@
+ALTER TABLE public.agent_profiles ADD COLUMN commission_enabled boolean NOT NULL DEFAULT false;
