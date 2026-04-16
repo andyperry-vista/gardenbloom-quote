@@ -281,6 +281,7 @@ export default function QuoteEditor() {
                 <div className="flex flex-col sm:flex-row sm:items-end gap-3">
                   <div className="w-40">
                     <Label>Discount</Label>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <Select value={discountType} onValueChange={(v) => { setDiscountType(v as any); if (v === "none") setDiscountValue(0); }}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>

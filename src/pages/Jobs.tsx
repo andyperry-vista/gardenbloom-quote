@@ -30,7 +30,7 @@ export default function Jobs() {
   const filteredJobs = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
 
   const handleStatusChange = (jobId: string, status: string) => {
-    const updates: any = { status };
+    const updates: Partial<{ status: string; completedDate: string }> = { status };
     if (status === "completed") updates.completedDate = format(new Date(), "yyyy-MM-dd");
     updateJob(jobId, updates);
     toast.success(`Status updated to ${status.replace("_", " ")}`);
