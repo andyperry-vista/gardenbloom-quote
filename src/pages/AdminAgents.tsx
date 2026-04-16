@@ -1,12 +1,15 @@
 import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useAllAgentProfiles, useUpdateAgentStatus } from "@/hooks/useAgentProfile";
 import { useAgentRequests } from "@/hooks/useAgentRequests";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
   pending: "secondary",
@@ -19,12 +22,27 @@ export default function AdminAgents() {
   const updateStatus = useUpdateAgentStatus();
   const { requests } = useAgentRequests();
   const { toast } = useToast();
+  const qc = useQueryClient();
 
   const handleStatus = async (id: string, status: string) => {
     try {
       await updateStatus.mutateAsync({ id, status });
       toast({ title: `Agent ${status}` });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleToggleCommission = async (id: string, enabled: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("agent_profiles")
+        .update({ commission_enabled: enabled } as any)
+        .eq("id", id);
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["allAgentProfiles"] });
+      toast({ title: `Commission ${enabled ? "enabled" : "disabled"}` });
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     }
@@ -54,6 +72,7 @@ export default function AdminAgents() {
                     <TableHead>Contact</TableHead>
                     <TableHead>Requests</TableHead>
                     <TableHead>Referral Code</TableHead>
+                    <TableHead>Commission</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -69,6 +88,17 @@ export default function AdminAgents() {
                       </TableCell>
                       <TableCell>{getRequestCount(agent.id)}</TableCell>
                       <TableCell><code className="text-xs bg-muted px-1.5 py-0.5 rounded">{agent.referralCode}</code></TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={agent.commissionEnabled}
+                            onCheckedChange={(checked) => handleToggleCommission(agent.id, checked)}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {agent.commissionEnabled ? `${agent.commissionRate}%` : "Off"}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell><Badge variant={statusColors[agent.status]}>{agent.status}</Badge></TableCell>
                       <TableCell>
                         <div className="flex gap-1">

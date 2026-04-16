@@ -13,6 +13,7 @@ export default function AgentDashboard() {
   const { requests } = useAgentRequests(profile?.id);
   const { referrals } = useAgentReferrals(profile?.id);
 
+  const commissionEnabled = profile?.commissionEnabled ?? false;
   const activeRequests = requests.filter((r) => r.status !== "completed");
   const completedRequests = requests.filter((r) => r.status === "completed");
   const totalEarned = referrals.filter((r) => r.status === "earned" || r.status === "paid").reduce((s, r) => s + r.commissionAmount, 0);
@@ -26,7 +27,7 @@ export default function AgentDashboard() {
           <p className="text-muted-foreground">{profile?.agencyName}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 ${commissionEnabled ? "lg:grid-cols-4" : "lg:grid-cols-2"} gap-4`}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Active Requests</CardTitle>
@@ -45,24 +46,28 @@ export default function AgentDashboard() {
               <div className="text-2xl font-bold">{completedRequests.length}</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${totalEarned.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending Commission</CardTitle>
-              <FileText className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${pendingCommission.toFixed(2)}</div>
-            </CardContent>
-          </Card>
+          {commissionEnabled && (
+            <>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
+                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">${totalEarned.toFixed(2)}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Pending Commission</CardTitle>
+                  <FileText className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">${pendingCommission.toFixed(2)}</div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         <div className="flex gap-3">
@@ -97,7 +102,7 @@ export default function AgentDashboard() {
           </Card>
         )}
 
-        {profile?.referralCode && (
+        {commissionEnabled && profile?.referralCode && (
           <Card>
             <CardHeader>
               <CardTitle className="text-sm">Your Referral Code</CardTitle>
