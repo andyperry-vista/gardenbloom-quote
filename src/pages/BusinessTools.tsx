@@ -22,7 +22,7 @@ const EMAIL_SCENARIOS = [
   { value: "quote-request", label: "Send Quote", description: "Send a quote to the client" },
   { value: "booking-confirmation", label: "Booking Confirmation", description: "Confirm a scheduled job with the client" },
   { value: "unpaid-invoice", label: "Payment Request", description: "Request payment for an invoice" },
-  { value: "quote-followup", label: "Payment Follow-Up", description: "Follow up on an unanswered quote" },
+  { value: "quote-followup", label: "Quote Follow-Up", description: "Follow up on an unanswered quote" },
   { value: "job-completion", label: "Job Completion", description: "Notify client that work is finished" },
   { value: "rate-review", label: "Rate & Review", description: "Ask client for a review after completion" },
   { value: "tax-invoice", label: "Tax Invoice", description: "Send a tax invoice to the client" },
