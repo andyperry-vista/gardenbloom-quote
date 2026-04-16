@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useInvoices, usePayments } from "@/hooks/useInvoices";
+import { useInvoices, usePayments, type Invoice } from "@/hooks/useInvoices";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +69,17 @@ export default function InvoiceView() {
     }
   };
 
+  const handleStatusChange = (status: string) => {
+    const updates: Parameters<typeof updateInvoice>[1] = { status: status as Invoice["status"] };
+    if (status === "paid" && !invoice.paidDate) {
+      updates.paidDate = format(new Date(), "yyyy-MM-dd");
+    }
+    if (status === "sent" && !invoice.sentAt) {
+      updates.sentAt = new Date().toISOString();
+    }
+    updateInvoice(invoice.id, updates);
+  };
+
   const handleSendInvoice = async () => {
     if (!invoice.client?.email) {
       toast.error("No client email");
@@ -103,7 +114,7 @@ export default function InvoiceView() {
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <div className="flex items-center gap-2">
-            <Select value={invoice.status} onValueChange={(v) => updateInvoice(invoice.id, { status: v })}>
+            <Select value={invoice.status} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="unpaid">Unpaid</SelectItem>
