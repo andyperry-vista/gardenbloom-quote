@@ -16,12 +16,13 @@ import { useInvoices } from "@/hooks/useInvoices";
 
 /* ─── Email Scenarios ─── */
 const QUOTE_SCENARIOS = ["quote-request", "quote-followup", "booking-confirmation"];
-const INVOICE_SCENARIOS = ["unpaid-invoice", "tax-invoice", "payment-remittance"];
+const INVOICE_SCENARIOS = ["unpaid-invoice", "payment-followup", "tax-invoice", "payment-remittance"];
 
 const EMAIL_SCENARIOS = [
   { value: "quote-request", label: "Send Quote", description: "Send a quote to the client" },
   { value: "booking-confirmation", label: "Booking Confirmation", description: "Confirm a scheduled job with the client" },
   { value: "unpaid-invoice", label: "Payment Request", description: "Request payment for an invoice" },
+  { value: "payment-followup", label: "Payment Follow-Up", description: "Second reminder for an outstanding invoice" },
   { value: "quote-followup", label: "Quote Follow-Up", description: "Follow up on an unanswered quote" },
   { value: "job-completion", label: "Job Completion", description: "Notify client that work is finished" },
   { value: "rate-review", label: "Rate & Review", description: "Ask client for a review after completion" },
@@ -91,6 +92,10 @@ function EmailComposer() {
       case "unpaid-invoice":
         subject = `Payment Reminder: Invoice ${iNum}`;
         body += `This is a friendly reminder that Invoice ${iNum} for ${iAmt} is due on ${iDue}. Please let us know if you have any questions or need a copy of the invoice.\n\n`;
+        break;
+      case "payment-followup":
+        subject = `Second Reminder: Invoice ${iNum} Outstanding`;
+        body += `I'm following up on a previous reminder regarding Invoice ${iNum} for ${iAmt}, which is now overdue. I'd appreciate your prompt attention to this outstanding payment.\n\nPlease get in touch if you need to discuss payment arrangements.\n\n`;
         break;
       case "quote-followup":
         subject = `Following up on Quote #${qNum}`;

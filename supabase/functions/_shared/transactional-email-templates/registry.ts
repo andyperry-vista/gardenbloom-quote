@@ -13,6 +13,7 @@ import { template as quoteRequest } from './quote-request.tsx'
 import { template as paymentRemittance } from './payment-remittance.tsx'
 import { template as unpaidInvoice } from './unpaid-invoice.tsx'
 import { template as quoteFollowup } from './quote-followup.tsx'
+import { template as paymentFollowup } from './payment-followup.tsx'
 import { template as jobCompletion } from './job-completion.tsx'
 import { template as bookingConfirmation } from './booking-confirmation.tsx'
 import { template as rateReview } from './rate-review.tsx'
@@ -23,6 +24,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'payment-remittance': paymentRemittance,
   'unpaid-invoice': unpaidInvoice,
   'quote-followup': quoteFollowup,
+  'payment-followup': paymentFollowup,
   'job-completion': jobCompletion,
   'booking-confirmation': bookingConfirmation,
   'rate-review': rateReview,
