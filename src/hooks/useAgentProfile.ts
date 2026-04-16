@@ -85,6 +85,7 @@ export function useAllAgentProfiles() {
         status: d.status,
         referralCode: d.referral_code,
         commissionRate: Number(d.commission_rate),
+        commissionEnabled: Boolean(d.commission_enabled),
         createdAt: d.created_at,
       }));
     },
