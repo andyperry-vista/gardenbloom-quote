@@ -151,13 +151,18 @@ export function useQuotes() {
     return addQuoteMut.mutateAsync(quote);
   };
 
+  // Fire-and-forget — use in event handlers that stay on the same page
   const updateQuote = (id: string, updates: Partial<Quote>) => {
     updateQuoteMut.mutate({ id, updates });
   };
+
+  // Awaitable version — use when navigating away after saving
+  const updateQuoteAsync = (id: string, updates: Partial<Quote>) =>
+    updateQuoteMut.mutateAsync({ id, updates });
 
   const deleteQuote = (id: string) => {
     deleteQuoteMut.mutate(id);
   };
 
-  return { quotes, isLoading, addQuote, updateQuote, deleteQuote };
+  return { quotes, isLoading, addQuote, updateQuote, updateQuoteAsync, deleteQuote };
 }

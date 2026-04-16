@@ -21,7 +21,7 @@ export default function QuoteEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { quotes, addQuote, updateQuote } = useQuotes();
+  const { quotes, addQuote, updateQuoteAsync } = useQuotes();
   const { materials } = useMaterials();
   const { settings } = useSettings();
 
@@ -132,7 +132,7 @@ export default function QuoteEditor() {
     setSaving(true);
     try {
       if (isEditing) {
-        updateQuote(existingQuote.id, { client, items, subtotal, markupTotal, grandTotal, discountType, discountValue, notes: notes || undefined });
+        await updateQuoteAsync(existingQuote.id, { client, items, subtotal, markupTotal, grandTotal, discountType, discountValue, notes: notes || undefined });
         toast.success("Quote updated");
         navigate(`/admin/quotes/${existingQuote.id}`);
       } else {
