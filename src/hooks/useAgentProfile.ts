@@ -11,6 +11,7 @@ export interface AgentProfile {
   status: "pending" | "approved" | "suspended";
   referralCode: string;
   commissionRate: number;
+  commissionEnabled: boolean;
   createdAt: string;
 }
 
