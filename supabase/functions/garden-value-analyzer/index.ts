@@ -1,11 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { encodeBase64 } from "https://deno.land/std@0.203.0/encoding/base64.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const SYSTEM_PROMPT = `You are a professional garden assessor for Mayura Garden Services, a landscaping company in Lower Templestowe, Melbourne, Australia.
+
+Analyze the provided garden photos and provide a detailed assessment including:
+
+1. **Garden Condition** — Overall state (overgrown, well-maintained, needs renovation, etc.)
+2. **Key Observations** — Notable plants, lawn condition, hardscape, problem areas
+3. **Recommended Services** — Specific services needed (mowing, hedging, pruning, mulching, garden bed cleanup, green waste removal, etc.)
+4. **Estimated Effort** — Rough difficulty level (light maintenance, moderate cleanup, heavy renovation)
+5. **Suggested Quote Items** — Line items with estimated hours/quantities for quoting
+
+Keep the tone professional and practical. Focus on actionable items that help prepare an accurate quote.
+Format the response clearly with headings and bullet points.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -15,14 +27,13 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error("Missing Supabase configuration");
     }
-
-    if (!anthropicKey) {
-      throw new Error("Missing ANTHROPIC_API_KEY");
+    if (!lovableApiKey) {
+      throw new Error("Missing LOVABLE_API_KEY");
     }
 
     const { quoteRequestId, photoUrls } = await req.json();
@@ -33,58 +44,54 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch photos and convert to base64 for Anthropic
-    const imageParts = await Promise.all(photoUrls.map(async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Failed to fetch image: ${url}`);
-      const buffer = await res.arrayBuffer();
-      // Basic mime type guessing
-      let mimeType = "image/jpeg";
-      if (url.toLowerCase().endsWith(".png")) mimeType = "image/png";
-      else if (url.toLowerCase().endsWith(".webp")) mimeType = "image/webp";
-      
-      return {
-        type: "image",
-        source: {
-          type: "base64",
-          media_type: mimeType,
-          data: encodeBase64(buffer)
-        }
-      };
+    // Build image content parts for the vision model
+    const imageParts = photoUrls.map((url: string) => ({
+      type: "image_url" as const,
+      image_url: { url },
     }));
 
-    // Process with Anthropic API
-    const response = await fetch(`https://api.anthropic.com/v1/messages`, {
+    // Call Lovable AI Gateway with vision model
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${lovableApiKey}`,
         "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20240620",
-        max_tokens: 1500,
-        system: systemPrompt,
+        model: "google/gemini-2.5-flash",
         messages: [
+          { role: "system", content: SYSTEM_PROMPT },
           {
             role: "user",
             content: [
               ...imageParts,
-              { type: "text", text: "Please analyze these garden photos according to your Mayura Garden Services protocol." }
-            ]
-          }
-        ]
-      })
+              { type: "text", text: "Please analyze these garden photos and provide a detailed assessment for quoting purposes." },
+            ],
+          },
+        ],
+      }),
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again shortly." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       const errText = await response.text();
-      console.error("Anthropic error:", errText);
-      throw new Error("Failed to process images with Anthropic");
+      console.error("AI gateway error:", response.status, errText);
+      throw new Error("Failed to analyze images with AI");
     }
 
     const data = await response.json();
-    const analyzerResult = data.content?.[0]?.text || "No analysis generated.";
+    const analyzerResult = data.choices?.[0]?.message?.content || "No analysis generated.";
 
     // Update quote_request with the analysis
     const { error: updateError } = await supabase
@@ -93,17 +100,18 @@ serve(async (req) => {
       .eq("id", quoteRequestId);
 
     if (updateError) {
-      throw updateError;
+      console.error("DB update error:", updateError);
+      throw new Error("Failed to save analysis result");
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, analysis: analyzerResult }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
-
-  } catch (error: any) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("garden-value-analyzer error:", message);
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

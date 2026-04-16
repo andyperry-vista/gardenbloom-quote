@@ -498,6 +498,7 @@ export type Database = {
       quote_requests: {
         Row: {
           address: string | null
+          analyzer_result: string | null
           created_at: string
           email: string
           id: string
@@ -511,6 +512,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          analyzer_result?: string | null
           created_at?: string
           email: string
           id?: string
@@ -524,6 +526,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          analyzer_result?: string | null
           created_at?: string
           email?: string
           id?: string
