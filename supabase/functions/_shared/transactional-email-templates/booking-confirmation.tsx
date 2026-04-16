@@ -48,7 +48,7 @@ const BookingConfirmationEmail = ({ clientName, scheduledDate, propertyAddress, 
         <Text style={text}>
           We'll be in touch before the scheduled date to confirm timing. If you need to reschedule, please reply to this email.
         </Text>
-        <Text style={footer}>Best regards, The {SITE_NAME} Team</Text>
+        <Text style={footer}>ABN: 22 046 912 532 | {SITE_NAME}</Text>
       </Container>
     </Body>
   </Html>

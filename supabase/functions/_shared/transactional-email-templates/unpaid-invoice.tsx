@@ -56,7 +56,7 @@ const UnpaidInvoiceEmail = ({ clientName, invoiceNumber, amount, dueDate, daysPa
         <Text style={text}>
           Kind regards,{'\n'}Nick{'\n'}{SITE_NAME}{'\n'}0413 806 551
         </Text>
-        <Text style={footer}>ABN: [Your ABN] | {SITE_NAME}</Text>
+        <Text style={footer}>ABN: 22 046 912 532 | {SITE_NAME}</Text>
       </Container>
     </Body>
   </Html>

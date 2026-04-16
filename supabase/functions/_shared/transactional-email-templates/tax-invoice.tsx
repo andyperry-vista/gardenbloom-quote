@@ -55,7 +55,7 @@ const TaxInvoiceEmail = ({ clientName, invoiceNumber, amount, dueDate, notes }: 
         <Text style={text}>
           Payment is due within 14 days. Please transfer to the bank details provided on the attached invoice, or reply to this email for alternative payment options.
         </Text>
-        <Text style={footer}>Thank you for your business, The {SITE_NAME} Team</Text>
+        <Text style={footer}>ABN: 22 046 912 532 | {SITE_NAME}</Text>
       </Container>
     </Body>
   </Html>

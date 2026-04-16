@@ -60,7 +60,7 @@ const PaymentRemittanceEmail = ({ recipientName, invoiceNumber, amount, paymentD
         <Text style={text}>
           Kind regards,{'\n'}Nick{'\n'}{SITE_NAME}
         </Text>
-        <Text style={footer}>ABN: [Your ABN] | {SITE_NAME}</Text>
+        <Text style={footer}>ABN: 22 046 912 532 | {SITE_NAME}</Text>
       </Container>
     </Body>
   </Html>

@@ -59,7 +59,7 @@ const JobCompletionEmail = ({ clientName, propertyAddress, workCompleted, invoic
         <Text style={text}>
           Kind regards,{'\n'}Nick{'\n'}{SITE_NAME}{'\n'}0413 806 551
         </Text>
-        <Text style={footer}>{SITE_NAME} — Maximising Property Value</Text>
+        <Text style={footer}>{SITE_NAME} | ABN: 22 046 912 532</Text>
       </Container>
     </Body>
   </Html>
