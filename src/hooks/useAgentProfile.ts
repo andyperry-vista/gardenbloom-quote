@@ -53,7 +53,8 @@ export function useAgentProfile() {
       if (updates.agentName !== undefined) dbUpdates.agent_name = updates.agentName;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
       if (updates.email !== undefined) dbUpdates.email = updates.email;
-      const { error } = await supabase.from("agent_profiles").update(dbUpdates).eq("user_id", user.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabase.from("agent_profiles").update(dbUpdates as any).eq("user_id", user.id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["agentProfile"] }),

@@ -133,7 +133,8 @@ export function useQuotes() {
         }
       }
 
-      const { error } = await supabase.from("quotes").update(dbUpdates).eq("id", id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabase.from("quotes").update(dbUpdates as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["quotes"] }),

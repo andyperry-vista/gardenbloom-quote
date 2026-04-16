@@ -74,7 +74,8 @@ export function useJobs() {
       if (updates.scheduledDate !== undefined) dbUpdates.scheduled_date = updates.scheduledDate;
       if (updates.completedDate !== undefined) dbUpdates.completed_date = updates.completedDate;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
-      const { error } = await supabase.from("jobs").update(dbUpdates).eq("id", id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabase.from("jobs").update(dbUpdates as any).eq("id", id);
       if (error) throw error;
     },
     onMutate: async ({ id, updates }) => {
