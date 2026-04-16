@@ -40,6 +40,7 @@ export function useAgentProfile() {
         status: data.status as AgentProfile["status"],
         referralCode: data.referral_code,
         commissionRate: Number(data.commission_rate),
+        commissionEnabled: Boolean(data.commission_enabled),
         createdAt: data.created_at,
       } as AgentProfile;
     },
