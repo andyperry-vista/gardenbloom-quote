@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 import { useAgentReferrals } from "@/hooks/useAgentReferrals";
 import { DollarSign } from "lucide-react";
+import { Navigate } from "react-router-dom";
 
 const statusColors: Record<string, "default" | "secondary" | "outline"> = {
   pending: "secondary",
@@ -12,8 +13,13 @@ const statusColors: Record<string, "default" | "secondary" | "outline"> = {
 };
 
 export default function AgentReferrals() {
-  const { profile } = useAgentProfile();
+  const { profile, isLoading } = useAgentProfile();
   const { referrals } = useAgentReferrals(profile?.id);
+
+  // Redirect agents without commission access
+  if (!isLoading && profile && !profile.commissionEnabled) {
+    return <Navigate to="/agent" replace />;
+  }
 
   const totalEarned = referrals.filter((r) => r.status !== "pending").reduce((s, r) => s + r.commissionAmount, 0);
   const totalPaid = referrals.filter((r) => r.status === "paid").reduce((s, r) => s + r.commissionAmount, 0);

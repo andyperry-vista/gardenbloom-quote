@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           agency_name: string
           agent_name: string
+          commission_enabled: boolean
           commission_rate: number
           created_at: string
           email: string | null
@@ -31,6 +32,7 @@ export type Database = {
         Insert: {
           agency_name?: string
           agent_name?: string
+          commission_enabled?: boolean
           commission_rate?: number
           created_at?: string
           email?: string | null
@@ -44,6 +46,7 @@ export type Database = {
         Update: {
           agency_name?: string
           agent_name?: string
+          commission_enabled?: boolean
           commission_rate?: number
           created_at?: string
           email?: string | null

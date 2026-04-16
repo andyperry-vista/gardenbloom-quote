@@ -4,19 +4,26 @@ import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { useAgentProfile } from "@/hooks/useAgentProfile";
 
-const navItems = [
+const baseNavItems = [
   { to: "/agent", label: "Dashboard", icon: LayoutDashboard },
   { to: "/agent/request", label: "New Request", icon: FilePlus },
   { to: "/agent/jobs", label: "My Jobs", icon: Briefcase },
   { to: "/agent/gallery", label: "Gallery", icon: Image },
-  { to: "/agent/referrals", label: "Referrals", icon: DollarSign },
 ];
+
+const referralNavItem = { to: "/agent/referrals", label: "Referrals", icon: DollarSign };
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { profile } = useAgentProfile();
+
+  const navItems = profile?.commissionEnabled
+    ? [...baseNavItems, referralNavItem]
+    : baseNavItems;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
