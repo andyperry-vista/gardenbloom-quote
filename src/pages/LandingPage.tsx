@@ -246,9 +246,11 @@ export default function LandingPage() {
           </p>
           {(() => {
             const shareUrl = typeof window !== "undefined" ? window.location.href : "https://www.mayuragardenservices.com.au/";
+            const shareTitle = "Mayura Garden Services";
             const shareText = "Mayura Garden Services — beautiful gardens, expertly maintained in Melbourne.";
             const encodedUrl = encodeURIComponent(shareUrl);
             const encodedText = encodeURIComponent(shareText);
+            const canNativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
             const links = [
               { label: "Facebook", icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
               { label: "X / Twitter", icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}` },
@@ -256,30 +258,49 @@ export default function LandingPage() {
               { label: "LinkedIn", icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
               { label: "Email", icon: Mail, href: `mailto:?subject=${encodeURIComponent("Mayura Garden Services")}&body=${encodedText}%20${encodedUrl}` },
             ];
+            const handleNativeShare = async () => {
+              try {
+                await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+              } catch (err) {
+                if ((err as Error)?.name !== "AbortError") {
+                  toast.error("Could not open share sheet");
+                }
+              }
+            };
             return (
-              <div className="flex flex-wrap justify-center gap-3">
-                {links.map((l) => (
-                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="gap-2">
-                      <l.icon className="w-4 h-4" /> {l.label}
+              <>
+                {canNativeShare && (
+                  <div className="md:hidden mb-6">
+                    <Button size="lg" onClick={handleNativeShare} className="gap-2 w-full sm:w-auto">
+                      <Share2 className="w-4 h-4" /> Share…
                     </Button>
-                  </a>
-                ))}
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(shareUrl);
-                      toast.success("Link copied to clipboard!");
-                    } catch {
-                      toast.error("Could not copy link");
-                    }
-                  }}
-                >
-                  <Link2 className="w-4 h-4" /> Copy Link
-                </Button>
-              </div>
+                    <p className="text-xs text-muted-foreground mt-3">Or choose a platform:</p>
+                  </div>
+                )}
+                <div className="flex flex-wrap justify-center gap-3">
+                  {links.map((l) => (
+                    <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" className="gap-2">
+                        <l.icon className="w-4 h-4" /> {l.label}
+                      </Button>
+                    </a>
+                  ))}
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(shareUrl);
+                        toast.success("Link copied to clipboard!");
+                      } catch {
+                        toast.error("Could not copy link");
+                      }
+                    }}
+                  >
+                    <Link2 className="w-4 h-4" /> Copy Link
+                  </Button>
+                </div>
+              </>
             );
           })()}
         </div>
