@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import mayuraLogoHorizontal from "@/assets/mayura-logo-horizontal.png";
 import mayuraLogoStacked from "@/assets/mayura-logo-stacked.png";
 import { supabase } from "@/integrations/supabase/client";
-import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X } from "lucide-react";
+import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X, MessageCircle } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import GoldDivider from "@/components/GoldDivider";
 import BeforeAfterReveal from "@/components/BeforeAfterReveal";
@@ -16,6 +16,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { TranslationKey } from "@/i18n/translations";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const services: { icon: typeof Flower2; titleKey: TranslationKey; descKey: TranslationKey }[] = [
   { icon: Flower2, titleKey: "serviceGardenStyling", descKey: "serviceGardenStylingDesc" },
@@ -148,6 +149,23 @@ export default function LandingPage() {
                 <Mail className="w-4 h-4" /> {t("emailUs")}
               </Button>
             </a>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="lg" variant="outline" className="gap-2 border-[#07C160]/30 text-[#07C160] hover:bg-[#07C160]/10 w-full sm:w-auto">
+                  <MessageCircle className="w-4 h-4" /> WeChat Contact
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-center">Connect on WeChat</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
+                  <img src="/wechat-qr.jpg" alt="WeChat QR Code" className="w-64 h-64 object-contain shadow-sm border p-2 rounded-md" />
+                  <p className="mt-4 text-sm text-center text-muted-foreground">Scan QR code to add me</p>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>

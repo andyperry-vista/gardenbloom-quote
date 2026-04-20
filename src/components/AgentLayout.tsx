@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ const baseNavItems = [
   { to: "/agent/request", label: "New Request", icon: FilePlus },
   { to: "/agent/jobs", label: "My Jobs", icon: Briefcase },
   { to: "/agent/gallery", label: "Gallery", icon: Image },
+  { to: "/agent/contact", label: "Contact Us", icon: MessageCircle },
 ];
 
 const referralNavItem = { to: "/agent/referrals", label: "Referrals", icon: DollarSign };

@@ -31,6 +31,7 @@ import AgentReferrals from "./pages/AgentReferrals";
 import AdminAgents from "./pages/AdminAgents";
 import AdminPackages from "./pages/AdminPackages";
 import QuoteRequests from "./pages/QuoteRequests";
+import AgentContact from "./pages/AgentContact";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/agent/jobs" element={<AgentGuard><AgentJobs /></AgentGuard>} />
             <Route path="/agent/gallery" element={<AgentGuard><AgentGallery /></AgentGuard>} />
             <Route path="/agent/referrals" element={<AgentGuard><AgentReferrals /></AgentGuard>} />
+            <Route path="/agent/contact" element={<AgentGuard><AgentContact /></AgentGuard>} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
