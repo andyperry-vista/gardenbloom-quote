@@ -17,6 +17,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { TranslationKey } from "@/i18n/translations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { QRCodeSVG } from "qrcode.react";
 
 const services: { icon: typeof Flower2; titleKey: TranslationKey; descKey: TranslationKey }[] = [
   { icon: Flower2, titleKey: "serviceGardenStyling", descKey: "serviceGardenStylingDesc" },
@@ -166,12 +168,35 @@ export default function LandingPage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-center">Connect on WeChat</DialogTitle>
+                  <DialogTitle className="text-center">WeChat</DialogTitle>
                 </DialogHeader>
-                <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
-                  <img src="/wechat-qr.jpg" alt="WeChat QR Code" className="w-64 h-64 object-contain shadow-sm border p-2 rounded-md" />
-                  <p className="mt-4 text-sm text-center text-muted-foreground">Scan QR code to add me</p>
-                </div>
+                <Tabs defaultValue="contact" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="contact">Add Me</TabsTrigger>
+                    <TabsTrigger value="share">Share Page</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="contact">
+                    <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
+                      <img src="/wechat-qr.jpg" alt="WeChat contact QR Code" className="w-64 h-64 object-contain shadow-sm border p-2 rounded-md" />
+                      <p className="mt-4 text-sm text-center text-muted-foreground">Scan QR code to add me on WeChat</p>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="share">
+                    <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
+                      <div className="p-3 bg-white border rounded-md shadow-sm">
+                        <QRCodeSVG
+                          value={typeof window !== "undefined" ? window.location.href : "https://www.mayuragardenservices.com.au/"}
+                          size={232}
+                          level="M"
+                          marginSize={0}
+                        />
+                      </div>
+                      <p className="mt-4 text-sm text-center text-muted-foreground">
+                        Open WeChat → Scan, then tap ••• to share this page with your contacts or Moments.
+                      </p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </DialogContent>
             </Dialog>
           </div>
