@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import mayuraLogoHorizontal from "@/assets/mayura-logo-horizontal.png";
 import mayuraLogoStacked from "@/assets/mayura-logo-stacked.webp";
 import { supabase } from "@/integrations/supabase/client";
-import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X, MessageCircle } from "lucide-react";
+import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X, MessageCircle, Facebook, Twitter, Linkedin, Link2, Share2 } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import GoldDivider from "@/components/GoldDivider";
 import BeforeAfterReveal from "@/components/BeforeAfterReveal";
@@ -233,6 +233,57 @@ export default function LandingPage() {
 
       {/* Before/After Gallery */}
       <BeforeAfterGallery />
+
+      <GoldDivider />
+
+      {/* Share on Social Media */}
+      <section className="container py-12 md:py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <Share2 className="w-8 h-8 text-primary mx-auto mb-3" />
+          <h2 className="text-3xl font-bold mb-2">Share with friends</h2>
+          <p className="text-muted-foreground mb-8">
+            Know someone who needs a beautiful garden? Spread the word.
+          </p>
+          {(() => {
+            const shareUrl = typeof window !== "undefined" ? window.location.href : "https://www.mayuragardenservices.com.au/";
+            const shareText = "Mayura Garden Services — beautiful gardens, expertly maintained in Melbourne.";
+            const encodedUrl = encodeURIComponent(shareUrl);
+            const encodedText = encodeURIComponent(shareText);
+            const links = [
+              { label: "Facebook", icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+              { label: "X / Twitter", icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}` },
+              { label: "WhatsApp", icon: MessageCircle, href: `https://wa.me/?text=${encodedText}%20${encodedUrl}` },
+              { label: "LinkedIn", icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
+              { label: "Email", icon: Mail, href: `mailto:?subject=${encodeURIComponent("Mayura Garden Services")}&body=${encodedText}%20${encodedUrl}` },
+            ];
+            return (
+              <div className="flex flex-wrap justify-center gap-3">
+                {links.map((l) => (
+                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="gap-2">
+                      <l.icon className="w-4 h-4" /> {l.label}
+                    </Button>
+                  </a>
+                ))}
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(shareUrl);
+                      toast.success("Link copied to clipboard!");
+                    } catch {
+                      toast.error("Could not copy link");
+                    }
+                  }}
+                >
+                  <Link2 className="w-4 h-4" /> Copy Link
+                </Button>
+              </div>
+            );
+          })()}
+        </div>
+      </section>
 
       <GoldDivider />
 
