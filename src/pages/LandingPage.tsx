@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import mayuraLogoHorizontal from "@/assets/mayura-logo-horizontal.png";
 import mayuraLogoStacked from "@/assets/mayura-logo-stacked.webp";
 import { supabase } from "@/integrations/supabase/client";
-import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X, MessageCircle } from "lucide-react";
+import { Flower2, TreePine, Shovel, Scissors, Leaf, Sparkles, Phone, Mail, Send, CheckCircle, Loader2, Camera, X, MessageCircle, Facebook, Twitter, Linkedin, Link2, Share2 } from "lucide-react";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
 import GoldDivider from "@/components/GoldDivider";
 import BeforeAfterReveal from "@/components/BeforeAfterReveal";
