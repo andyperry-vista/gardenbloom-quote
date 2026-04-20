@@ -17,6 +17,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { TranslationKey } from "@/i18n/translations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { QRCodeSVG } from "qrcode.react";
 
 const services: { icon: typeof Flower2; titleKey: TranslationKey; descKey: TranslationKey }[] = [
   { icon: Flower2, titleKey: "serviceGardenStyling", descKey: "serviceGardenStylingDesc" },
