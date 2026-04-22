@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useSettings } from "@/hooks/useSettings";
 import heroBefore from "@/assets/gallery/hero-before.jpg";
 import heroAfter from "@/assets/gallery/hero-after.jpg";
 import heroProfessional from "@/assets/gallery/hero-professional.jpg";
 
-const slides = [
-  { src: heroBefore, label: "Before", variant: "outline" as const },
-  { src: heroAfter, label: "After", variant: "default" as const },
-  { src: heroProfessional, label: "Professional Shot", variant: "secondary" as const },
-];
-
 export default function BeforeAfterReveal() {
   const [current, setCurrent] = useState(0);
+  const { settings } = useSettings();
+
+  const slides = [
+    { src: settings.heroBeforeImage || heroBefore, label: "Before", variant: "outline" as const },
+    { src: settings.heroAfterImage || heroAfter, label: "After", variant: "default" as const },
+    { src: settings.heroProfessionalImage || heroProfessional, label: "Professional Shot", variant: "secondary" as const },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {

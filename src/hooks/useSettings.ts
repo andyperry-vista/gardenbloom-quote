@@ -5,6 +5,15 @@ export interface AppSettings {
   businessLocation: string;
   currency: string;
   currencySymbol: string;
+  heroBeforeImage?: string;
+  heroAfterImage?: string;
+  heroProfessionalImage?: string;
+  galleryProject1Before?: string;
+  galleryProject1After?: string;
+  galleryProject2Before?: string;
+  galleryProject2After?: string;
+  galleryProject3Before?: string;
+  galleryProject3After?: string;
 }
 
 const STORAGE_KEY = "garden-settings";

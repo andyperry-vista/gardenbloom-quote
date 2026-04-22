@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { TranslationKey } from "@/i18n/translations";
+import { useSettings } from "@/hooks/useSettings";
 
 import before1 from "@/assets/gallery/before-1.jpg";
 import after1 from "@/assets/gallery/after-1.jpg";
@@ -12,15 +13,16 @@ import after2 from "@/assets/gallery/after-2.jpg";
 import before3 from "@/assets/gallery/before-3.jpg";
 import after3 from "@/assets/gallery/after-3.jpg";
 
-const projects: { before: string; after: string; titleKey: TranslationKey; descKey: TranslationKey }[] = [
-  { before: before1, after: after1, titleKey: "galleryProject1Title", descKey: "galleryProject1Desc" },
-  { before: before2, after: after2, titleKey: "galleryProject2Title", descKey: "galleryProject2Desc" },
-  { before: before3, after: after3, titleKey: "galleryProject3Title", descKey: "galleryProject3Desc" },
-];
-
 export default function BeforeAfterGallery() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { t } = useLanguage();
+  const { settings } = useSettings();
+
+  const projects: { before: string; after: string; titleKey: TranslationKey; descKey: TranslationKey }[] = [
+    { before: settings.galleryProject1Before || before1, after: settings.galleryProject1After || after1, titleKey: "galleryProject1Title", descKey: "galleryProject1Desc" },
+    { before: settings.galleryProject2Before || before2, after: settings.galleryProject2After || after2, titleKey: "galleryProject2Title", descKey: "galleryProject2Desc" },
+    { before: settings.galleryProject3Before || before3, after: settings.galleryProject3After || after3, titleKey: "galleryProject3Title", descKey: "galleryProject3Desc" },
+  ];
 
   return (
     <section className="bg-muted/50 py-12 md:py-16">

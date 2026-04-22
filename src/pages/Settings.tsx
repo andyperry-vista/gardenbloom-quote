@@ -84,6 +84,113 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Landing Page Images</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Provide public URLs to override the default before and after photos shown on the landing page.
+            </p>
+            
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Hero Section</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Before Image URL</Label>
+                  <Input 
+                    value={settings.heroBeforeImage || ""} 
+                    onChange={(e) => updateSettings({ heroBeforeImage: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>After Image URL</Label>
+                  <Input 
+                    value={settings.heroAfterImage || ""} 
+                    onChange={(e) => updateSettings({ heroAfterImage: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Professional Shot URL</Label>
+                  <Input 
+                    value={settings.heroProfessionalImage || ""} 
+                    onChange={(e) => updateSettings({ heroProfessionalImage: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Gallery Project 1</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Before Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject1Before || ""} 
+                    onChange={(e) => updateSettings({ galleryProject1Before: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>After Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject1After || ""} 
+                    onChange={(e) => updateSettings({ galleryProject1After: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Gallery Project 2</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Before Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject2Before || ""} 
+                    onChange={(e) => updateSettings({ galleryProject2Before: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>After Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject2After || ""} 
+                    onChange={(e) => updateSettings({ galleryProject2After: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Gallery Project 3</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Before Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject3Before || ""} 
+                    onChange={(e) => updateSettings({ galleryProject3Before: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>After Image URL</Label>
+                  <Input 
+                    value={settings.galleryProject3After || ""} 
+                    onChange={(e) => updateSettings({ galleryProject3After: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {isSupported && (
           <Card>
             <CardHeader>
