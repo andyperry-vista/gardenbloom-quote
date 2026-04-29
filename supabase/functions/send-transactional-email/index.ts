@@ -60,6 +60,8 @@ Deno.serve(async (req) => {
   let idempotencyKey: string
   let messageId: string
   let templateData: Record<string, any> = {}
+  let cc: string[] = []
+  let bcc: string[] = []
   try {
     const body = await req.json()
     templateName = body.templateName || body.template_name
@@ -69,6 +71,13 @@ Deno.serve(async (req) => {
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
     }
+    const normalizeList = (v: unknown): string[] => {
+      if (!v) return []
+      const arr = Array.isArray(v) ? v : [v]
+      return arr.map((s) => String(s).trim()).filter(Boolean)
+    }
+    cc = normalizeList(body.cc)
+    bcc = normalizeList(body.bcc)
   } catch {
     return new Response(
       JSON.stringify({ error: 'Invalid JSON in request body' }),
