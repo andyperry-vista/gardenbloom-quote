@@ -65,6 +65,13 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="640" />
     <meta property="og:image:alt" content="Beautifully landscaped Melbourne garden by Mayura Garden Services" />
+    <!-- Fallback OG image (always-deployed PWA icon) used if /og-image.jpg is briefly unavailable post-deploy -->
+    <meta property="og:image" content="https://www.mayuragardenservices.com.au/pwa-icon-512.png" />
+    <meta property="og:image:secure_url" content="https://www.mayuragardenservices.com.au/pwa-icon-512.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Mayura Garden Services logo" />
     <meta property="og:locale" content="en_AU" />
 
     <!-- Twitter -->
@@ -73,6 +80,8 @@
     <meta name="twitter:description" content="Beautiful gardens, expertly maintained. Pre-sale styling, planting, mulching, lawn care & hedge trimming across Melbourne." />
     <meta name="twitter:image" content="https://www.mayuragardenservices.com.au/og-image.jpg" />
     <meta name="twitter:image:alt" content="Beautifully landscaped Melbourne garden by Mayura Garden Services" />
+    <!-- Twitter only honours the first twitter:image; pwa-icon-512.png is also referenced via og:image fallback above for crawlers that read OG -->
+    <meta name="twitter:image:src" content="https://www.mayuragardenservices.com.au/pwa-icon-512.png" />
 
     <!-- JSON-LD: Local Business -->
     <script type="application/ld+json">
