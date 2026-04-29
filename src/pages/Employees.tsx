@@ -250,6 +250,29 @@ export default function Employees() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!inviteFor} onOpenChange={(v) => !v && setInviteFor(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite {inviteFor?.name} to crew app</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              They'll get an email with a link to set their password and access the mobile crew portal at <code>/employee</code>.
+            </p>
+            <div>
+              <Label>Email</Label>
+              <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="crew@example.com" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteFor(null)}>Cancel</Button>
+            <Button onClick={handleInvite} disabled={inviting}>
+              {inviting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}<Mail className="w-4 h-4 mr-1" /> Send invite
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
