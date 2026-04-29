@@ -151,7 +151,7 @@ export async function generateInvoicePdf(invoice: Invoice, payments: Payment[]) 
   doc.setFontSize(8);
   doc.setTextColor(...GREY);
   doc.setFont("helvetica", "normal");
-  doc.text("Payment is due within 14 days of the invoice date.", margin, y);
+  doc.text("Payment is required on or before the job completion date.", margin, y);
   y += 6;
 
   doc.setFontSize(9);
