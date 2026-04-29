@@ -42,22 +42,94 @@ export default function CalendarPage() {
   const handleDragEnd = () => {
     setDraggingId(null);
     setDropTarget(null);
+    setInsertBeforeId(null);
   };
 
   const handleDrop = (e: React.DragEvent, dateISO: string, slot: TimeSlot) => {
     e.preventDefault();
     const jobId = e.dataTransfer.getData("text/job-id") || draggingId;
+    const beforeId = insertBeforeId;
     setDraggingId(null);
     setDropTarget(null);
+    setInsertBeforeId(null);
     if (!jobId) return;
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return;
-    const sameDate = job.scheduledDate === dateISO;
-    const sameSlot = job.timeSlot === slot;
-    if (sameDate && sameSlot) return;
-    const updates: Parameters<typeof updateJob>[1] = { timeSlot: slot };
-    if (!sameDate) updates.scheduledDate = dateISO;
-    updateJob(job.id, updates);
+
+    // Build the destination lane (excluding the dragged job), then insert.
+    const destLane = jobs
+      .filter(
+        (j) =>
+          j.id !== job.id &&
+          j.scheduledDate === dateISO &&
+          j.timeSlot === slot,
+      )
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+
+    const insertIdx =
+      beforeId && destLane.some((j) => j.id === beforeId)
+        ? destLane.findIndex((j) => j.id === beforeId)
+        : destLane.length;
+
+    const movedJob = {
+      ...job,
+      scheduledDate: dateISO,
+      timeSlot: slot,
+    };
+    const newDestLane = [
+      ...destLane.slice(0, insertIdx),
+      movedJob,
+      ...destLane.slice(insertIdx),
+    ];
+
+    const updates: Array<{
+      id: string;
+      sortOrder: number;
+      scheduledDate?: string | null;
+      timeSlot?: TimeSlot;
+    }> = newDestLane.map((j, idx) => {
+      const u: { id: string; sortOrder: number; scheduledDate?: string | null; timeSlot?: TimeSlot } = {
+        id: j.id,
+        sortOrder: idx,
+      };
+      if (j.id === job.id) {
+        u.scheduledDate = dateISO;
+        u.timeSlot = slot;
+      } else if (j.sortOrder !== idx) {
+        // sort_order changed only
+      }
+      return u;
+    });
+
+    // If the source lane is different, also resequence the source lane.
+    const sourceChanged =
+      job.scheduledDate !== dateISO || job.timeSlot !== slot;
+    if (sourceChanged && job.scheduledDate) {
+      const sourceLane = jobs
+        .filter(
+          (j) =>
+            j.id !== job.id &&
+            j.scheduledDate === job.scheduledDate &&
+            j.timeSlot === job.timeSlot,
+        )
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+      sourceLane.forEach((j, idx) => {
+        if (j.sortOrder !== idx) {
+          updates.push({ id: j.id, sortOrder: idx });
+        }
+      });
+    }
+
+    // No-op guard: same lane, same position
+    if (!sourceChanged) {
+      const oldIdx = [...destLane, movedJob]
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .findIndex((j) => j.id === job.id);
+      const newIdx = newDestLane.findIndex((j) => j.id === job.id);
+      if (oldIdx === newIdx) return;
+    }
+
+    reorderJobs(updates);
     toast.success(
       `${job.jobNumber} → ${format(new Date(dateISO), "d MMM")} ${
         slot === "morning" ? "AM" : slot === "afternoon" ? "PM" : "All-day"
