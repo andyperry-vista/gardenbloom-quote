@@ -107,6 +107,7 @@ export function useJobs() {
                 ...(updates.status !== undefined && { status: updates.status as Job["status"] }),
                 ...(updates.scheduledDate !== undefined && { scheduledDate: updates.scheduledDate }),
                 ...(updates.timeSlot !== undefined && { timeSlot: updates.timeSlot }),
+                ...(updates.sortOrder !== undefined && { sortOrder: updates.sortOrder }),
                 ...(updates.completedDate !== undefined && { completedDate: updates.completedDate }),
                 ...(updates.notes !== undefined && { notes: updates.notes }),
               }
