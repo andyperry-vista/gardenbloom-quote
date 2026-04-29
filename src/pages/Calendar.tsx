@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { useInvoices } from "@/hooks/useInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Sun, Cloud, CloudRain } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sun, Cloud, CloudRain, GripVertical } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameDay, addMonths, subMonths } from "date-fns";
 import { Link } from "react-router-dom";
-import { timeSlotOrder } from "@/lib/timeSlot";
+import { timeSlotOrder, type TimeSlot } from "@/lib/timeSlot";
+import { toast } from "sonner";
 
 interface WeatherDay {
   date: string;
