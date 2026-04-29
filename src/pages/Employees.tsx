@@ -106,11 +106,14 @@ export default function Employees() {
             <p className="text-muted-foreground mt-1">Staff, hourly rates, super and payroll setup</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={openDefaults}><SettingsIcon className="w-4 h-4 mr-2" /> Defaults</Button>
+            {canEditRates && <Button variant="outline" onClick={openDefaults}><SettingsIcon className="w-4 h-4 mr-2" /> Defaults</Button>}
             <Link to="/admin/payroll"><Button variant="outline"><Calculator className="w-4 h-4 mr-2" /> Payroll</Button></Link>
-            <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add Employee</Button>
+            {canManage && <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add Employee</Button>}
           </div>
         </div>
+        {!canManage && (
+          <Card><CardContent className="py-3 text-sm text-muted-foreground">You have view-only access to employees. Ask an admin for manage permissions.</CardContent></Card>
+        )}
 
         {isLoading ? (
           <p className="text-muted-foreground">Loading…</p>
