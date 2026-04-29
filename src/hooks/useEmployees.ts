@@ -22,6 +22,7 @@ export interface Employee {
   active: boolean;
   notes: string;
   createdAt: string;
+  linkedUserId: string | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,6 +48,7 @@ function map(r: any): Employee {
     active: !!r.active,
     notes: r.notes ?? "",
     createdAt: r.created_at,
+    linkedUserId: r.linked_user_id ?? null,
   };
 }
 
