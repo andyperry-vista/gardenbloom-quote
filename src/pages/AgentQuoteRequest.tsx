@@ -12,6 +12,7 @@ import { useAgentRequests } from "@/hooks/useAgentRequests";
 import { useServicePackages } from "@/hooks/useServicePackages";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 const propertyTypes = ["House", "Townhouse", "Unit/Apartment", "Commercial", "Vacant Land"];
 
@@ -62,7 +63,12 @@ export default function AgentQuoteRequest() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Property Address</Label>
-              <Input value={form.propertyAddress} onChange={(e) => setForm({ ...form, propertyAddress: e.target.value })} placeholder="123 Smith St, Doncaster VIC 3108" required />
+              <AddressAutocomplete
+                value={form.propertyAddress}
+                onChange={(v) => setForm({ ...form, propertyAddress: v })}
+                placeholder="Start typing the address…"
+                required
+              />
             </div>
             <div>
               <Label>Property Type</Label>

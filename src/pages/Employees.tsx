@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
 import { effectiveHourlyRate } from "@/lib/employeeRate";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partial<Employee> => ({
   name: "", email: "", phone: "", address: "",
@@ -158,7 +159,7 @@ export default function Employees() {
             <div className="sm:col-span-2"><Label>Full Name *</Label><Input value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div><Label>Email</Label><Input type="email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>Phone</Label><Input value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-            <div className="sm:col-span-2"><Label>Address</Label><Input value={form.address ?? ""} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+            <div className="sm:col-span-2"><Label>Address</Label><AddressAutocomplete value={form.address ?? ""} onChange={(v) => setForm({ ...form, address: v })} placeholder="Start typing the address…" /></div>
             <div>
               <Label>Pay Basis</Label>
               <Select value={form.payBasis ?? "hourly"} onValueChange={(v) => setForm({ ...form, payBasis: v as "hourly" | "salary" })}>
