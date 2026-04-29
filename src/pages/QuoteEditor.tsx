@@ -19,6 +19,7 @@ import AppLayout from "@/components/AppLayout";
 import EmailPreviewDialog from "@/components/EmailPreviewDialog";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 export default function QuoteEditor() {
   const { id } = useParams();
@@ -180,7 +181,7 @@ export default function QuoteEditor() {
             <div><Label>Full Name</Label><Input value={client.name} onChange={(e) => setClient({ ...client, name: e.target.value })} placeholder="Jane Smith" /></div>
             <div><Label>Email</Label><Input type="email" value={client.email} onChange={(e) => setClient({ ...client, email: e.target.value })} placeholder="jane@example.com" /></div>
             <div><Label>Phone</Label><Input value={client.phone} onChange={(e) => setClient({ ...client, phone: e.target.value })} placeholder="0412 345 678" /></div>
-            <div><Label>Property Address</Label><Input value={client.address} onChange={(e) => setClient({ ...client, address: e.target.value })} placeholder="123 Garden Lane, Melbourne" /></div>
+            <div><Label>Property Address</Label><AddressAutocomplete value={client.address} onChange={(v) => setClient({ ...client, address: v })} placeholder="Start typing the address…" /></div>
           </CardContent>
         </Card>
 
