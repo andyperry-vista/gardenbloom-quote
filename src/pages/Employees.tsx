@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon, Settings as SettingsIcon, Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon, Settings as SettingsIcon, Mail, CheckCircle2, Loader2, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
@@ -137,6 +137,9 @@ export default function Employees() {
                     {!e.linkedUserId && (
                       <Button variant="outline" size="sm" onClick={() => openInvite(e)}><Mail className="w-4 h-4 mr-1" /> Invite</Button>
                     )}
+                    <Link to={`/admin/employees/${e.id}/time-log`}>
+                      <Button variant="outline" size="sm"><Clock className="w-4 h-4 mr-1" /> Time log</Button>
+                    </Link>
                     <Link to={`/admin/payroll?employee=${e.id}`}>
                       <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-1" /> Payslips</Button>
                     </Link>
