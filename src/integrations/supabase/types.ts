@@ -372,6 +372,7 @@ export type Database = {
           referral_agent_id: string | null
           scheduled_date: string | null
           status: string
+          time_slot: string
           updated_at: string
           user_id: string
         }
@@ -386,6 +387,7 @@ export type Database = {
           referral_agent_id?: string | null
           scheduled_date?: string | null
           status?: string
+          time_slot?: string
           updated_at?: string
           user_id: string
         }
@@ -400,6 +402,7 @@ export type Database = {
           referral_agent_id?: string | null
           scheduled_date?: string | null
           status?: string
+          time_slot?: string
           updated_at?: string
           user_id?: string
         }
