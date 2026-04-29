@@ -296,6 +296,7 @@ export type Database = {
           account_number: string | null
           active: boolean
           address: string | null
+          annual_salary: number
           bsb: string | null
           created_at: string
           email: string | null
@@ -304,7 +305,9 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          pay_basis: string
           phone: string | null
+          standard_hours_per_week: number
           start_date: string | null
           super_fund: string | null
           super_member_number: string | null
@@ -317,6 +320,7 @@ export type Database = {
           account_number?: string | null
           active?: boolean
           address?: string | null
+          annual_salary?: number
           bsb?: string | null
           created_at?: string
           email?: string | null
@@ -325,7 +329,9 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          pay_basis?: string
           phone?: string | null
+          standard_hours_per_week?: number
           start_date?: string | null
           super_fund?: string | null
           super_member_number?: string | null
@@ -338,6 +344,7 @@ export type Database = {
           account_number?: string | null
           active?: boolean
           address?: string | null
+          annual_salary?: number
           bsb?: string | null
           created_at?: string
           email?: string | null
@@ -346,7 +353,9 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          pay_basis?: string
           phone?: string | null
+          standard_hours_per_week?: number
           start_date?: string | null
           super_fund?: string | null
           super_member_number?: string | null

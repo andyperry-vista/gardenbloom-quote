@@ -4,6 +4,7 @@ import { useQuotes } from "@/hooks/useQuotes";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useSettings } from "@/hooks/useSettings";
 import { useEmployees } from "@/hooks/useEmployees";
+import { effectiveHourlyRate } from "@/lib/employeeRate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -203,18 +204,19 @@ export default function QuoteEditor() {
                   onValueChange={(empId) => {
                     const emp = employees.find((e) => e.id === empId);
                     if (!emp) return;
+                    const rate = effectiveHourlyRate(emp);
                     const newId = `li-${Date.now()}`;
                     pendingScrollId.current = newId;
                     setItems((prev) => [...prev, {
                       id: newId, type: "labor", description: `Labour — ${emp.name}`,
-                      quantity: 1, unitCost: emp.hourlyRate, markupPercent: 0, total: emp.hourlyRate,
+                      quantity: 1, unitCost: rate, markupPercent: 0, total: rate,
                     }]);
                   }}
                 >
                   <SelectTrigger className="w-56 h-8"><SelectValue placeholder="Pick employee" /></SelectTrigger>
                   <SelectContent>
                     {employees.filter((e) => e.active).map((e) => (
-                      <SelectItem key={e.id} value={e.id}>{e.name} — ${e.hourlyRate}/hr</SelectItem>
+                      <SelectItem key={e.id} value={e.id}>{e.name} — ${effectiveHourlyRate(e).toFixed(2)}/hr</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

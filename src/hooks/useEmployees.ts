@@ -8,6 +8,9 @@ export interface Employee {
   phone: string;
   address: string;
   hourlyRate: number;
+  payBasis: "hourly" | "salary";
+  annualSalary: number;
+  standardHoursPerWeek: number;
   superRate: number;
   superFund: string;
   superMemberNumber: string;
@@ -30,6 +33,9 @@ function map(r: any): Employee {
     phone: r.phone ?? "",
     address: r.address ?? "",
     hourlyRate: Number(r.hourly_rate ?? 0),
+    payBasis: (r.pay_basis === "salary" ? "salary" : "hourly"),
+    annualSalary: Number(r.annual_salary ?? 0),
+    standardHoursPerWeek: Number(r.standard_hours_per_week ?? 38),
     superRate: Number(r.super_rate ?? 11.5),
     superFund: r.super_fund ?? "",
     superMemberNumber: r.super_member_number ?? "",
@@ -67,6 +73,9 @@ export function useEmployees() {
         phone: e.phone ?? "",
         address: e.address ?? "",
         hourly_rate: e.hourlyRate ?? 0,
+        pay_basis: e.payBasis ?? "hourly",
+        annual_salary: e.annualSalary ?? 0,
+        standard_hours_per_week: e.standardHoursPerWeek ?? 38,
         super_rate: e.superRate ?? 11.5,
         super_fund: e.superFund ?? "",
         super_member_number: e.superMemberNumber ?? "",
@@ -93,6 +102,9 @@ export function useEmployees() {
       if (updates.phone !== undefined) u.phone = updates.phone;
       if (updates.address !== undefined) u.address = updates.address;
       if (updates.hourlyRate !== undefined) u.hourly_rate = updates.hourlyRate;
+      if (updates.payBasis !== undefined) u.pay_basis = updates.payBasis;
+      if (updates.annualSalary !== undefined) u.annual_salary = updates.annualSalary;
+      if (updates.standardHoursPerWeek !== undefined) u.standard_hours_per_week = updates.standardHoursPerWeek;
       if (updates.superRate !== undefined) u.super_rate = updates.superRate;
       if (updates.superFund !== undefined) u.super_fund = updates.superFund;
       if (updates.superMemberNumber !== undefined) u.super_member_number = updates.superMemberNumber;

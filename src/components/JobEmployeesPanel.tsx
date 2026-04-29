@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { UserPlus, Trash2, Clock, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { effectiveHourlyRate } from "@/lib/employeeRate";
 
 export default function JobEmployeesPanel({ jobId }: { jobId: string }) {
   const { employees } = useEmployees();
@@ -35,7 +36,7 @@ export default function JobEmployeesPanel({ jobId }: { jobId: string }) {
       return;
     }
     try {
-      await assignEmployee({ jobId, employeeId: selectedEmp, estimatedHours: estHours, rate: emp.hourlyRate });
+      await assignEmployee({ jobId, employeeId: selectedEmp, estimatedHours: estHours, rate: effectiveHourlyRate(emp) });
       toast.success(`${emp.name} assigned`);
       setSelectedEmp(""); setEstHours(0);
     } catch (e) {
@@ -50,7 +51,7 @@ export default function JobEmployeesPanel({ jobId }: { jobId: string }) {
     try {
       await addEntry({
         employeeId: logEmp, jobId, workDate: logDate,
-        hours: logHours, rate: emp.hourlyRate, notes: logNotes,
+        hours: logHours, rate: effectiveHourlyRate(emp), notes: logNotes,
         confirmed: false,
       });
       toast.success("Time entry added");
@@ -106,7 +107,7 @@ export default function JobEmployeesPanel({ jobId }: { jobId: string }) {
               <Select value={selectedEmp} onValueChange={setSelectedEmp}>
                 <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
                 <SelectContent>
-                  {activeEmployees.map((e) => <SelectItem key={e.id} value={e.id}>{e.name} (${e.hourlyRate}/hr)</SelectItem>)}
+                  {activeEmployees.map((e) => <SelectItem key={e.id} value={e.id}>{e.name} (${effectiveHourlyRate(e).toFixed(2)}/hr)</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
