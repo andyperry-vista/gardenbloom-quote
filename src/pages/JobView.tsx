@@ -12,6 +12,7 @@ import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { useState } from "react";
 import { format, addDays } from "date-fns";
+import { TIME_SLOTS, type TimeSlot } from "@/lib/timeSlot";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-primary/10 text-primary",
