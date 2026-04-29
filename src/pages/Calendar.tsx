@@ -24,12 +24,14 @@ function WeatherIcon({ code }: { code: number }) {
 }
 
 export default function CalendarPage() {
-  const { jobs, updateJob } = useJobs();
+  const { jobs, updateJob, reorderJobs } = useJobs();
   const { invoices } = useInvoices();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [weather, setWeather] = useState<WeatherDay[]>([]);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  // Drop target for inserting BEFORE a specific job: `${jobId}`
+  const [insertBeforeId, setInsertBeforeId] = useState<string | null>(null);
 
   const handleDragStart = (e: React.DragEvent, jobId: string) => {
     e.dataTransfer.setData("text/job-id", jobId);
