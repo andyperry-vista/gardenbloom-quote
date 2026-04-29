@@ -133,6 +133,13 @@ export default function QuoteEditor() {
   const grandTotal = Math.max(0, preTotalBeforeDiscount - discountAmount);
   const markupTotal = preTotalBeforeDiscount - subtotal;
 
+  // Breakdown by line type — labour & misc carry no markup; materials do.
+  const materialsCost = items.filter((i) => i.type === "material").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+  const materialsWithMarkup = items.filter((i) => i.type === "material").reduce((s, i) => s + i.total, 0);
+  const labourTotal = items.filter((i) => i.type === "labor").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+  const labourHours = items.filter((i) => i.type === "labor").reduce((s, i) => s + i.quantity, 0);
+  const miscTotal = items.filter((i) => i.type === "misc").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+
   const handleSave = async () => {
     if (!client.name || saving) return;
     setSaving(true);
@@ -260,20 +267,21 @@ export default function QuoteEditor() {
                 {/* Qty + Cost side by side */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Qty</Label>
+                    <Label>{item.type === "labor" ? "Hours" : "Qty"}</Label>
                     <div className="flex items-center gap-1">
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
                         className="h-9 w-9 shrink-0"
-                        onClick={() => updateItem(item.id, { quantity: Math.max(0, item.quantity - 1) })}
+                        onClick={() => updateItem(item.id, { quantity: Math.max(0, item.quantity - (item.type === "labor" ? 0.5 : 1)) })}
                       >
                         <Minus className="w-3 h-3" />
                       </Button>
                       <Input
                         type="number"
                         min={0}
+                        step={item.type === "labor" ? 0.25 : 1}
                         value={item.quantity === 0 ? "" : item.quantity}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -286,7 +294,7 @@ export default function QuoteEditor() {
                         variant="outline"
                         size="icon"
                         className="h-9 w-9 shrink-0"
-                        onClick={() => updateItem(item.id, { quantity: item.quantity + 1 })}
+                        onClick={() => updateItem(item.id, { quantity: item.quantity + (item.type === "labor" ? 0.5 : 1) })}
                       >
                         <Plus className="w-3 h-3" />
                       </Button>
@@ -300,6 +308,9 @@ export default function QuoteEditor() {
 
                 <div className="text-right font-semibold text-primary">
                   Line Total: ${item.total.toFixed(2)}
+                  {item.type === "labor" && item.quantity > 0 && item.unitCost > 0 && (
+                    <span className="text-xs text-muted-foreground ml-2">({item.quantity}h × ${item.unitCost.toFixed(2)}/hr · no markup)</span>
+                  )}
                   {item.type === "material" && item.markupPercent > 0 && (
                     <span className="text-xs text-muted-foreground ml-2">(incl. {item.markupPercent}% markup)</span>
                   )}
@@ -341,13 +352,24 @@ export default function QuoteEditor() {
                   )}
                 </div>
                 <Separator />
-                <div className="space-y-2 text-right">
-                  <p className="text-muted-foreground">Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span></p>
-                  <p className="text-muted-foreground">Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span></p>
-                  {discountAmount > 0 && (
-                    <p className="text-muted-foreground">Discount: <span className="font-medium text-destructive">−${discountAmount.toFixed(2)}</span></p>
-                  )}
-                  <p className="text-xl font-bold text-foreground">Total: ${grandTotal.toFixed(2)}</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5 text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Breakdown</p>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Materials cost</span><span>${materialsCost.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Materials markup</span><span className="text-accent">+${(materialsWithMarkup - materialsCost).toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Labour ({labourHours}h, no markup)</span><span>${labourTotal.toFixed(2)}</span></div>
+                    {miscTotal > 0 && (
+                      <div className="flex justify-between"><span className="text-muted-foreground">Misc (no markup)</span><span>${miscTotal.toFixed(2)}</span></div>
+                    )}
+                  </div>
+                  <div className="space-y-2 text-right self-end">
+                    <p className="text-muted-foreground">Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span></p>
+                    <p className="text-muted-foreground">Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span></p>
+                    {discountAmount > 0 && (
+                      <p className="text-muted-foreground">Discount: <span className="font-medium text-destructive">−${discountAmount.toFixed(2)}</span></p>
+                    )}
+                    <p className="text-xl font-bold text-foreground">Total: ${grandTotal.toFixed(2)}</p>
+                  </div>
                 </div>
               </>
             )}
