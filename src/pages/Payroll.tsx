@@ -346,8 +346,8 @@ export default function Payroll() {
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => downloadPayslip(p.id)}><Download className="w-4 h-4 mr-1" /> PDF</Button>
-                      {p.status === "draft" && <Button size="sm" onClick={() => issuePayslip(p.id)}>Mark Issued</Button>}
-                      <Button variant="destructive" size="icon" onClick={() => { if (confirm("Delete payslip?")) deletePayslip(p.id); }}><Trash2 className="w-4 h-4" /></Button>
+                      {canApprove && p.status === "draft" && <Button size="sm" onClick={() => issuePayslip(p.id)}>Mark Issued</Button>}
+                      {canApprove && <Button variant="destructive" size="icon" onClick={() => { if (confirm("Delete payslip?")) deletePayslip(p.id); }}><Trash2 className="w-4 h-4" /></Button>}
                     </div>
                   </CardContent>
                 </Card>
