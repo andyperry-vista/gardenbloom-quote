@@ -10,55 +10,55 @@ import NotificationBell from "@/components/NotificationBell";
 const navGroups = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
   {
-    label: "Work",
-    icon: Briefcase,
+    label: "Quotes",
+    icon: FilePlus,
     children: [
-      { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
       { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
-      { to: "/admin/clients", label: "Clients", icon: Users },
-      { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
-      { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
-    ],
-  },
-  {
-    label: "Finance",
-    icon: FileText,
-    children: [
-      { to: "/admin/invoices", label: "Invoices", icon: FileText },
-    ],
-  },
-  {
-    label: "Resources",
-    icon: Package,
-    children: [
+      { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
       { to: "/admin/materials", label: "Materials", icon: Package },
       { to: "/admin/packages", label: "Packages", icon: PackageCheck },
     ],
   },
   {
-    label: "Admin",
-    icon: Settings,
+    label: "Jobs",
+    icon: Briefcase,
     children: [
-      { to: "/admin/agents", label: "Agents", icon: UserCheck },
-      { to: "/admin/tools", label: "Tools", icon: Wrench },
-      { to: "/admin/settings", label: "Settings", icon: Settings },
+      { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
+      { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
+      { to: "/admin/invoices", label: "Invoices", icon: FileText },
     ],
   },
+  {
+    label: "Emails",
+    icon: Wrench,
+    children: [
+      { to: "/admin/tools", label: "Tools", icon: Wrench },
+    ],
+  },
+  {
+    label: "Clients",
+    icon: Users,
+    children: [
+      { to: "/admin/clients", label: "Client List", icon: Users },
+      { to: "/admin/agents", label: "Agents", icon: UserCheck },
+    ],
+  },
+  { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 
-// All flat items for mobile
+// All flat items for mobile, grouped by section
 const allNavItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
   { to: "/admin/quotes/new", label: "New Quote", icon: FilePlus },
-  { to: "/admin/clients", label: "Clients", icon: Users },
-  { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
-  { to: "/admin/invoices", label: "Invoices", icon: FileText },
-  { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
+  { to: "/admin/quote-requests", label: "Quote Requests", icon: Inbox },
   { to: "/admin/materials", label: "Materials", icon: Package },
-  { to: "/admin/tools", label: "Tools", icon: Wrench },
-  { to: "/admin/agents", label: "Agents", icon: UserCheck },
   { to: "/admin/packages", label: "Packages", icon: PackageCheck },
+  { to: "/admin/jobs", label: "Jobs", icon: Briefcase },
+  { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
+  { to: "/admin/invoices", label: "Invoices", icon: FileText },
+  { to: "/admin/tools", label: "Email Tools", icon: Wrench },
+  { to: "/admin/clients", label: "Client List", icon: Users },
+  { to: "/admin/agents", label: "Agents", icon: UserCheck },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
