@@ -104,18 +104,6 @@ export default function EmailPreviewDialog({
     setLoadingPdf(true);
     (async () => {
       try {
-        // Patched: generateQuotePdf saves the file. We need a Blob URL instead,
-        // so we replicate using jsPDF's output('bloburl'). Easiest: call
-        // generateQuotePdf with a Blob-returning variant. Since our existing
-        // helper saves directly, regenerate inline here.
-        const { jsPDF } = await import("jspdf");
-        const doc = new jsPDF({ unit: "mm", format: "a4" });
-        // Use the existing helper to populate the doc by monkey-patching save
-        // is fragile — instead we re-use generateQuotePdf and produce a blob via
-        // a wrapped jsPDF in lib later. For now, fall back to running generateQuotePdf
-        // which downloads. To avoid forcing a download in the preview, we use a
-        // dedicated blob path below.
-        void doc; // discard placeholder
         const blobUrl = await generateQuotePdfBlobUrl(quote);
         if (!cancelled) {
           if (lastBlobUrl.current) URL.revokeObjectURL(lastBlobUrl.current);
