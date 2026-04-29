@@ -122,6 +122,9 @@ export default function CalendarPage() {
                 <span className="w-3 h-3 rounded-sm bg-destructive/20" aria-hidden />
                 <span>Invoice due</span>
               </div>
+              <span className="text-muted-foreground ml-auto hidden sm:inline">
+                Tip: drag a job between AM, PM or All-day to reschedule.
+              </span>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted-foreground mb-2">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d}>{d}</div>)}
