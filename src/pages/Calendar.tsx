@@ -201,7 +201,7 @@ export default function CalendarPage() {
                 <span>Invoice due</span>
               </div>
               <span className="text-muted-foreground ml-auto hidden sm:inline">
-                Tip: drag a job between AM, PM or All-day to reschedule.
+                Tip: drag a job to reorder, or move it between AM, PM and All-day.
               </span>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted-foreground mb-2">
