@@ -18,9 +18,11 @@ import { template as jobCompletion } from './job-completion.tsx'
 import { template as bookingConfirmation } from './booking-confirmation.tsx'
 import { template as rateReview } from './rate-review.tsx'
 import { template as taxInvoice } from './tax-invoice.tsx'
+import { template as quoteReady } from './quote-ready.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'quote-request': quoteRequest,
+  'quote-ready': quoteReady,
   'payment-remittance': paymentRemittance,
   'unpaid-invoice': unpaidInvoice,
   'quote-followup': quoteFollowup,

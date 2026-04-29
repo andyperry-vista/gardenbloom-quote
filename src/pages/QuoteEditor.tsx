@@ -12,8 +12,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import EmailPreviewDialog from "@/components/EmailPreviewDialog";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
 
@@ -45,6 +46,7 @@ export default function QuoteEditor() {
   const [discountType, setDiscountType] = useState<'none' | 'percentage' | 'fixed'>(existingQuote?.discountType ?? "none");
   const [discountValue, setDiscountValue] = useState(existingQuote?.discountValue ?? 0);
   const [saving, setSaving] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (existingQuote) {
@@ -331,11 +333,38 @@ export default function QuoteEditor() {
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => navigate(isEditing ? `/admin/quotes/${id}` : "/admin")}>Cancel</Button>
+          {isEditing && existingQuote && client.email && (
+            <Button
+              variant="secondary"
+              onClick={() => setPreviewOpen(true)}
+              disabled={items.length === 0}
+            >
+              <Mail className="w-4 h-4 mr-2" /> Preview Email
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={!client.name || items.length === 0 || saving}>
             <Save className="w-4 h-4 mr-2" /> {isEditing ? "Update Quote" : "Save Quote"}
           </Button>
         </div>
       </div>
+
+      {isEditing && existingQuote && (
+        <EmailPreviewDialog
+          quote={{
+            ...existingQuote,
+            client,
+            items,
+            subtotal,
+            markupTotal,
+            grandTotal,
+            discountType,
+            discountValue,
+            notes: notes || undefined,
+          }}
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+        />
+      )}
     </AppLayout>
   );
 }
