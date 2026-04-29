@@ -15,11 +15,14 @@ import { toast } from "sonner";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { estimatePAYG, inferPayPeriod } from "@/lib/payg";
 import { generatePayslipPdf } from "@/lib/generatePayslipPdf";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Payroll() {
   const [params, setParams] = useSearchParams();
   const empParam = params.get("employee") ?? "";
   const { employees } = useEmployees();
+  const perms = usePermissions();
+  const canApprove = perms.canApprovePayslips;
   const [employeeId, setEmployeeId] = useState(empParam);
   const employee = employees.find((e) => e.id === employeeId);
 
@@ -318,9 +321,10 @@ export default function Payroll() {
                     <p className="text-base font-bold">Net: ${totals.net.toFixed(2)}</p>
                     <p className="text-sm text-accent">Super ({employee.superRate}%): ${totals.superAmount.toFixed(2)}</p>
                   </div>
-                  <Button className="w-full" disabled={eligibleEntries.length === 0} onClick={handleCreatePayslip}>
+                  <Button className="w-full" disabled={eligibleEntries.length === 0 || !canApprove} onClick={handleCreatePayslip}>
                     <FileText className="w-4 h-4 mr-2" /> Create Payslip (Draft)
                   </Button>
+                  {!canApprove && <p className="text-xs text-muted-foreground text-center">Only admins or managers can create payslips.</p>}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -342,8 +346,8 @@ export default function Payroll() {
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => downloadPayslip(p.id)}><Download className="w-4 h-4 mr-1" /> PDF</Button>
-                      {p.status === "draft" && <Button size="sm" onClick={() => issuePayslip(p.id)}>Mark Issued</Button>}
-                      <Button variant="destructive" size="icon" onClick={() => { if (confirm("Delete payslip?")) deletePayslip(p.id); }}><Trash2 className="w-4 h-4" /></Button>
+                      {canApprove && p.status === "draft" && <Button size="sm" onClick={() => issuePayslip(p.id)}>Mark Issued</Button>}
+                      {canApprove && <Button variant="destructive" size="icon" onClick={() => { if (confirm("Delete payslip?")) deletePayslip(p.id); }}><Trash2 className="w-4 h-4" /></Button>}
                     </div>
                   </CardContent>
                 </Card>

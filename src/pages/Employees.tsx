@@ -17,6 +17,7 @@ import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
 import { effectiveHourlyRate } from "@/lib/employeeRate";
 import { supabase } from "@/integrations/supabase/client";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partial<Employee> => ({
   name: "", email: "", phone: "", address: "",
@@ -33,6 +34,9 @@ const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partia
 export default function Employees() {
   const { employees, isLoading, createEmployee, updateEmployee, deleteEmployee } = useEmployees();
   const { defaults, saveDefaults } = usePayrollDefaults();
+  const perms = usePermissions();
+  const canManage = perms.canManageEmployees;
+  const canEditRates = perms.canEditRates;
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | null>(null);
   const [form, setForm] = useState<Partial<Employee>>(() => makeBlank(defaults));
@@ -102,11 +106,14 @@ export default function Employees() {
             <p className="text-muted-foreground mt-1">Staff, hourly rates, super and payroll setup</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={openDefaults}><SettingsIcon className="w-4 h-4 mr-2" /> Defaults</Button>
+            {canEditRates && <Button variant="outline" onClick={openDefaults}><SettingsIcon className="w-4 h-4 mr-2" /> Defaults</Button>}
             <Link to="/admin/payroll"><Button variant="outline"><Calculator className="w-4 h-4 mr-2" /> Payroll</Button></Link>
-            <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add Employee</Button>
+            {canManage && <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add Employee</Button>}
           </div>
         </div>
+        {!canManage && (
+          <Card><CardContent className="py-3 text-sm text-muted-foreground">You have view-only access to employees. Ask an admin for manage permissions.</CardContent></Card>
+        )}
 
         {isLoading ? (
           <p className="text-muted-foreground">Loading…</p>
@@ -134,7 +141,7 @@ export default function Employees() {
                     </p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    {!e.linkedUserId && (
+                    {canManage && !e.linkedUserId && (
                       <Button variant="outline" size="sm" onClick={() => openInvite(e)}><Mail className="w-4 h-4 mr-1" /> Invite</Button>
                     )}
                     <Link to={`/admin/employees/${e.id}/time-log`}>
@@ -143,8 +150,8 @@ export default function Employees() {
                     <Link to={`/admin/payroll?employee=${e.id}`}>
                       <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-1" /> Payslips</Button>
                     </Link>
-                    <Button variant="outline" size="icon" onClick={() => openEdit(e)}><Pencil className="w-4 h-4" /></Button>
-                    <Button variant="destructive" size="icon" onClick={() => handleDelete(e)}><Trash2 className="w-4 h-4" /></Button>
+                    {canManage && <Button variant="outline" size="icon" onClick={() => openEdit(e)}><Pencil className="w-4 h-4" /></Button>}
+                    {canManage && <Button variant="destructive" size="icon" onClick={() => handleDelete(e)}><Trash2 className="w-4 h-4" /></Button>}
                   </div>
                 </CardContent>
               </Card>
@@ -175,7 +182,7 @@ export default function Employees() {
             </div>
             {form.payBasis === "salary" ? (
               <>
-                <div><Label>Annual Salary ($)</Label><Input type="number" step="0.01" value={form.annualSalary ?? 0} onChange={(e) => setForm({ ...form, annualSalary: Number(e.target.value) })} /></div>
+                <div><Label>Annual Salary ($){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.01" disabled={!canEditRates} value={form.annualSalary ?? 0} onChange={(e) => setForm({ ...form, annualSalary: Number(e.target.value) })} /></div>
                 <div><Label>Standard Hours / Week</Label><Input type="number" step="0.5" value={form.standardHoursPerWeek ?? 38} onChange={(e) => setForm({ ...form, standardHoursPerWeek: Number(e.target.value) })} /></div>
                 <div className="sm:col-span-2 text-xs text-muted-foreground -mt-2">
                   Effective hourly: ${effectiveHourlyRate({
@@ -187,7 +194,7 @@ export default function Employees() {
                 </div>
               </>
             ) : (
-              <div><Label>Hourly Rate ($)</Label><Input type="number" step="0.01" value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
+              <div><Label>Hourly Rate ($){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.01" disabled={!canEditRates} value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
             )}
             <div>
               <Label>Employment Type</Label>
@@ -201,7 +208,7 @@ export default function Employees() {
                 </SelectContent>
               </Select>
             </div>
-            <div><Label>Super Rate (%)</Label><Input type="number" step="0.1" value={form.superRate ?? 11.5} onChange={(e) => setForm({ ...form, superRate: Number(e.target.value) })} /></div>
+            <div><Label>Super Rate (%){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.1" disabled={!canEditRates} value={form.superRate ?? 11.5} onChange={(e) => setForm({ ...form, superRate: Number(e.target.value) })} /></div>
             <div><Label>Super Fund</Label><Input value={form.superFund ?? ""} onChange={(e) => setForm({ ...form, superFund: e.target.value })} /></div>
             <div><Label>Super Member #</Label><Input value={form.superMemberNumber ?? ""} onChange={(e) => setForm({ ...form, superMemberNumber: e.target.value })} /></div>
             <div><Label>Tax File Number</Label><Input value={form.taxFileNumber ?? ""} onChange={(e) => setForm({ ...form, taxFileNumber: e.target.value })} /></div>
