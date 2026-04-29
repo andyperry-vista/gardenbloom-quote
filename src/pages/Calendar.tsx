@@ -77,14 +77,26 @@ export default function CalendarPage() {
               {Array.from({ length: (monthStart.getDay() + 6) % 7 }).map((_, i) => <div key={`pad-${i}`} />)}
               {days.map((day) => {
                 const dayJobs = getJobsForDay(day);
+                const amJobs = dayJobs.filter((j) => j.timeSlot === "morning");
+                const pmJobs = dayJobs.filter((j) => j.timeSlot === "afternoon");
+                const allDayJobs = dayJobs.filter((j) => j.timeSlot === "all_day");
                 const dayInvoices = getDueInvoices(day);
                 const dayWeather = getWeather(day);
+
+                const renderJob = (j: typeof dayJobs[number]) => (
+                  <Link key={j.id} to={`/admin/jobs/${j.id}`}>
+                    <div className="rounded px-1 py-0.5 truncate text-[10px] hover:opacity-80 transition-opacity bg-background/70">
+                      {j.jobNumber}
+                    </div>
+                  </Link>
+                );
+
                 return (
                   <div
                     key={day.toISOString()}
-                    className={`min-h-[80px] p-1 rounded-lg border text-xs ${isToday(day) ? "border-primary bg-primary/5" : "border-transparent hover:bg-muted/30"}`}
+                    className={`min-h-[110px] p-1 rounded-lg border text-xs flex flex-col ${isToday(day) ? "border-primary bg-primary/5" : "border-transparent hover:bg-muted/30"}`}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-1">
                       <span className={`font-medium ${isToday(day) ? "text-primary" : ""}`}>{format(day, "d")}</span>
                       {dayWeather && (
                         <div className="flex items-center gap-0.5">
@@ -93,29 +105,55 @@ export default function CalendarPage() {
                         </div>
                       )}
                     </div>
-                    <div className="space-y-0.5 mt-1">
-                      {dayJobs.map((j) => {
-                        const slotClass =
-                          j.timeSlot === "morning"
-                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
-                            : j.timeSlot === "afternoon"
-                            ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
-                            : "bg-primary/10 text-primary";
-                        return (
+
+                    {/* All-day band */}
+                    {allDayJobs.length > 0 && (
+                      <div className="mb-0.5 space-y-0.5">
+                        {allDayJobs.map((j) => (
                           <Link key={j.id} to={`/admin/jobs/${j.id}`}>
-                            <div className={`${slotClass} rounded px-1 truncate text-[10px] flex items-center gap-1`}>
-                              <span className="font-semibold shrink-0">{timeSlotShort(j.timeSlot)}</span>
-                              <span className="truncate">{j.jobNumber}</span>
+                            <div className="bg-primary/15 text-primary rounded px-1 truncate text-[10px] font-medium">
+                              {j.jobNumber}
                             </div>
                           </Link>
-                        );
-                      })}
-                      {dayInvoices.map((i) => (
-                        <Link key={i.id} to={`/admin/invoices/${i.id}`}>
-                          <div className="bg-destructive/10 text-destructive rounded px-1 truncate text-[10px]">{i.invoiceNumber} due</div>
-                        </Link>
-                      ))}
+                        ))}
+                      </div>
+                    )}
+
+                    {/* AM / PM split */}
+                    <div className="flex-1 grid grid-rows-2 gap-0.5 min-h-[44px]">
+                      <div className={`rounded px-1 py-0.5 border-l-2 overflow-hidden ${
+                        amJobs.length > 0
+                          ? "bg-amber-500/10 border-amber-500/70 text-amber-800 dark:text-amber-200"
+                          : "bg-muted/20 border-transparent text-muted-foreground/40"
+                      }`}>
+                        <div className="flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase opacity-80">
+                          <span>AM</span>
+                          {amJobs.length > 0 && <span className="opacity-60">· {amJobs.length}</span>}
+                        </div>
+                        <div className="space-y-0.5">{amJobs.map(renderJob)}</div>
+                      </div>
+                      <div className={`rounded px-1 py-0.5 border-l-2 overflow-hidden ${
+                        pmJobs.length > 0
+                          ? "bg-indigo-500/10 border-indigo-500/70 text-indigo-800 dark:text-indigo-200"
+                          : "bg-muted/20 border-transparent text-muted-foreground/40"
+                      }`}>
+                        <div className="flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase opacity-80">
+                          <span>PM</span>
+                          {pmJobs.length > 0 && <span className="opacity-60">· {pmJobs.length}</span>}
+                        </div>
+                        <div className="space-y-0.5">{pmJobs.map(renderJob)}</div>
+                      </div>
                     </div>
+
+                    {dayInvoices.length > 0 && (
+                      <div className="mt-0.5 space-y-0.5">
+                        {dayInvoices.map((i) => (
+                          <Link key={i.id} to={`/admin/invoices/${i.id}`}>
+                            <div className="bg-destructive/10 text-destructive rounded px-1 truncate text-[10px]">{i.invoiceNumber} due</div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
