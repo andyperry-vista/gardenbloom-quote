@@ -47,6 +47,7 @@ export function useJobs() {
         status: r.status,
         scheduledDate: r.scheduled_date,
         timeSlot: (r.time_slot ?? "all_day") as TimeSlot,
+        sortOrder: typeof r.sort_order === "number" ? r.sort_order : 0,
         completedDate: r.completed_date,
         notes: r.notes ?? "",
         createdAt: r.created_at,
