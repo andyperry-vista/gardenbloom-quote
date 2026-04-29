@@ -21,6 +21,8 @@ export default function Payroll() {
   const [params, setParams] = useSearchParams();
   const empParam = params.get("employee") ?? "";
   const { employees } = useEmployees();
+  const perms = usePermissions();
+  const canApprove = perms.canApprovePayslips;
   const [employeeId, setEmployeeId] = useState(empParam);
   const employee = employees.find((e) => e.id === employeeId);
 
