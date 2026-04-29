@@ -15,11 +15,19 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Search, Plus, MapPin, Package, RefreshCw, Loader2, Globe } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import AppLayout from "@/components/AppLayout";
 import type { Material } from "@/types/quote";
 import { supabase } from "@/integrations/supabase/client";
 import MaterialCard from "@/components/MaterialCard";
+
+const SUPPLIERS = [
+  { id: "bunnings", label: "Bunnings", location: "Doncaster, VIC" },
+  { id: "colsmith", label: "Colsmith Wholesale Nursery", location: "Skye, VIC" },
+  { id: "plantmulti", label: "Plant Multi Nursery", location: "Devon Meadows, VIC" },
+] as const;
+type SupplierId = (typeof SUPPLIERS)[number]["id"];
 
 interface BunningsProduct {
   name: string;
@@ -45,7 +53,8 @@ export default function Materials() {
     notes: "",
   });
 
-  // Bunnings search state
+  // Live supplier search state
+  const [supplierId, setSupplierId] = useState<SupplierId>("bunnings");
   const [bunningsQuery, setBunningsQuery] = useState("");
   const [bunningsResults, setBunningsResults] = useState<BunningsProduct[]>([]);
   const [bunningsLoading, setBunningsLoading] = useState(false);
@@ -59,14 +68,16 @@ export default function Materials() {
 
   const categories = [...new Set(materials.map((m) => m.category))];
 
+  const supplier = SUPPLIERS.find((s) => s.id === supplierId)!;
+
   const handleBunningsSearch = async () => {
     if (!bunningsQuery.trim() || bunningsQuery.trim().length < 2) return;
     setBunningsLoading(true);
     setBunningsResults([]);
 
     try {
-      const { data, error } = await supabase.functions.invoke("search-bunnings", {
-        body: { query: bunningsQuery.trim() },
+      const { data, error } = await supabase.functions.invoke("search-supplier", {
+        body: { query: bunningsQuery.trim(), supplier: supplierId },
       });
 
       if (error) throw error;
@@ -76,14 +87,14 @@ export default function Materials() {
       } else {
         toast({
           title: "No results",
-          description: "No products found. Try a different search term.",
+          description: `No products found at ${supplier.label}. Try a different search term.`,
         });
       }
     } catch (err) {
-      console.error("Bunnings search error:", err);
+      console.error("Supplier search error:", err);
       toast({
         title: "Search failed",
-        description: "Could not search Bunnings. Please try again.",
+        description: `Could not search ${supplier.label}. Please try again.`,
         variant: "destructive",
       });
     } finally {
@@ -97,8 +108,8 @@ export default function Materials() {
       category: product.category,
       wholesalePrice: product.price?.toString() || "",
       unit: product.unit,
-      supplier: "Bunnings",
-      supplierLocation: "Doncaster, VIC",
+      supplier: supplier.label,
+      supplierLocation: supplier.location,
       inStock: product.inStock,
       notes: "",
     });
@@ -155,18 +166,26 @@ export default function Materials() {
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Material</DialogTitle>
-                <DialogDescription className="sr-only">Form to add a new material or search via Bunnings.</DialogDescription>
+                <DialogDescription className="sr-only">Form to add a new material or search live supplier catalogues.</DialogDescription>
               </DialogHeader>
 
-              {/* Bunnings Search Section */}
+              {/* Live Supplier Search Section */}
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-primary">
                   <Globe className="w-4 h-4" />
-                  Search Bunnings Live
+                  Search Suppliers Live
                 </div>
+                <Select value={supplierId} onValueChange={(v) => { setSupplierId(v as SupplierId); setBunningsResults([]); }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {SUPPLIERS.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>{s.label} <span className="text-muted-foreground">· {s.location}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="e.g. garden soil, pavers, timber sleeper…"
+                    placeholder={supplierId === "bunnings" ? "e.g. garden soil, pavers, timber sleeper…" : "e.g. lomandra, dianella, advanced trees…"}
                     value={bunningsQuery}
                     onChange={(e) => setBunningsQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleBunningsSearch()}
@@ -185,7 +204,7 @@ export default function Materials() {
                   </Button>
                 </div>
                 {bunningsLoading && (
-                  <p className="text-xs text-muted-foreground">Searching Bunnings for real-time pricing…</p>
+                  <p className="text-xs text-muted-foreground">Searching {supplier.label} for product info…</p>
                 )}
                 {bunningsResults.length > 0 && (
                   <div className="space-y-2 max-h-48 overflow-y-auto">
