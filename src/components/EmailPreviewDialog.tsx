@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Send, Mail, FileText, RefreshCw } from "lucide-react";
+import { Loader2, Send, Mail, FileText, RefreshCw, CheckCircle2, ArrowLeft, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { generateQuotePdf } from "@/lib/generateQuotePdf";
@@ -21,6 +21,13 @@ interface EmailPreviewDialogProps {
 
 const formatAUD = (n: number) =>
   `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const parseEmailList = (raw: string): string[] =>
+  raw
+    .split(/[,;\n]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
 export default function EmailPreviewDialog({
   quote,
@@ -40,11 +47,14 @@ export default function EmailPreviewDialog({
 
   const [subject, setSubject] = useState(defaultSubject);
   const [introMessage, setIntroMessage] = useState(defaultIntro);
+  const [ccRaw, setCcRaw] = useState("");
+  const [bccRaw, setBccRaw] = useState("");
   const [emailHtml, setEmailHtml] = useState<string>("");
   const [pdfUrl, setPdfUrl] = useState<string>("");
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
   const [sending, setSending] = useState(false);
+  const [step, setStep] = useState<"preview" | "confirm">("preview");
   const renderTimer = useRef<number | null>(null);
   const lastBlobUrl = useRef<string | null>(null);
 
@@ -53,9 +63,19 @@ export default function EmailPreviewDialog({
     if (open) {
       setSubject(defaultSubject);
       setIntroMessage(defaultIntro);
+      setCcRaw("");
+      setBccRaw("");
+      setStep("preview");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, quote.id]);
+
+  const ccList = useMemo(() => parseEmailList(ccRaw), [ccRaw]);
+  const bccList = useMemo(() => parseEmailList(bccRaw), [bccRaw]);
+  const invalidEmails = useMemo(
+    () => [...ccList, ...bccList].filter((e) => !EMAIL_RE.test(e)),
+    [ccList, bccList],
+  );
 
   const lineItems = useMemo(
     () =>
@@ -89,7 +109,7 @@ export default function EmailPreviewDialog({
       quoteTotal,
       propertyAddress,
       introMessage,
-      subject, // used by subject() function in the template
+      subject,
       lineItems,
       subtotal: formatAUD(preDiscountTotal),
       discountLabel:
@@ -171,6 +191,18 @@ export default function EmailPreviewDialog({
     };
   }, []);
 
+  const handleProceed = () => {
+    if (!quote.client.email) {
+      toast.error("No client email address on this quote");
+      return;
+    }
+    if (invalidEmails.length > 0) {
+      toast.error(`Invalid email address: ${invalidEmails[0]}`);
+      return;
+    }
+    setStep("confirm");
+  };
+
   const handleSend = async () => {
     if (!quote.client.email) {
       toast.error("No client email address on this quote");
@@ -182,8 +214,11 @@ export default function EmailPreviewDialog({
         body: {
           templateName: "quote-ready",
           recipientEmail: quote.client.email,
-          // Idempotency keyed on subject+intro hash so an edited resend isn't blocked
-          idempotencyKey: `quote-ready-${quote.id}-${hashString(subject + "|" + introMessage)}`,
+          cc: ccList.length > 0 ? ccList : undefined,
+          bcc: bccList.length > 0 ? bccList : undefined,
+          idempotencyKey: `quote-ready-${quote.id}-${hashString(
+            subject + "|" + introMessage + "|" + ccList.join(",") + "|" + bccList.join(","),
+          )}`,
           templateData,
         },
       });
@@ -203,116 +238,227 @@ export default function EmailPreviewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl w-[95vw] h-[90vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-3 border-b">
-          <DialogTitle>Preview Email to Client</DialogTitle>
+          <DialogTitle>
+            {step === "preview" ? "Preview Email to Client" : "Confirm & Send"}
+          </DialogTitle>
           <DialogDescription>
-            Edit the subject and intro message, then preview exactly what {clientName || "your client"} will see.
+            {step === "preview"
+              ? `Edit the subject, recipients and intro, then preview exactly what ${clientName || "your client"} will see.`
+              : "Review the recipients and content below. Nothing has been sent yet."}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[340px_1fr] overflow-hidden">
-          {/* Editable fields */}
-          <aside className="border-r p-5 space-y-4 overflow-y-auto bg-muted/30">
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider">To</Label>
-              <Input value={quote.client.email || "(no email on file)"} readOnly className="bg-background" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email-subject" className="text-xs uppercase tracking-wider">Subject</Label>
-              <Input
-                id="email-subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="bg-background"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email-intro" className="text-xs uppercase tracking-wider">Personal Intro</Label>
-              <Textarea
-                id="email-intro"
-                value={introMessage}
-                onChange={(e) => setIntroMessage(e.target.value)}
-                rows={8}
-                className="bg-background resize-none"
-                placeholder="Add a personal note to the client…"
-              />
-              <p className="text-xs text-muted-foreground">
-                This appears at the top of the email body.
+        {step === "preview" ? (
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-[340px_1fr] overflow-hidden">
+            {/* Editable fields */}
+            <aside className="border-r p-5 space-y-4 overflow-y-auto bg-muted/30">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider">To</Label>
+                <Input value={quote.client.email || "(no email on file)"} readOnly className="bg-background" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email-cc" className="text-xs uppercase tracking-wider">CC</Label>
+                <Input
+                  id="email-cc"
+                  value={ccRaw}
+                  onChange={(e) => setCcRaw(e.target.value)}
+                  className="bg-background"
+                  placeholder="comma separated"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email-bcc" className="text-xs uppercase tracking-wider">BCC</Label>
+                <Input
+                  id="email-bcc"
+                  value={bccRaw}
+                  onChange={(e) => setBccRaw(e.target.value)}
+                  className="bg-background"
+                  placeholder="comma separated"
+                />
+              </div>
+              {invalidEmails.length > 0 && (
+                <p className="text-xs text-destructive flex items-start gap-1">
+                  <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+                  Invalid: {invalidEmails.join(", ")}
+                </p>
+              )}
+              <div className="space-y-1.5">
+                <Label htmlFor="email-subject" className="text-xs uppercase tracking-wider">Subject</Label>
+                <Input
+                  id="email-subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="bg-background"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email-intro" className="text-xs uppercase tracking-wider">Personal Intro</Label>
+                <Textarea
+                  id="email-intro"
+                  value={introMessage}
+                  onChange={(e) => setIntroMessage(e.target.value)}
+                  rows={6}
+                  className="bg-background resize-none"
+                  placeholder="Add a personal note to the client…"
+                />
+              </div>
+              <div className="rounded border bg-background p-3 text-sm space-y-1">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Quote Summary</p>
+                <p><span className="text-muted-foreground">Quote #</span> {quoteNumber}</p>
+                {propertyAddress && <p><span className="text-muted-foreground">Property:</span> {propertyAddress}</p>}
+                <p className="font-semibold"><span className="text-muted-foreground font-normal">Total:</span> {quoteTotal}</p>
+              </div>
+            </aside>
+
+            {/* Preview tabs */}
+            <section className="overflow-hidden flex flex-col">
+              <Tabs defaultValue="email" className="flex-1 flex flex-col overflow-hidden">
+                <TabsList className="mx-5 mt-3 self-start">
+                  <TabsTrigger value="email" className="gap-2">
+                    <Mail className="w-4 h-4" /> Email Body
+                    {loadingEmail && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
+                  </TabsTrigger>
+                  <TabsTrigger value="pdf" className="gap-2">
+                    <FileText className="w-4 h-4" /> Attached PDF
+                    {loadingPdf && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="email" className="flex-1 overflow-hidden m-0 p-5 pt-3">
+                  <div className="h-full border rounded-md bg-white overflow-hidden">
+                    {emailHtml ? (
+                      <iframe
+                        title="Email preview"
+                        srcDoc={emailHtml}
+                        className="w-full h-full border-0"
+                        sandbox=""
+                      />
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-muted-foreground">
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Rendering preview…
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="pdf" className="flex-1 overflow-hidden m-0 p-5 pt-3">
+                  <div className="h-full border rounded-md bg-muted overflow-hidden">
+                    {pdfUrl ? (
+                      <iframe
+                        title="Quote PDF preview"
+                        src={pdfUrl}
+                        className="w-full h-full border-0"
+                      />
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-muted-foreground">
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Generating PDF…
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </section>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto px-6 py-5">
+            <div className="max-w-2xl mx-auto space-y-5">
+              <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Recipients</p>
+                <SummaryRow label="To" values={[quote.client.email || ""]} />
+                <SummaryRow label="CC" values={ccList} emptyText="— none —" />
+                <SummaryRow label="BCC" values={bccList} emptyText="— none —" />
+              </div>
+
+              <div className="rounded-md border p-4 space-y-2">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Subject</p>
+                <p className="text-sm font-medium">{subject}</p>
+              </div>
+
+              <div className="rounded-md border p-4 space-y-2">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Intro Message</p>
+                <p className="text-sm whitespace-pre-wrap">{introMessage}</p>
+              </div>
+
+              <div className="rounded-md border p-4 space-y-2">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Quote</p>
+                <div className="text-sm grid grid-cols-2 gap-y-1">
+                  <span className="text-muted-foreground">Quote #</span><span>{quoteNumber}</span>
+                  {clientName && (<><span className="text-muted-foreground">Client</span><span>{clientName}</span></>)}
+                  {propertyAddress && (<><span className="text-muted-foreground">Property</span><span>{propertyAddress}</span></>)}
+                  <span className="text-muted-foreground">Line items</span><span>{lineItems.length}</span>
+                  <span className="text-muted-foreground">Total (inc. GST)</span><span className="font-semibold">{quoteTotal}</span>
+                </div>
+              </div>
+
+              <div className="rounded-md border p-4 flex items-center gap-2 text-sm">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                Attachment: <span className="font-medium">Quote-{quoteNumber}.pdf</span>
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center pt-1">
+                Confirming will send the email immediately. You can still go back to make changes.
               </p>
             </div>
-            <div className="rounded border bg-background p-3 text-sm space-y-1">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">Quote Summary</p>
-              <p><span className="text-muted-foreground">Quote #</span> {quoteNumber}</p>
-              {propertyAddress && <p><span className="text-muted-foreground">Property:</span> {propertyAddress}</p>}
-              <p className="font-semibold"><span className="text-muted-foreground font-normal">Total:</span> {quoteTotal}</p>
-            </div>
-          </aside>
-
-          {/* Preview tabs */}
-          <section className="overflow-hidden flex flex-col">
-            <Tabs defaultValue="email" className="flex-1 flex flex-col overflow-hidden">
-              <TabsList className="mx-5 mt-3 self-start">
-                <TabsTrigger value="email" className="gap-2">
-                  <Mail className="w-4 h-4" /> Email Body
-                  {loadingEmail && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
-                </TabsTrigger>
-                <TabsTrigger value="pdf" className="gap-2">
-                  <FileText className="w-4 h-4" /> Attached PDF
-                  {loadingPdf && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="email" className="flex-1 overflow-hidden m-0 p-5 pt-3">
-                <div className="h-full border rounded-md bg-white overflow-hidden">
-                  {emailHtml ? (
-                    <iframe
-                      title="Email preview"
-                      srcDoc={emailHtml}
-                      className="w-full h-full border-0"
-                      sandbox=""
-                    />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" /> Rendering preview…
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="pdf" className="flex-1 overflow-hidden m-0 p-5 pt-3">
-                <div className="h-full border rounded-md bg-muted overflow-hidden">
-                  {pdfUrl ? (
-                    <iframe
-                      title="Quote PDF preview"
-                      src={pdfUrl}
-                      className="w-full h-full border-0"
-                    />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" /> Generating PDF…
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </section>
-        </div>
+          </div>
+        )}
 
         <DialogFooter className="px-6 py-4 border-t flex-row sm:justify-between items-center gap-3">
-          <p className="text-xs text-muted-foreground hidden sm:block">
-            <RefreshCw className="w-3 h-3 inline mr-1" /> Preview updates as you type.
-          </p>
-          <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
-              Cancel
-            </Button>
-            <Button onClick={handleSend} disabled={sending || !quote.client.email}>
-              {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-              Send to Client
-            </Button>
-          </div>
+          {step === "preview" ? (
+            <>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                <RefreshCw className="w-3 h-3 inline mr-1" /> Preview updates as you type.
+              </p>
+              <div className="flex gap-2 ml-auto">
+                <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleProceed}
+                  disabled={!quote.client.email || invalidEmails.length > 0}
+                >
+                  Continue to Confirm
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" onClick={() => setStep("preview")} disabled={sending}>
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back to edit
+              </Button>
+              <div className="flex gap-2 ml-auto">
+                <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSend} disabled={sending || !quote.client.email}>
+                  {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
+                  Confirm & Send
+                </Button>
+              </div>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function SummaryRow({ label, values, emptyText }: { label: string; values: string[]; emptyText?: string }) {
+  const filtered = values.filter(Boolean);
+  return (
+    <div className="flex gap-3 text-sm">
+      <span className="w-12 shrink-0 text-muted-foreground">{label}</span>
+      <div className="flex-1 flex flex-wrap gap-1.5">
+        {filtered.length === 0 ? (
+          <span className="text-muted-foreground italic">{emptyText ?? "—"}</span>
+        ) : (
+          filtered.map((v) => (
+            <span key={v} className="inline-flex items-center rounded-full bg-background border px-2.5 py-0.5 text-xs">
+              {v}
+            </span>
+          ))
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -324,10 +470,6 @@ function hashString(s: string): string {
 
 /** Generate the same quote PDF as the download flow but return a Blob URL for inline preview. */
 async function generateQuotePdfBlobUrl(quote: Quote): Promise<string> {
-  // Re-implement by intercepting jsPDF.save through a temporary override.
-  // generateQuotePdf calls doc.save(filename) at the end. We monkey-patch save
-  // to capture the doc instance and produce a blob instead of triggering a
-  // download. This avoids duplicating ~150 lines of PDF layout code.
   const jspdfModule = await import("jspdf");
   const originalSave = jspdfModule.jsPDF.prototype.save;
   let captured: { blob: Blob } | null = null;
