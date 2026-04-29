@@ -123,6 +123,22 @@ export default function JobView() {
                 />
               </div>
               <div>
+                <Label className="text-muted-foreground text-xs">Time of Day</Label>
+                <Select
+                  value={job.timeSlot}
+                  onValueChange={(v) => updateJob(job.id, { timeSlot: v as TimeSlot })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_SLOTS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label className="text-muted-foreground text-xs">Completed Date</Label>
                 <Input
                   type="date"
