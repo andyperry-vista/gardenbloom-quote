@@ -133,6 +133,13 @@ export default function QuoteEditor() {
   const grandTotal = Math.max(0, preTotalBeforeDiscount - discountAmount);
   const markupTotal = preTotalBeforeDiscount - subtotal;
 
+  // Breakdown by line type — labour & misc carry no markup; materials do.
+  const materialsCost = items.filter((i) => i.type === "material").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+  const materialsWithMarkup = items.filter((i) => i.type === "material").reduce((s, i) => s + i.total, 0);
+  const labourTotal = items.filter((i) => i.type === "labor").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+  const labourHours = items.filter((i) => i.type === "labor").reduce((s, i) => s + i.quantity, 0);
+  const miscTotal = items.filter((i) => i.type === "misc").reduce((s, i) => s + i.quantity * i.unitCost, 0);
+
   const handleSave = async () => {
     if (!client.name || saving) return;
     setSaving(true);
@@ -260,20 +267,21 @@ export default function QuoteEditor() {
                 {/* Qty + Cost side by side */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Qty</Label>
+                    <Label>{item.type === "labor" ? "Hours" : "Qty"}</Label>
                     <div className="flex items-center gap-1">
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
                         className="h-9 w-9 shrink-0"
-                        onClick={() => updateItem(item.id, { quantity: Math.max(0, item.quantity - 1) })}
+                        onClick={() => updateItem(item.id, { quantity: Math.max(0, item.quantity - (item.type === "labor" ? 0.5 : 1)) })}
                       >
                         <Minus className="w-3 h-3" />
                       </Button>
                       <Input
                         type="number"
                         min={0}
+                        step={item.type === "labor" ? 0.25 : 1}
                         value={item.quantity === 0 ? "" : item.quantity}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -286,7 +294,7 @@ export default function QuoteEditor() {
                         variant="outline"
                         size="icon"
                         className="h-9 w-9 shrink-0"
-                        onClick={() => updateItem(item.id, { quantity: item.quantity + 1 })}
+                        onClick={() => updateItem(item.id, { quantity: item.quantity + (item.type === "labor" ? 0.5 : 1) })}
                       >
                         <Plus className="w-3 h-3" />
                       </Button>
@@ -300,6 +308,9 @@ export default function QuoteEditor() {
 
                 <div className="text-right font-semibold text-primary">
                   Line Total: ${item.total.toFixed(2)}
+                  {item.type === "labor" && item.quantity > 0 && item.unitCost > 0 && (
+                    <span className="text-xs text-muted-foreground ml-2">({item.quantity}h × ${item.unitCost.toFixed(2)}/hr · no markup)</span>
+                  )}
                   {item.type === "material" && item.markupPercent > 0 && (
                     <span className="text-xs text-muted-foreground ml-2">(incl. {item.markupPercent}% markup)</span>
                   )}
