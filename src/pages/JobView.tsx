@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, FileText, Trash2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import JobEmployeesPanel from "@/components/JobEmployeesPanel";
 import { toast } from "sonner";
 import { useState } from "react";
 import { format, addDays } from "date-fns";
@@ -152,6 +153,8 @@ export default function JobView() {
             )}
           </CardContent>
         </Card>
+
+        <JobEmployeesPanel jobId={job.id} />
 
         {(job.status === "completed" || job.status === "in_progress") && (
           <div className="flex justify-end">

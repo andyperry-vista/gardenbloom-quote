@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useSettings } from "@/hooks/useSettings";
+import { useEmployees } from "@/hooks/useEmployees";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ export default function QuoteEditor() {
   const { quotes, addQuote, updateQuoteAsync } = useQuotes();
   const { materials } = useMaterials();
   const { settings } = useSettings();
+  const { employees } = useEmployees();
 
   const existingQuote = id ? quotes.find((q) => q.id === id) : undefined;
   const isEditing = !!existingQuote;
@@ -193,6 +195,31 @@ export default function QuoteEditor() {
                 <Button variant="outline" size="sm" onClick={() => { const newId = `li-${Date.now()}`; pendingScrollId.current = newId; setItems((prev) => [...prev, { id: newId, type: "misc" as const, description: "Delivery", quantity: 1, unitCost: 0, markupPercent: 0, total: 0 }]); }}><Plus className="w-4 h-4 mr-1" /> Delivery</Button>
               </div>
             </div>
+            {employees.filter((e) => e.active).length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 pt-2">
+                <span className="text-xs text-muted-foreground">Add employee labour:</span>
+                <Select
+                  value=""
+                  onValueChange={(empId) => {
+                    const emp = employees.find((e) => e.id === empId);
+                    if (!emp) return;
+                    const newId = `li-${Date.now()}`;
+                    pendingScrollId.current = newId;
+                    setItems((prev) => [...prev, {
+                      id: newId, type: "labor", description: `Labour — ${emp.name}`,
+                      quantity: 1, unitCost: emp.hourlyRate, markupPercent: 0, total: emp.hourlyRate,
+                    }]);
+                  }}
+                >
+                  <SelectTrigger className="w-56 h-8"><SelectValue placeholder="Pick employee" /></SelectTrigger>
+                  <SelectContent>
+                    {employees.filter((e) => e.active).map((e) => (
+                      <SelectItem key={e.id} value={e.id}>{e.name} — ${e.hourlyRate}/hr</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
             {items.length === 0 && <p className="text-center text-muted-foreground py-8">Add materials or labour to build the quote</p>}

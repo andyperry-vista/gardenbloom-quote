@@ -291,6 +291,72 @@ export type Database = {
         }
         Relationships: []
       }
+      employees: {
+        Row: {
+          account_number: string | null
+          active: boolean
+          address: string | null
+          bsb: string | null
+          created_at: string
+          email: string | null
+          employment_type: string
+          hourly_rate: number
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          start_date: string | null
+          super_fund: string | null
+          super_member_number: string | null
+          super_rate: number
+          tax_file_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          active?: boolean
+          address?: string | null
+          bsb?: string | null
+          created_at?: string
+          email?: string | null
+          employment_type?: string
+          hourly_rate?: number
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          start_date?: string | null
+          super_fund?: string | null
+          super_member_number?: string | null
+          super_rate?: number
+          tax_file_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          active?: boolean
+          address?: string | null
+          bsb?: string | null
+          created_at?: string
+          email?: string | null
+          employment_type?: string
+          hourly_rate?: number
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          start_date?: string | null
+          super_fund?: string | null
+          super_member_number?: string | null
+          super_rate?: number
+          tax_file_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
@@ -359,6 +425,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_employees: {
+        Row: {
+          created_at: string
+          employee_id: string
+          estimated_hours: number
+          id: string
+          job_id: string
+          rate_at_assignment: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          estimated_hours?: number
+          id?: string
+          job_id: string
+          rate_at_assignment?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          estimated_hours?: number
+          id?: string
+          job_id?: string
+          rate_at_assignment?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       jobs: {
         Row: {
@@ -473,6 +569,111 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payslip_lines: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          hours: number
+          id: string
+          job_id: string | null
+          payslip_id: string
+          rate: number
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string
+          hours?: number
+          id?: string
+          job_id?: string | null
+          payslip_id: string
+          rate?: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          hours?: number
+          id?: string
+          job_id?: string | null
+          payslip_id?: string
+          rate?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payslips: {
+        Row: {
+          created_at: string
+          employee_id: string
+          gross: number
+          hours_total: number
+          id: string
+          issued_at: string | null
+          job_id: string | null
+          net: number
+          notes: string | null
+          payslip_number: string
+          period_end: string
+          period_start: string
+          status: string
+          super_amount: number
+          tax_withheld: number
+          updated_at: string
+          user_id: string
+          ytd_gross: number
+          ytd_super: number
+          ytd_tax: number
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          gross?: number
+          hours_total?: number
+          id?: string
+          issued_at?: string | null
+          job_id?: string | null
+          net?: number
+          notes?: string | null
+          payslip_number?: string
+          period_end: string
+          period_start: string
+          status?: string
+          super_amount?: number
+          tax_withheld?: number
+          updated_at?: string
+          user_id: string
+          ytd_gross?: number
+          ytd_super?: number
+          ytd_tax?: number
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          gross?: number
+          hours_total?: number
+          id?: string
+          issued_at?: string | null
+          job_id?: string | null
+          net?: number
+          notes?: string | null
+          payslip_number?: string
+          period_end?: string
+          period_start?: string
+          status?: string
+          super_amount?: number
+          tax_withheld?: number
+          updated_at?: string
+          user_id?: string
+          ytd_gross?: number
+          ytd_super?: number
+          ytd_tax?: number
+        }
+        Relationships: []
       }
       push_subscriptions: {
         Row: {
@@ -672,6 +873,51 @@ export type Database = {
         }
         Relationships: []
       }
+      time_entries: {
+        Row: {
+          confirmed: boolean
+          created_at: string
+          employee_id: string
+          hours: number
+          id: string
+          job_id: string | null
+          notes: string | null
+          payslip_id: string | null
+          rate: number
+          updated_at: string
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          confirmed?: boolean
+          created_at?: string
+          employee_id: string
+          hours?: number
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          payslip_id?: string | null
+          rate?: number
+          updated_at?: string
+          user_id: string
+          work_date?: string
+        }
+        Update: {
+          confirmed?: boolean
+          created_at?: string
+          employee_id?: string
+          hours?: number
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          payslip_id?: string | null
+          rate?: number
+          updated_at?: string
+          user_id?: string
+          work_date?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -732,6 +978,7 @@ export type Database = {
       }
       generate_invoice_number: { Args: never; Returns: string }
       generate_job_number: { Args: never; Returns: string }
+      generate_payslip_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
