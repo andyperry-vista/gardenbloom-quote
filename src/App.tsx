@@ -35,6 +35,7 @@ import AgentContact from "./pages/AgentContact";
 import Employees from "./pages/Employees";
 import EmployeeTimeLog from "./pages/EmployeeTimeLog";
 import Payroll from "./pages/Payroll";
+import AdminTeam from "./pages/AdminTeam";
 import EmployeeLogin from "./pages/EmployeeLogin";
 import EmployeeGuard from "./components/EmployeeGuard";
 import EmployeeHome from "./pages/EmployeeHome";
