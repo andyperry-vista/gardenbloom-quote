@@ -141,7 +141,7 @@ export default function Employees() {
                     </p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    {!e.linkedUserId && (
+                    {canManage && !e.linkedUserId && (
                       <Button variant="outline" size="sm" onClick={() => openInvite(e)}><Mail className="w-4 h-4 mr-1" /> Invite</Button>
                     )}
                     <Link to={`/admin/employees/${e.id}/time-log`}>
@@ -150,8 +150,8 @@ export default function Employees() {
                     <Link to={`/admin/payroll?employee=${e.id}`}>
                       <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-1" /> Payslips</Button>
                     </Link>
-                    <Button variant="outline" size="icon" onClick={() => openEdit(e)}><Pencil className="w-4 h-4" /></Button>
-                    <Button variant="destructive" size="icon" onClick={() => handleDelete(e)}><Trash2 className="w-4 h-4" /></Button>
+                    {canManage && <Button variant="outline" size="icon" onClick={() => openEdit(e)}><Pencil className="w-4 h-4" /></Button>}
+                    {canManage && <Button variant="destructive" size="icon" onClick={() => handleDelete(e)}><Trash2 className="w-4 h-4" /></Button>}
                   </div>
                 </CardContent>
               </Card>
