@@ -26,22 +26,28 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(url, serviceKey);
-    const { data: isAdminRow } = await admin
+    const { data: callerRoles } = await admin
       .from("user_roles")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!isAdminRow) {
+      .select("role")
+      .eq("user_id", user.id);
+    const callerRoleSet = new Set((callerRoles ?? []).map((r) => r.role));
+    const isCallerAdmin = callerRoleSet.has("admin") || callerRoleSet.has("webmaster");
+    if (!isCallerAdmin) {
       return new Response(JSON.stringify({ error: "Admins only" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const { email, role } = await req.json();
-    if (!email || !["admin", "manager"].includes(role)) {
+    if (!email || !["admin", "manager", "webmaster"].includes(role)) {
       return new Response(JSON.stringify({ error: "Invalid input" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // Only webmasters can grant the webmaster role
+    if (role === "webmaster" && !callerRoleSet.has("webmaster")) {
+      return new Response(JSON.stringify({ error: "Only a webmaster can grant the webmaster role" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 

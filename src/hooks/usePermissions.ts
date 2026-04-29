@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "admin" | "manager" | "user";
+export type AppRole = "webmaster" | "admin" | "manager" | "user";
 
 export interface Permissions {
   loading: boolean;
   userId: string | null;
   roles: AppRole[];
+  isWebmaster: boolean;
   isAdmin: boolean;
   isManager: boolean;
   /** Admins or managers — base access to admin portal */
@@ -25,6 +26,7 @@ const empty: Permissions = {
   loading: true,
   userId: null,
   roles: [],
+  isWebmaster: false,
   isAdmin: false,
   isManager: false,
   isStaff: false,
@@ -51,12 +53,15 @@ export function usePermissions(): Permissions {
         .eq("user_id", userId);
       if (cancelled) return;
       const roles = ((data ?? []).map((r) => r.role)) as AppRole[];
-      const isAdmin = roles.includes("admin");
-      const isManager = roles.includes("manager");
+      const isWebmaster = roles.includes("webmaster");
+      // Webmaster implicitly has admin & manager privileges.
+      const isAdmin = isWebmaster || roles.includes("admin");
+      const isManager = isWebmaster || roles.includes("manager");
       setState({
         loading: false,
         userId,
         roles,
+        isWebmaster,
         isAdmin,
         isManager,
         isStaff: isAdmin || isManager,

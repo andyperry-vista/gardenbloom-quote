@@ -18,7 +18,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .in("role", ["admin", "manager"]);
+        .in("role", ["webmaster", "admin", "manager"]);
       setIsAdmin((data ?? []).length > 0);
       setLoading(false);
     };

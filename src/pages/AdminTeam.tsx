@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, UserCog, Trash2, Loader2 } from "lucide-react";
+import { ShieldCheck, UserCog, Trash2, Loader2, Crown } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,12 +27,42 @@ export default function AdminTeam() {
   const [newRole, setNewRole] = useState<AppRole>("manager");
   const [adding, setAdding] = useState(false);
 
+  // Webmaster bootstrap
+  const [wmEmail, setWmEmail] = useState("");
+  const [wmPassword, setWmPassword] = useState("");
+  const [provisioning, setProvisioning] = useState(false);
+  const hasWebmaster = rows.some((r) => r.role === "webmaster");
+
+  const handleProvisionWebmaster = async () => {
+    if (!wmEmail.includes("@") || wmPassword.length < 8) {
+      toast.error("Email and password (8+ chars) required");
+      return;
+    }
+    setProvisioning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("provision-webmaster", {
+        body: { email: wmEmail.trim().toLowerCase(), password: wmPassword },
+      });
+      if (error) throw error;
+      const result = data as { error?: string; message?: string };
+      if (result?.error) throw new Error(result.error);
+      toast.success(result?.message || "Webmaster account ready");
+      setWmEmail("");
+      setWmPassword("");
+      load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setProvisioning(false);
+    }
+  };
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("user_roles")
       .select("id, user_id, role")
-      .in("role", ["admin", "manager"]);
+      .in("role", ["webmaster", "admin", "manager"]);
     if (error) toast.error(error.message);
     setRows((data ?? []) as RoleRow[]);
     setLoading(false);
@@ -83,9 +113,48 @@ export default function AdminTeam() {
         <div>
           <h1 className="font-display text-3xl flex items-center gap-2"><ShieldCheck className="w-7 h-7" /> Team & Permissions</h1>
           <p className="text-muted-foreground mt-1">
-            Admins have full access. Managers can manage employees and approve payslips, but cannot edit pay rates or assign roles.
+            Webmasters have unrestricted access to the entire site. Admins have full operational access. Managers can manage employees and approve payslips, but cannot edit pay rates or assign roles.
           </p>
         </div>
+
+        {(!hasWebmaster || perms.isWebmaster) && (
+          <Card className="border-primary/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-primary" />
+                {hasWebmaster ? "Provision another webmaster" : "Create webmaster account"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
+              <div>
+                <Label>Webmaster email</Label>
+                <Input
+                  type="email"
+                  value={wmEmail}
+                  onChange={(e) => setWmEmail(e.target.value)}
+                  placeholder="webmaster@example.com"
+                />
+              </div>
+              <div>
+                <Label>Password (min 8 chars)</Label>
+                <Input
+                  type="password"
+                  value={wmPassword}
+                  onChange={(e) => setWmPassword(e.target.value)}
+                  placeholder="Strong password"
+                  autoComplete="new-password"
+                />
+              </div>
+              <Button onClick={handleProvisionWebmaster} disabled={provisioning}>
+                {provisioning && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {hasWebmaster ? "Add webmaster" : "Create"}
+              </Button>
+              <p className="sm:col-span-3 text-xs text-muted-foreground">
+                Creates a dedicated login with full site access. If the email already exists, its password is reset to the value above and the webmaster role is granted. Sign in via the standard <strong>/admin/login</strong> page.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><UserCog className="w-5 h-5" /> Grant role</CardTitle></CardHeader>
@@ -101,6 +170,7 @@ export default function AdminTeam() {
                 <SelectContent>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  {perms.isWebmaster && <SelectItem value="webmaster">Webmaster</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
@@ -124,7 +194,7 @@ export default function AdminTeam() {
               <div key={r.id} className="flex items-center justify-between gap-3 border rounded-md px-3 py-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge variant={r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
+                    <Badge variant={r.role === "webmaster" ? "destructive" : r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
                     {r.user_id === perms.userId && <Badge variant="outline">You</Badge>}
                   </div>
                   <p className="text-xs text-muted-foreground font-mono truncate">{r.user_id}</p>
