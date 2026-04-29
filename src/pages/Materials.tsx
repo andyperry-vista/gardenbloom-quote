@@ -21,6 +21,7 @@ import AppLayout from "@/components/AppLayout";
 import type { Material } from "@/types/quote";
 import { supabase } from "@/integrations/supabase/client";
 import MaterialCard from "@/components/MaterialCard";
+import { materialCategories } from "@/data/materials";
 
 const SUPPLIERS = [
   { id: "bunnings", label: "Bunnings", location: "Doncaster, VIC" },
@@ -66,7 +67,9 @@ export default function Materials() {
       m.supplier.toLowerCase().includes(search.toLowerCase())
   );
 
-  const categories = [...new Set(materials.map((m) => m.category))];
+  const categories = [
+    ...new Set([...materialCategories, ...materials.map((m) => m.category)]),
+  ];
 
   const supplier = SUPPLIERS.find((s) => s.id === supplierId)!;
 
