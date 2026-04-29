@@ -1,9 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, Menu, X, MessageCircle } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 
 const baseNavItems = [
@@ -19,7 +18,6 @@ const referralNavItem = { to: "/agent/referrals", label: "Referrals", icon: Doll
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { profile } = useAgentProfile();
 
   const navItems = profile?.commissionEnabled
