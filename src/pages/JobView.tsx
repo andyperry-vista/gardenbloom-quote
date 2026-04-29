@@ -58,7 +58,7 @@ export default function JobView() {
         jobId: job.id,
         clientId: job.clientId,
         amount: job.quoteTotal,
-        dueDate: format(addDays(new Date(), 14), "yyyy-MM-dd"),
+        dueDate: job.completedDate ?? job.scheduledDate ?? format(new Date(), "yyyy-MM-dd"),
       });
       updateJob(job.id, { status: "invoiced" });
       toast.success(`Invoice ${result.invoice_number} created`);
