@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { TimeSlot } from "@/lib/timeSlot";
 
 export interface Job {
   id: string;
@@ -8,12 +9,21 @@ export interface Job {
   jobNumber: string;
   status: "scheduled" | "in_progress" | "completed" | "invoiced";
   scheduledDate: string | null;
+  timeSlot: TimeSlot;
   completedDate: string | null;
   notes: string;
   createdAt: string;
   client?: { name: string; address: string; email: string; phone: string };
   quoteTotal?: number;
 }
+
+type JobUpdates = Partial<{
+  status: string;
+  scheduledDate: string;
+  timeSlot: TimeSlot;
+  completedDate: string;
+  notes: string;
+}>;
 
 export function useJobs() {
   const qc = useQueryClient();
@@ -34,6 +44,7 @@ export function useJobs() {
         jobNumber: r.job_number,
         status: r.status,
         scheduledDate: r.scheduled_date,
+        timeSlot: (r.time_slot ?? "all_day") as TimeSlot,
         completedDate: r.completed_date,
         notes: r.notes ?? "",
         createdAt: r.created_at,
@@ -44,18 +55,20 @@ export function useJobs() {
   });
 
   const createJobMut = useMutation({
-    mutationFn: async (params: { quoteId: string; clientId: string; scheduledDate?: string; notes?: string }) => {
+    mutationFn: async (params: { quoteId: string; clientId: string; scheduledDate?: string; timeSlot?: TimeSlot; notes?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("jobs")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .insert({
           user_id: user.id,
           quote_id: params.quoteId,
           client_id: params.clientId,
           scheduled_date: params.scheduledDate ?? null,
+          time_slot: params.timeSlot ?? "all_day",
           notes: params.notes ?? "",
-        })
+        } as any)
         .select("id, job_number")
         .single();
       if (error) throw error;
@@ -68,10 +81,11 @@ export function useJobs() {
   });
 
   const updateJobMut = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: JobUpdates }) => {
       const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.scheduledDate !== undefined) dbUpdates.scheduled_date = updates.scheduledDate;
+      if (updates.timeSlot !== undefined) dbUpdates.time_slot = updates.timeSlot;
       if (updates.completedDate !== undefined) dbUpdates.completed_date = updates.completedDate;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,11 +93,8 @@ export function useJobs() {
       if (error) throw error;
     },
     onMutate: async ({ id, updates }) => {
-      // Cancel any in-flight refetches so they don't overwrite our optimistic update
       await qc.cancelQueries({ queryKey: ["jobs"] });
-      // Snapshot the previous value for rollback
       const previous = qc.getQueryData<Job[]>(["jobs"]);
-      // Optimistically update the cache immediately so the UI reflects the change
       qc.setQueryData<Job[]>(["jobs"], (old) =>
         old?.map((j) =>
           j.id === id
@@ -91,6 +102,7 @@ export function useJobs() {
                 ...j,
                 ...(updates.status !== undefined && { status: updates.status as Job["status"] }),
                 ...(updates.scheduledDate !== undefined && { scheduledDate: updates.scheduledDate }),
+                ...(updates.timeSlot !== undefined && { timeSlot: updates.timeSlot }),
                 ...(updates.completedDate !== undefined && { completedDate: updates.completedDate }),
                 ...(updates.notes !== undefined && { notes: updates.notes }),
               }
@@ -100,7 +112,6 @@ export function useJobs() {
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      // Roll back to previous data if the mutation fails
       if (ctx?.previous) qc.setQueryData(["jobs"], ctx.previous);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
@@ -118,7 +129,8 @@ export function useJobs() {
     jobs,
     isLoading,
     createJob: createJobMut.mutateAsync,
-    updateJob: (id: string, updates: Partial<{ status: string; scheduledDate: string; completedDate: string; notes: string }>, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
+    updateJob: (id: string, updates: JobUpdates, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
   };
 }
+
