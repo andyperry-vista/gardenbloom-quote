@@ -208,7 +208,7 @@ export default function Employees() {
                 </SelectContent>
               </Select>
             </div>
-            <div><Label>Super Rate (%)</Label><Input type="number" step="0.1" value={form.superRate ?? 11.5} onChange={(e) => setForm({ ...form, superRate: Number(e.target.value) })} /></div>
+            <div><Label>Super Rate (%){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.1" disabled={!canEditRates} value={form.superRate ?? 11.5} onChange={(e) => setForm({ ...form, superRate: Number(e.target.value) })} /></div>
             <div><Label>Super Fund</Label><Input value={form.superFund ?? ""} onChange={(e) => setForm({ ...form, superFund: e.target.value })} /></div>
             <div><Label>Super Member #</Label><Input value={form.superMemberNumber ?? ""} onChange={(e) => setForm({ ...form, superMemberNumber: e.target.value })} /></div>
             <div><Label>Tax File Number</Label><Input value={form.taxFileNumber ?? ""} onChange={(e) => setForm({ ...form, taxFileNumber: e.target.value })} /></div>
