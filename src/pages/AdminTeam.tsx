@@ -32,7 +32,7 @@ export default function AdminTeam() {
     const { data, error } = await supabase
       .from("user_roles")
       .select("id, user_id, role")
-      .in("role", ["admin", "manager"]);
+      .in("role", ["webmaster", "admin", "manager"]);
     if (error) toast.error(error.message);
     setRows((data ?? []) as RoleRow[]);
     setLoading(false);
@@ -101,6 +101,7 @@ export default function AdminTeam() {
                 <SelectContent>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  {perms.isWebmaster && <SelectItem value="webmaster">Webmaster</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
@@ -124,7 +125,7 @@ export default function AdminTeam() {
               <div key={r.id} className="flex items-center justify-between gap-3 border rounded-md px-3 py-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge variant={r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
+                    <Badge variant={r.role === "webmaster" ? "destructive" : r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
                     {r.user_id === perms.userId && <Badge variant="outline">You</Badge>}
                   </div>
                   <p className="text-xs text-muted-foreground font-mono truncate">{r.user_id}</p>
