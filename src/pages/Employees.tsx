@@ -10,25 +10,36 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon, Settings as SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
+import { effectiveHourlyRate } from "@/lib/employeeRate";
 
-const blank: Partial<Employee> = {
+const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partial<Employee> => ({
   name: "", email: "", phone: "", address: "",
-  hourlyRate: 35, superRate: 11.5, superFund: "", superMemberNumber: "",
+  hourlyRate: d.defaultHourlyRate,
+  payBasis: d.defaultPayBasis,
+  annualSalary: d.defaultAnnualSalary,
+  standardHoursPerWeek: d.defaultStandardHoursPerWeek,
+  superRate: d.defaultSuperRate,
+  superFund: "", superMemberNumber: "",
   bsb: "", accountNumber: "", taxFileNumber: "",
   employmentType: "casual", active: true, notes: "",
-};
+});
 
 export default function Employees() {
   const { employees, isLoading, createEmployee, updateEmployee, deleteEmployee } = useEmployees();
+  const { defaults, saveDefaults } = usePayrollDefaults();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | null>(null);
-  const [form, setForm] = useState<Partial<Employee>>(blank);
+  const [form, setForm] = useState<Partial<Employee>>(() => makeBlank(defaults));
+  const [defaultsOpen, setDefaultsOpen] = useState(false);
+  const [defaultsForm, setDefaultsForm] = useState(defaults);
 
-  const openNew = () => { setEditing(null); setForm(blank); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm(makeBlank(defaults)); setOpen(true); };
   const openEdit = (e: Employee) => { setEditing(e); setForm(e); setOpen(true); };
+  const openDefaults = () => { setDefaultsForm(defaults); setDefaultsOpen(true); };
 
   const save = async () => {
     if (!form.name) { toast.error("Name is required"); return; }
@@ -60,7 +71,8 @@ export default function Employees() {
             <h1 className="font-display text-3xl flex items-center gap-2"><UsersIcon className="w-7 h-7" /> Employees</h1>
             <p className="text-muted-foreground mt-1">Staff, hourly rates, super and payroll setup</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" onClick={openDefaults}><SettingsIcon className="w-4 h-4 mr-2" /> Defaults</Button>
             <Link to="/admin/payroll"><Button variant="outline"><Calculator className="w-4 h-4 mr-2" /> Payroll</Button></Link>
             <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add Employee</Button>
           </div>
