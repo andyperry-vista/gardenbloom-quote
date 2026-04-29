@@ -15,11 +15,19 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Search, Plus, MapPin, Package, RefreshCw, Loader2, Globe } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import AppLayout from "@/components/AppLayout";
 import type { Material } from "@/types/quote";
 import { supabase } from "@/integrations/supabase/client";
 import MaterialCard from "@/components/MaterialCard";
+
+const SUPPLIERS = [
+  { id: "bunnings", label: "Bunnings", location: "Doncaster, VIC" },
+  { id: "colsmith", label: "Colsmith Wholesale Nursery", location: "Skye, VIC" },
+  { id: "plantmulti", label: "Plant Multi Nursery", location: "Devon Meadows, VIC" },
+] as const;
+type SupplierId = (typeof SUPPLIERS)[number]["id"];
 
 interface BunningsProduct {
   name: string;
