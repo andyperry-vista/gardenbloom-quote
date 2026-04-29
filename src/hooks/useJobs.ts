@@ -130,12 +130,52 @@ export function useJobs() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
   });
 
+  const reorderJobsMut = useMutation({
+    mutationFn: async (
+      items: Array<{ id: string; sortOrder: number; scheduledDate?: string | null; timeSlot?: TimeSlot }>,
+    ) => {
+      const now = new Date().toISOString();
+      await Promise.all(
+        items.map((it) => {
+          const u: Record<string, unknown> = { sort_order: it.sortOrder, updated_at: now };
+          if (it.scheduledDate !== undefined) u.scheduled_date = it.scheduledDate;
+          if (it.timeSlot !== undefined) u.time_slot = it.timeSlot;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return supabase.from("jobs").update(u as any).eq("id", it.id);
+        }),
+      );
+    },
+    onMutate: async (items) => {
+      await qc.cancelQueries({ queryKey: ["jobs"] });
+      const previous = qc.getQueryData<Job[]>(["jobs"]);
+      const map = new Map(items.map((it) => [it.id, it]));
+      qc.setQueryData<Job[]>(["jobs"], (old) =>
+        old?.map((j) => {
+          const it = map.get(j.id);
+          if (!it) return j;
+          return {
+            ...j,
+            sortOrder: it.sortOrder,
+            ...(it.scheduledDate !== undefined && { scheduledDate: it.scheduledDate }),
+            ...(it.timeSlot !== undefined && { timeSlot: it.timeSlot }),
+          };
+        }) ?? [],
+      );
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) qc.setQueryData(["jobs"], ctx.previous);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
+  });
+
   return {
     jobs,
     isLoading,
     createJob: createJobMut.mutateAsync,
     updateJob: (id: string, updates: JobUpdates, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
+    reorderJobs: reorderJobsMut.mutate,
   };
 }
 
