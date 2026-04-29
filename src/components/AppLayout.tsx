@@ -64,6 +64,7 @@ const allNavItems = [
   { to: "/admin/agents", label: "Agents", icon: UserCheck },
   { to: "/admin/employees", label: "Employees", icon: HardHat },
   { to: "/admin/payroll", label: "Payroll", icon: Calculator },
+  { to: "/admin/team", label: "Team & Roles", icon: ShieldCheck },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
