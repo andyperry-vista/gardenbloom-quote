@@ -49,7 +49,10 @@ export default function CalendarPage() {
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  const getJobsForDay = (date: Date) => jobs.filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date));
+  const getJobsForDay = (date: Date) =>
+    jobs
+      .filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date))
+      .sort((a, b) => timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot));
   const getDueInvoices = (date: Date) => invoices.filter((i) => i.dueDate && isSameDay(new Date(i.dueDate), date) && i.status !== "paid");
   const getWeather = (date: Date) => weather.find((w) => isSameDay(new Date(w.date), date));
 
