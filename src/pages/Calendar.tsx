@@ -270,6 +270,8 @@ export default function CalendarPage() {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
                       if (dropTarget !== key) setDropTarget(key);
+                      // dragging over slot background = append (no insertBefore)
+                      if (insertBeforeId !== null) setInsertBeforeId(null);
                     },
                     onDragLeave: () => {
                       if (dropTarget === key) setDropTarget(null);
