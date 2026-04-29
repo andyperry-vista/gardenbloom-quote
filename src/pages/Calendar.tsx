@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Sun, Cloud, CloudRain } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths } from "date-fns";
 import { Link } from "react-router-dom";
+import { timeSlotShort, timeSlotOrder } from "@/lib/timeSlot";
 
 interface WeatherDay {
   date: string;
@@ -48,7 +49,10 @@ export default function CalendarPage() {
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  const getJobsForDay = (date: Date) => jobs.filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date));
+  const getJobsForDay = (date: Date) =>
+    jobs
+      .filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date))
+      .sort((a, b) => timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot));
   const getDueInvoices = (date: Date) => invoices.filter((i) => i.dueDate && isSameDay(new Date(i.dueDate), date) && i.status !== "paid");
   const getWeather = (date: Date) => weather.find((w) => isSameDay(new Date(w.date), date));
 
@@ -90,11 +94,22 @@ export default function CalendarPage() {
                       )}
                     </div>
                     <div className="space-y-0.5 mt-1">
-                      {dayJobs.map((j) => (
-                        <Link key={j.id} to={`/admin/jobs/${j.id}`}>
-                          <div className="bg-primary/10 text-primary rounded px-1 truncate text-[10px]">{j.jobNumber}</div>
-                        </Link>
-                      ))}
+                      {dayJobs.map((j) => {
+                        const slotClass =
+                          j.timeSlot === "morning"
+                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                            : j.timeSlot === "afternoon"
+                            ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+                            : "bg-primary/10 text-primary";
+                        return (
+                          <Link key={j.id} to={`/admin/jobs/${j.id}`}>
+                            <div className={`${slotClass} rounded px-1 truncate text-[10px] flex items-center gap-1`}>
+                              <span className="font-semibold shrink-0">{timeSlotShort(j.timeSlot)}</span>
+                              <span className="truncate">{j.jobNumber}</span>
+                            </div>
+                          </Link>
+                        );
+                      })}
                       {dayInvoices.map((i) => (
                         <Link key={i.id} to={`/admin/invoices/${i.id}`}>
                           <div className="bg-destructive/10 text-destructive rounded px-1 truncate text-[10px]">{i.invoiceNumber} due</div>

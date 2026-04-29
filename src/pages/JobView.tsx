@@ -12,6 +12,7 @@ import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { useState } from "react";
 import { format, addDays } from "date-fns";
+import { TIME_SLOTS, type TimeSlot } from "@/lib/timeSlot";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-primary/10 text-primary",
@@ -120,6 +121,22 @@ export default function JobView() {
                   value={job.scheduledDate ?? ""}
                   onChange={(e) => updateJob(job.id, { scheduledDate: e.target.value })}
                 />
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-xs">Time of Day</Label>
+                <Select
+                  value={job.timeSlot}
+                  onValueChange={(v) => updateJob(job.id, { timeSlot: v as TimeSlot })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_SLOTS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label className="text-muted-foreground text-xs">Completed Date</Label>
