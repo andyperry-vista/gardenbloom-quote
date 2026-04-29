@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Send, Trash2, Pencil, Briefcase, Download } from "lucide-react";
 import { generateQuotePdf } from "@/lib/generateQuotePdf";
 import AppLayout from "@/components/AppLayout";
+import EmailPreviewDialog from "@/components/EmailPreviewDialog";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,7 @@ export default function QuoteView() {
   const { createJob } = useJobs();
   const quote = quotes.find((q) => q.id === id);
   const [creatingJob, setCreatingJob] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   if (!quote) {
     return (
@@ -41,22 +43,9 @@ export default function QuoteView() {
     );
   }
 
-  const handleSendEmail = async () => {
+  const handleOpenPreview = () => {
     if (!quote.client.email) { toast.error("No client email address on this quote"); return; }
-    try {
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "quote-request",
-          recipientEmail: quote.client.email,
-          idempotencyKey: `quote-send-${quote.id}`,
-          templateData: { clientName: quote.client.name, amount: `$${quote.grandTotal.toFixed(2)}` },
-        },
-      });
-      updateQuote(quote.id, { status: "sent" });
-      toast.success("Quote sent to client");
-    } catch {
-      toast.error("Failed to send email");
-    }
+    setPreviewOpen(true);
   };
 
   const handleCreateJob = async () => {
@@ -182,9 +171,16 @@ export default function QuoteView() {
               <Briefcase className="w-4 h-4 mr-2" /> Accept & Create Job
             </Button>
           )}
-          <Button onClick={handleSendEmail}><Send className="w-4 h-4 mr-2" /> Send to Client</Button>
+          <Button onClick={handleOpenPreview}><Send className="w-4 h-4 mr-2" /> Preview & Send</Button>
         </div>
       </div>
+
+      <EmailPreviewDialog
+        quote={quote}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        onSent={() => updateQuote(quote.id, { status: "sent" })}
+      />
     </AppLayout>
   );
 }
