@@ -29,8 +29,77 @@ export default function Payroll() {
   const [mode, setMode] = useState<"period" | "job">("period");
   const [jobFilter, setJobFilter] = useState<string>("");
 
+  // CSV export range (independent of payslip generation period)
+  const [exportFrom, setExportFrom] = useState(format(startOfMonth(today), "yyyy-MM-dd"));
+  const [exportTo, setExportTo] = useState(format(endOfMonth(today), "yyyy-MM-dd"));
+
   const { entries: empEntries } = useTimeEntries({ employeeId: employeeId || undefined });
+  const { entries: allEntries } = useTimeEntries();
   const { payslips, createPayslip, deletePayslip, updatePayslip } = usePayslips(employeeId || undefined);
+
+  const handleExportCsv = () => {
+    if (!exportFrom || !exportTo || exportFrom > exportTo) {
+      toast.error("Pick a valid date range");
+      return;
+    }
+    const inRange = allEntries.filter((e) => e.confirmed && e.workDate >= exportFrom && e.workDate <= exportTo);
+    if (inRange.length === 0) {
+      toast.error("No confirmed time entries in that range");
+      return;
+    }
+    const period = inferPayPeriod(exportFrom, exportTo);
+    // Aggregate per employee
+    const byEmp = new Map<string, { hours: number; gross: number }>();
+    for (const e of inRange) {
+      const cur = byEmp.get(e.employeeId) ?? { hours: 0, gross: 0 };
+      cur.hours += e.hours;
+      cur.gross += e.hours * e.rate;
+      byEmp.set(e.employeeId, cur);
+    }
+    const escape = (v: string | number) => {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const headers = [
+      "Employee", "Email", "Pay Basis", "Hours", "Gross Wages ($)",
+      "PAYG Estimate ($)", "Net ($)", "Super Rate (%)", "Super ($)", "Super Fund", "Member #", "BSB", "Account",
+    ];
+    const rows: string[][] = [];
+    let totHours = 0, totGross = 0, totTax = 0, totSuper = 0;
+    for (const [empId, agg] of byEmp.entries()) {
+      const emp = employees.find((x) => x.id === empId);
+      if (!emp) continue;
+      const tax = estimatePAYG(agg.gross, period, true);
+      const sup = agg.gross * (emp.superRate / 100);
+      const net = agg.gross - tax;
+      totHours += agg.hours; totGross += agg.gross; totTax += tax; totSuper += sup;
+      rows.push([
+        emp.name, emp.email, emp.payBasis,
+        agg.hours.toFixed(2), agg.gross.toFixed(2),
+        tax.toFixed(2), net.toFixed(2),
+        emp.superRate.toFixed(2), sup.toFixed(2),
+        emp.superFund, emp.superMemberNumber, emp.bsb, emp.accountNumber,
+      ].map(escape) as string[]);
+    }
+    rows.sort((a, b) => a[0].localeCompare(b[0]));
+    rows.push([
+      "TOTAL", "", "",
+      totHours.toFixed(2), totGross.toFixed(2),
+      totTax.toFixed(2), (totGross - totTax).toFixed(2),
+      "", totSuper.toFixed(2), "", "", "", "",
+    ].map(escape) as string[]);
+
+    const meta = `Payroll Summary,${exportFrom} to ${exportTo},Period: ${period},Generated: ${format(new Date(), "yyyy-MM-dd HH:mm")}\n`;
+    const csv = meta + headers.map(escape).join(",") + "\n" + rows.map((r) => r.join(",")).join("\n") + "\n";
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `payroll-summary_${exportFrom}_to_${exportTo}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${byEmp.size} employee${byEmp.size === 1 ? "" : "s"}`);
+  };
 
   // Eligible entries: confirmed, unpaid, in range (or matching job)
   const eligibleEntries = useMemo(() => {
