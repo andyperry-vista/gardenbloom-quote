@@ -10,11 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon, Settings as SettingsIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Calculator, FileText, Users as UsersIcon, Settings as SettingsIcon, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
 import { effectiveHourlyRate } from "@/lib/employeeRate";
+import { supabase } from "@/integrations/supabase/client";
 
 const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partial<Employee> => ({
   name: "", email: "", phone: "", address: "",
@@ -40,6 +41,34 @@ export default function Employees() {
   const openNew = () => { setEditing(null); setForm(makeBlank(defaults)); setOpen(true); };
   const openEdit = (e: Employee) => { setEditing(e); setForm(e); setOpen(true); };
   const openDefaults = () => { setDefaultsForm(defaults); setDefaultsOpen(true); };
+
+  const [inviteFor, setInviteFor] = useState<Employee | null>(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviting, setInviting] = useState(false);
+
+  const openInvite = (e: Employee) => {
+    setInviteFor(e);
+    setInviteEmail(e.email || "");
+  };
+
+  const handleInvite = async () => {
+    if (!inviteFor) return;
+    if (!inviteEmail.includes("@")) { toast.error("Valid email required"); return; }
+    setInviting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("invite-employee", {
+        body: { employeeId: inviteFor.id, email: inviteEmail.trim().toLowerCase() },
+      });
+      if (error) throw error;
+      if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
+      toast.success((data as { alreadyHadAccount?: boolean })?.alreadyHadAccount
+        ? "Linked existing account"
+        : "Invitation sent");
+      setInviteFor(null);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally { setInviting(false); }
+  };
 
   const save = async () => {
     if (!form.name) { toast.error("Name is required"); return; }
@@ -92,6 +121,7 @@ export default function Employees() {
                       <span className="font-medium text-lg">{e.name}</span>
                       <Badge variant={e.active ? "default" : "secondary"}>{e.active ? "Active" : "Inactive"}</Badge>
                       <Badge variant="outline">{e.employmentType}</Badge>
+                      {e.linkedUserId && <Badge variant="secondary" className="text-[10px]"><CheckCircle2 className="w-3 h-3 mr-1" />Has login</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {e.payBasis === "salary"
@@ -102,7 +132,10 @@ export default function Employees() {
                       {e.phone && ` · ${e.phone}`}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
+                    {!e.linkedUserId && (
+                      <Button variant="outline" size="sm" onClick={() => openInvite(e)}><Mail className="w-4 h-4 mr-1" /> Invite</Button>
+                    )}
                     <Link to={`/admin/payroll?employee=${e.id}`}>
                       <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-1" /> Payslips</Button>
                     </Link>
@@ -214,6 +247,29 @@ export default function Employees() {
               try { await saveDefaults(defaultsForm); toast.success("Defaults saved"); setDefaultsOpen(false); }
               catch (e) { toast.error((e as Error).message); }
             }}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!inviteFor} onOpenChange={(v) => !v && setInviteFor(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite {inviteFor?.name} to crew app</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              They'll get an email with a link to set their password and access the mobile crew portal at <code>/employee</code>.
+            </p>
+            <div>
+              <Label>Email</Label>
+              <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="crew@example.com" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteFor(null)}>Cancel</Button>
+            <Button onClick={handleInvite} disabled={inviting}>
+              {inviting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}<Mail className="w-4 h-4 mr-1" /> Send invite
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

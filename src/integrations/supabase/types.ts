@@ -303,6 +303,7 @@ export type Database = {
           employment_type: string
           hourly_rate: number
           id: string
+          linked_user_id: string | null
           name: string
           notes: string | null
           pay_basis: string
@@ -327,6 +328,7 @@ export type Database = {
           employment_type?: string
           hourly_rate?: number
           id?: string
+          linked_user_id?: string | null
           name: string
           notes?: string | null
           pay_basis?: string
@@ -351,6 +353,7 @@ export type Database = {
           employment_type?: string
           hourly_rate?: number
           id?: string
+          linked_user_id?: string | null
           name?: string
           notes?: string | null
           pay_basis?: string
@@ -996,6 +999,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_linked_employee: { Args: { _employee_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1015,7 +1019,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "employee"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1143,7 +1147,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "employee"],
     },
   },
 } as const

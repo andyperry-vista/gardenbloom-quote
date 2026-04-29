@@ -34,6 +34,12 @@ import QuoteRequests from "./pages/QuoteRequests";
 import AgentContact from "./pages/AgentContact";
 import Employees from "./pages/Employees";
 import Payroll from "./pages/Payroll";
+import EmployeeLogin from "./pages/EmployeeLogin";
+import EmployeeGuard from "./components/EmployeeGuard";
+import EmployeeHome from "./pages/EmployeeHome";
+import EmployeeJobs from "./pages/EmployeeJobs";
+import EmployeeJobDetail from "./pages/EmployeeJobDetail";
+import EmployeeHours from "./pages/EmployeeHours";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +78,11 @@ const App = () => (
             <Route path="/agent/gallery" element={<AgentGuard><AgentGallery /></AgentGuard>} />
             <Route path="/agent/referrals" element={<AgentGuard><AgentReferrals /></AgentGuard>} />
             <Route path="/agent/contact" element={<AgentGuard><AgentContact /></AgentGuard>} />
+            <Route path="/employee/login" element={<EmployeeLogin />} />
+            <Route path="/employee" element={<EmployeeGuard><EmployeeHome /></EmployeeGuard>} />
+            <Route path="/employee/jobs" element={<EmployeeGuard><EmployeeJobs /></EmployeeGuard>} />
+            <Route path="/employee/jobs/:id" element={<EmployeeGuard><EmployeeJobDetail /></EmployeeGuard>} />
+            <Route path="/employee/hours" element={<EmployeeGuard><EmployeeHours /></EmployeeGuard>} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
