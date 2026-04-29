@@ -182,7 +182,7 @@ export default function Employees() {
             </div>
             {form.payBasis === "salary" ? (
               <>
-                <div><Label>Annual Salary ($)</Label><Input type="number" step="0.01" value={form.annualSalary ?? 0} onChange={(e) => setForm({ ...form, annualSalary: Number(e.target.value) })} /></div>
+                <div><Label>Annual Salary ($){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.01" disabled={!canEditRates} value={form.annualSalary ?? 0} onChange={(e) => setForm({ ...form, annualSalary: Number(e.target.value) })} /></div>
                 <div><Label>Standard Hours / Week</Label><Input type="number" step="0.5" value={form.standardHoursPerWeek ?? 38} onChange={(e) => setForm({ ...form, standardHoursPerWeek: Number(e.target.value) })} /></div>
                 <div className="sm:col-span-2 text-xs text-muted-foreground -mt-2">
                   Effective hourly: ${effectiveHourlyRate({
@@ -194,7 +194,7 @@ export default function Employees() {
                 </div>
               </>
             ) : (
-              <div><Label>Hourly Rate ($)</Label><Input type="number" step="0.01" value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
+              <div><Label>Hourly Rate ($){!canEditRates && <span className="text-xs text-muted-foreground ml-1">(admin only)</span>}</Label><Input type="number" step="0.01" disabled={!canEditRates} value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
             )}
             <div>
               <Label>Employment Type</Label>
