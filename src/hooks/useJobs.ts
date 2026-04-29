@@ -89,6 +89,7 @@ export function useJobs() {
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.scheduledDate !== undefined) dbUpdates.scheduled_date = updates.scheduledDate;
       if (updates.timeSlot !== undefined) dbUpdates.time_slot = updates.timeSlot;
+      if (updates.sortOrder !== undefined) dbUpdates.sort_order = updates.sortOrder;
       if (updates.completedDate !== undefined) dbUpdates.completed_date = updates.completedDate;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
