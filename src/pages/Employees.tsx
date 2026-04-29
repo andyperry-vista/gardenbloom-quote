@@ -34,6 +34,9 @@ const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partia
 export default function Employees() {
   const { employees, isLoading, createEmployee, updateEmployee, deleteEmployee } = useEmployees();
   const { defaults, saveDefaults } = usePayrollDefaults();
+  const perms = usePermissions();
+  const canManage = perms.canManageEmployees;
+  const canEditRates = perms.canEditRates;
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | null>(null);
   const [form, setForm] = useState<Partial<Employee>>(() => makeBlank(defaults));
