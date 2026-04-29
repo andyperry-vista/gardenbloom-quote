@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox, HardHat, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,8 @@ const navGroups = [
     children: [
       { to: "/admin/clients", label: "Client List", icon: Users },
       { to: "/admin/agents", label: "Agents", icon: UserCheck },
+      { to: "/admin/employees", label: "Employees", icon: HardHat },
+      { to: "/admin/payroll", label: "Payroll", icon: Calculator },
     ],
   },
   { label: "Settings", to: "/admin/settings", icon: Settings },
@@ -59,6 +61,8 @@ const allNavItems = [
   { to: "/admin/tools", label: "Email Tools", icon: Wrench },
   { to: "/admin/clients", label: "Client List", icon: Users },
   { to: "/admin/agents", label: "Agents", icon: UserCheck },
+  { to: "/admin/employees", label: "Employees", icon: HardHat },
+  { to: "/admin/payroll", label: "Payroll", icon: Calculator },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
