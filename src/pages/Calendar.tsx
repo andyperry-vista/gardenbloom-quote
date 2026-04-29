@@ -135,14 +135,57 @@ export default function CalendarPage() {
                 const allDayJobs = dayJobs.filter((j) => j.timeSlot === "all_day");
                 const dayInvoices = getDueInvoices(day);
                 const dayWeather = getWeather(day);
+                const dayISO = format(day, "yyyy-MM-dd");
 
-                const renderJob = (j: typeof dayJobs[number]) => (
-                  <Link key={j.id} to={`/admin/jobs/${j.id}`}>
-                    <div className="rounded px-1 py-0.5 truncate text-[10px] hover:opacity-80 transition-opacity bg-background/70">
-                      {j.jobNumber}
+                const renderJob = (j: typeof dayJobs[number], variant: "am" | "pm" | "all") => {
+                  const base =
+                    variant === "all"
+                      ? "bg-primary/15 text-primary font-medium"
+                      : "bg-background/70";
+                  return (
+                    <div
+                      key={j.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, j.id)}
+                      onDragEnd={handleDragEnd}
+                      className={`group relative flex items-center gap-0.5 rounded px-1 py-0.5 truncate text-[10px] cursor-grab active:cursor-grabbing transition-opacity ${base} ${
+                        draggingId === j.id ? "opacity-40" : "hover:opacity-80"
+                      }`}
+                      title="Drag to AM, PM or All-day"
+                    >
+                      <GripVertical className="w-2.5 h-2.5 shrink-0 opacity-40 group-hover:opacity-80" aria-hidden />
+                      <Link
+                        to={`/admin/jobs/${j.id}`}
+                        className="truncate flex-1"
+                        onClick={(e) => {
+                          // Prevent navigation if a drag has just ended
+                          if (draggingId) e.preventDefault();
+                        }}
+                      >
+                        {j.jobNumber}
+                      </Link>
                     </div>
-                  </Link>
-                );
+                  );
+                };
+
+                const dropZoneProps = (slot: TimeSlot) => {
+                  const key = `${dayISO}|${slot}`;
+                  return {
+                    onDragOver: (e: React.DragEvent) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "move";
+                      if (dropTarget !== key) setDropTarget(key);
+                    },
+                    onDragLeave: () => {
+                      if (dropTarget === key) setDropTarget(null);
+                    },
+                    onDrop: (e: React.DragEvent) => handleDrop(e, dayISO, slot),
+                    "data-active": dropTarget === key ? "true" : undefined,
+                  };
+                };
+
+                const dropRing = (slot: TimeSlot) =>
+                  dropTarget === `${dayISO}|${slot}` ? "ring-2 ring-primary ring-offset-1 ring-offset-background" : "";
 
                 return (
                   <div
@@ -159,42 +202,57 @@ export default function CalendarPage() {
                       )}
                     </div>
 
-                    {/* All-day band */}
-                    {allDayJobs.length > 0 && (
-                      <div className="mb-0.5 space-y-0.5">
-                        {allDayJobs.map((j) => (
-                          <Link key={j.id} to={`/admin/jobs/${j.id}`}>
-                            <div className="bg-primary/15 text-primary rounded px-1 truncate text-[10px] font-medium">
-                              {j.jobNumber}
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    {/* All-day band (drop zone) */}
+                    <div
+                      {...dropZoneProps("all_day")}
+                      className={`mb-0.5 rounded transition-colors ${dropRing("all_day")} ${
+                        allDayJobs.length === 0
+                          ? draggingId
+                            ? "min-h-[14px] border border-dashed border-primary/40 bg-primary/5 text-[9px] text-primary/70 px-1 leading-[14px]"
+                            : "min-h-0"
+                          : ""
+                      }`}
+                    >
+                      {allDayJobs.length > 0 ? (
+                        <div className="space-y-0.5">{allDayJobs.map((j) => renderJob(j, "all"))}</div>
+                      ) : draggingId ? (
+                        <span>Drop for All-day</span>
+                      ) : null}
+                    </div>
 
-                    {/* AM / PM split */}
+                    {/* AM / PM split (drop zones) */}
                     <div className="flex-1 grid grid-rows-2 gap-0.5 min-h-[44px]">
-                      <div className={`rounded px-1 py-0.5 border-l-2 overflow-hidden ${
-                        amJobs.length > 0
-                          ? "bg-amber-500/10 border-amber-500/70 text-amber-800 dark:text-amber-200"
-                          : "bg-muted/20 border-transparent text-muted-foreground/40"
-                      }`}>
+                      <div
+                        {...dropZoneProps("morning")}
+                        className={`rounded px-1 py-0.5 border-l-2 overflow-hidden transition-colors ${dropRing("morning")} ${
+                          amJobs.length > 0
+                            ? "bg-amber-500/10 border-amber-500/70 text-amber-800 dark:text-amber-200"
+                            : draggingId
+                            ? "bg-amber-500/15 border-amber-500/70 text-amber-800 dark:text-amber-200"
+                            : "bg-muted/20 border-transparent text-muted-foreground/40"
+                        }`}
+                      >
                         <div className="flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase opacity-80">
                           <span>AM</span>
                           {amJobs.length > 0 && <span className="opacity-60">· {amJobs.length}</span>}
                         </div>
-                        <div className="space-y-0.5">{amJobs.map(renderJob)}</div>
+                        <div className="space-y-0.5">{amJobs.map((j) => renderJob(j, "am"))}</div>
                       </div>
-                      <div className={`rounded px-1 py-0.5 border-l-2 overflow-hidden ${
-                        pmJobs.length > 0
-                          ? "bg-indigo-500/10 border-indigo-500/70 text-indigo-800 dark:text-indigo-200"
-                          : "bg-muted/20 border-transparent text-muted-foreground/40"
-                      }`}>
+                      <div
+                        {...dropZoneProps("afternoon")}
+                        className={`rounded px-1 py-0.5 border-l-2 overflow-hidden transition-colors ${dropRing("afternoon")} ${
+                          pmJobs.length > 0
+                            ? "bg-indigo-500/10 border-indigo-500/70 text-indigo-800 dark:text-indigo-200"
+                            : draggingId
+                            ? "bg-indigo-500/15 border-indigo-500/70 text-indigo-800 dark:text-indigo-200"
+                            : "bg-muted/20 border-transparent text-muted-foreground/40"
+                        }`}
+                      >
                         <div className="flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase opacity-80">
                           <span>PM</span>
                           {pmJobs.length > 0 && <span className="opacity-60">· {pmJobs.length}</span>}
                         </div>
-                        <div className="space-y-0.5">{pmJobs.map(renderJob)}</div>
+                        <div className="space-y-0.5">{pmJobs.map((j) => renderJob(j, "pm"))}</div>
                       </div>
                     </div>
 
