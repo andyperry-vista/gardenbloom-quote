@@ -216,10 +216,30 @@ export default function Payroll() {
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div>
-          <h1 className="font-display text-3xl flex items-center gap-2"><Calculator className="w-7 h-7" /> Payroll</h1>
-          <p className="text-muted-foreground mt-1">Tally hours, calculate wages and super, generate payslips</p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="font-display text-3xl flex items-center gap-2"><Calculator className="w-7 h-7" /> Payroll</h1>
+            <p className="text-muted-foreground mt-1">Tally hours, calculate wages and super, generate payslips</p>
+          </div>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Download className="w-5 h-5" /> Export Payroll Summary (CSV)</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
+            <div><Label>From</Label><Input type="date" value={exportFrom} onChange={(e) => setExportFrom(e.target.value)} /></div>
+            <div><Label>To</Label><Input type="date" value={exportTo} onChange={(e) => setExportTo(e.target.value)} /></div>
+            <Button onClick={handleExportCsv}><Download className="w-4 h-4 mr-2" /> Download CSV</Button>
+            <div className="sm:col-span-3 flex flex-wrap gap-2">
+              <Button variant="ghost" size="sm" onClick={() => { setExportFrom(format(startOfWeek(today, { weekStartsOn: 1 }), "yyyy-MM-dd")); setExportTo(format(endOfWeek(today, { weekStartsOn: 1 }), "yyyy-MM-dd")); }}>This week</Button>
+              <Button variant="ghost" size="sm" onClick={() => { const d = new Date(); d.setDate(d.getDate() - 7); setExportFrom(format(startOfWeek(d, { weekStartsOn: 1 }), "yyyy-MM-dd")); setExportTo(format(endOfWeek(d, { weekStartsOn: 1 }), "yyyy-MM-dd")); }}>Last week</Button>
+              <Button variant="ghost" size="sm" onClick={() => { setExportFrom(format(startOfMonth(today), "yyyy-MM-dd")); setExportTo(format(endOfMonth(today), "yyyy-MM-dd")); }}>This month</Button>
+              <Button variant="ghost" size="sm" onClick={() => { const d = new Date(today.getFullYear(), today.getMonth() - 1, 1); setExportFrom(format(startOfMonth(d), "yyyy-MM-dd")); setExportTo(format(endOfMonth(d), "yyyy-MM-dd")); }}>Last month</Button>
+              <span className="text-xs text-muted-foreground self-center ml-auto">Includes confirmed time entries only · PAYG estimated for the selected period</span>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader><CardTitle>Employee</CardTitle></CardHeader>
