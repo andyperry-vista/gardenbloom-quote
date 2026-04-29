@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { estimatePAYG, inferPayPeriod } from "@/lib/payg";
 import { generatePayslipPdf } from "@/lib/generatePayslipPdf";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Payroll() {
   const [params, setParams] = useSearchParams();
