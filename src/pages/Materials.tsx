@@ -53,7 +53,8 @@ export default function Materials() {
     notes: "",
   });
 
-  // Bunnings search state
+  // Live supplier search state
+  const [supplierId, setSupplierId] = useState<SupplierId>("bunnings");
   const [bunningsQuery, setBunningsQuery] = useState("");
   const [bunningsResults, setBunningsResults] = useState<BunningsProduct[]>([]);
   const [bunningsLoading, setBunningsLoading] = useState(false);
@@ -67,14 +68,16 @@ export default function Materials() {
 
   const categories = [...new Set(materials.map((m) => m.category))];
 
+  const supplier = SUPPLIERS.find((s) => s.id === supplierId)!;
+
   const handleBunningsSearch = async () => {
     if (!bunningsQuery.trim() || bunningsQuery.trim().length < 2) return;
     setBunningsLoading(true);
     setBunningsResults([]);
 
     try {
-      const { data, error } = await supabase.functions.invoke("search-bunnings", {
-        body: { query: bunningsQuery.trim() },
+      const { data, error } = await supabase.functions.invoke("search-supplier", {
+        body: { query: bunningsQuery.trim(), supplier: supplierId },
       });
 
       if (error) throw error;
@@ -84,14 +87,14 @@ export default function Materials() {
       } else {
         toast({
           title: "No results",
-          description: "No products found. Try a different search term.",
+          description: `No products found at ${supplier.label}. Try a different search term.`,
         });
       }
     } catch (err) {
-      console.error("Bunnings search error:", err);
+      console.error("Supplier search error:", err);
       toast({
         title: "Search failed",
-        description: "Could not search Bunnings. Please try again.",
+        description: `Could not search ${supplier.label}. Please try again.`,
         variant: "destructive",
       });
     } finally {
@@ -105,8 +108,8 @@ export default function Materials() {
       category: product.category,
       wholesalePrice: product.price?.toString() || "",
       unit: product.unit,
-      supplier: "Bunnings",
-      supplierLocation: "Doncaster, VIC",
+      supplier: supplier.label,
+      supplierLocation: supplier.location,
       inStock: product.inStock,
       notes: "",
     });
