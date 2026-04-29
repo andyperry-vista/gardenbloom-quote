@@ -20,7 +20,7 @@ const ICON_PATHS = [
   "/favicon-48x48.png",
   "/favicon-96x96.png",
   "/apple-touch-icon.png",
-  "/apple-touch-icon-180x180.png",
+  
   "/manifest.json",
   "/og-image.jpg",
   "/pwa-icon-192.png",
