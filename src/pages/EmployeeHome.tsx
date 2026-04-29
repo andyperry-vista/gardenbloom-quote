@@ -1,5 +1,6 @@
 import EmployeeLayout from "@/components/EmployeeLayout";
 import { useEmployeeSelf } from "@/hooks/useEmployeeSelf";
+import type { AssignedJob } from "@/hooks/useEmployeeJobs";
 import { useEmployeeJobs } from "@/hooks/useEmployeeJobs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +70,7 @@ export default function EmployeeHome() {
   );
 }
 
-function JobCard({ job }: { job: ReturnType<typeof useEmployeeJobs>["data"] extends (infer T)[] | undefined ? T : never }) {
+function JobCard({ job }: { job: AssignedJob }) {
   return (
     <Link to={`/employee/jobs/${job.id}`}>
       <Card className="active:scale-[0.99] transition-transform">
