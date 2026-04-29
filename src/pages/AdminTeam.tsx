@@ -113,9 +113,48 @@ export default function AdminTeam() {
         <div>
           <h1 className="font-display text-3xl flex items-center gap-2"><ShieldCheck className="w-7 h-7" /> Team & Permissions</h1>
           <p className="text-muted-foreground mt-1">
-            Admins have full access. Managers can manage employees and approve payslips, but cannot edit pay rates or assign roles.
+            Webmasters have unrestricted access to the entire site. Admins have full operational access. Managers can manage employees and approve payslips, but cannot edit pay rates or assign roles.
           </p>
         </div>
+
+        {(!hasWebmaster || perms.isWebmaster) && (
+          <Card className="border-primary/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-primary" />
+                {hasWebmaster ? "Provision another webmaster" : "Create webmaster account"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
+              <div>
+                <Label>Webmaster email</Label>
+                <Input
+                  type="email"
+                  value={wmEmail}
+                  onChange={(e) => setWmEmail(e.target.value)}
+                  placeholder="webmaster@example.com"
+                />
+              </div>
+              <div>
+                <Label>Password (min 8 chars)</Label>
+                <Input
+                  type="password"
+                  value={wmPassword}
+                  onChange={(e) => setWmPassword(e.target.value)}
+                  placeholder="Strong password"
+                  autoComplete="new-password"
+                />
+              </div>
+              <Button onClick={handleProvisionWebmaster} disabled={provisioning}>
+                {provisioning && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {hasWebmaster ? "Add webmaster" : "Create"}
+              </Button>
+              <p className="sm:col-span-3 text-xs text-muted-foreground">
+                Creates a dedicated login with full site access. If the email already exists, its password is reset to the value above and the webmaster role is granted. Sign in via the standard <strong>/admin/login</strong> page.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><UserCog className="w-5 h-5" /> Grant role</CardTitle></CardHeader>
