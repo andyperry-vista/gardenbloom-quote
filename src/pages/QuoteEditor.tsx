@@ -352,13 +352,24 @@ export default function QuoteEditor() {
                   )}
                 </div>
                 <Separator />
-                <div className="space-y-2 text-right">
-                  <p className="text-muted-foreground">Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span></p>
-                  <p className="text-muted-foreground">Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span></p>
-                  {discountAmount > 0 && (
-                    <p className="text-muted-foreground">Discount: <span className="font-medium text-destructive">−${discountAmount.toFixed(2)}</span></p>
-                  )}
-                  <p className="text-xl font-bold text-foreground">Total: ${grandTotal.toFixed(2)}</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5 text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Breakdown</p>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Materials cost</span><span>${materialsCost.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Materials markup</span><span className="text-accent">+${(materialsWithMarkup - materialsCost).toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Labour ({labourHours}h, no markup)</span><span>${labourTotal.toFixed(2)}</span></div>
+                    {miscTotal > 0 && (
+                      <div className="flex justify-between"><span className="text-muted-foreground">Misc (no markup)</span><span>${miscTotal.toFixed(2)}</span></div>
+                    )}
+                  </div>
+                  <div className="space-y-2 text-right self-end">
+                    <p className="text-muted-foreground">Cost (wholesale): <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span></p>
+                    <p className="text-muted-foreground">Markup: <span className="font-medium text-accent">${markupTotal.toFixed(2)}</span></p>
+                    {discountAmount > 0 && (
+                      <p className="text-muted-foreground">Discount: <span className="font-medium text-destructive">−${discountAmount.toFixed(2)}</span></p>
+                    )}
+                    <p className="text-xl font-bold text-foreground">Total: ${grandTotal.toFixed(2)}</p>
+                  </div>
                 </div>
               </>
             )}
