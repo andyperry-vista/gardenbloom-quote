@@ -10,6 +10,7 @@ export interface Job {
   status: "scheduled" | "in_progress" | "completed" | "invoiced";
   scheduledDate: string | null;
   timeSlot: TimeSlot;
+  sortOrder: number;
   completedDate: string | null;
   notes: string;
   createdAt: string;
@@ -21,6 +22,7 @@ type JobUpdates = Partial<{
   status: string;
   scheduledDate: string;
   timeSlot: TimeSlot;
+  sortOrder: number;
   completedDate: string;
   notes: string;
 }>;
