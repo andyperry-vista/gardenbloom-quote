@@ -160,7 +160,11 @@ export default function CalendarPage() {
   const getJobsForDay = (date: Date) =>
     jobs
       .filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date))
-      .sort((a, b) => timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot));
+      .sort(
+        (a, b) =>
+          timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot) ||
+          a.sortOrder - b.sortOrder,
+      );
   const getDueInvoices = (date: Date) => invoices.filter((i) => i.dueDate && isSameDay(new Date(i.dueDate), date) && i.status !== "paid");
   const getWeather = (date: Date) => weather.find((w) => isSameDay(new Date(w.date), date));
 
