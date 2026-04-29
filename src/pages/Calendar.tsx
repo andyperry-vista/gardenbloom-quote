@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Sun, Cloud, CloudRain } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths } from "date-fns";
 import { Link } from "react-router-dom";
+import { timeSlotShort, timeSlotOrder } from "@/lib/timeSlot";
 
 interface WeatherDay {
   date: string;
