@@ -223,16 +223,30 @@ export default function CalendarPage() {
                     variant === "all"
                       ? "bg-primary/15 text-primary font-medium"
                       : "bg-background/70";
+                  const showInsertBar =
+                    insertBeforeId === j.id &&
+                    draggingId &&
+                    draggingId !== j.id;
                   return (
                     <div
                       key={j.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, j.id)}
                       onDragEnd={handleDragEnd}
+                      onDragOver={(e) => {
+                        if (!draggingId || draggingId === j.id) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = "move";
+                        if (insertBeforeId !== j.id) setInsertBeforeId(j.id);
+                      }}
+                      onDragLeave={(e) => {
+                        e.stopPropagation();
+                      }}
                       className={`group relative flex items-center gap-0.5 rounded px-1 py-0.5 truncate text-[10px] cursor-grab active:cursor-grabbing transition-opacity ${base} ${
                         draggingId === j.id ? "opacity-40" : "hover:opacity-80"
-                      }`}
-                      title="Drag to AM, PM or All-day"
+                      } ${showInsertBar ? "before:absolute before:left-0 before:right-0 before:-top-[3px] before:h-[2px] before:rounded before:bg-primary before:content-['']" : ""}`}
+                      title="Drag to reorder, or move to AM, PM or All-day"
                     >
                       <GripVertical className="w-2.5 h-2.5 shrink-0 opacity-40 group-hover:opacity-80" aria-hidden />
                       <Link
