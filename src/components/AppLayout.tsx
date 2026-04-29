@@ -43,6 +43,7 @@ const navGroups = [
       { to: "/admin/agents", label: "Agents", icon: UserCheck },
       { to: "/admin/employees", label: "Employees", icon: HardHat },
       { to: "/admin/payroll", label: "Payroll", icon: Calculator },
+      { to: "/admin/team", label: "Team & Roles", icon: ShieldCheck },
     ],
   },
   { label: "Settings", to: "/admin/settings", icon: Settings },
