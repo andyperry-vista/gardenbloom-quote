@@ -4,7 +4,7 @@ import { defaultMaterials } from "@/data/materials";
 
 const STORAGE_KEY = "garden-materials";
 const MATERIALS_VERSION_KEY = "garden-materials-version";
-const CURRENT_VERSION = "2"; // bump to force refresh from defaults
+const CURRENT_VERSION = "3"; // bump to force refresh from defaults
 
 export function useMaterials() {
   const [materials, setMaterials] = useState<Material[]>(() => {
