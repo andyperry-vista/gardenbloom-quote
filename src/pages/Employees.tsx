@@ -94,7 +94,10 @@ export default function Employees() {
                       <Badge variant="outline">{e.employmentType}</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      ${e.hourlyRate.toFixed(2)}/hr · Super {e.superRate}%
+                      {e.payBasis === "salary"
+                        ? `$${e.annualSalary.toLocaleString()}/yr (≈ $${effectiveHourlyRate(e).toFixed(2)}/hr @ ${e.standardHoursPerWeek}h/wk)`
+                        : `$${e.hourlyRate.toFixed(2)}/hr`}
+                      {` · Super ${e.superRate}%`}
                       {e.email && ` · ${e.email}`}
                       {e.phone && ` · ${e.phone}`}
                     </p>
@@ -123,7 +126,32 @@ export default function Employees() {
             <div><Label>Email</Label><Input type="email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>Phone</Label><Input value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             <div className="sm:col-span-2"><Label>Address</Label><Input value={form.address ?? ""} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-            <div><Label>Hourly Rate ($)</Label><Input type="number" step="0.01" value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
+            <div>
+              <Label>Pay Basis</Label>
+              <Select value={form.payBasis ?? "hourly"} onValueChange={(v) => setForm({ ...form, payBasis: v as "hourly" | "salary" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hourly">Hourly</SelectItem>
+                  <SelectItem value="salary">Annual Salary</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {form.payBasis === "salary" ? (
+              <>
+                <div><Label>Annual Salary ($)</Label><Input type="number" step="0.01" value={form.annualSalary ?? 0} onChange={(e) => setForm({ ...form, annualSalary: Number(e.target.value) })} /></div>
+                <div><Label>Standard Hours / Week</Label><Input type="number" step="0.5" value={form.standardHoursPerWeek ?? 38} onChange={(e) => setForm({ ...form, standardHoursPerWeek: Number(e.target.value) })} /></div>
+                <div className="sm:col-span-2 text-xs text-muted-foreground -mt-2">
+                  Effective hourly: ${effectiveHourlyRate({
+                    payBasis: "salary",
+                    hourlyRate: form.hourlyRate ?? 0,
+                    annualSalary: form.annualSalary ?? 0,
+                    standardHoursPerWeek: form.standardHoursPerWeek ?? 38,
+                  }).toFixed(2)}/hr (used for job costing & time entries)
+                </div>
+              </>
+            ) : (
+              <div><Label>Hourly Rate ($)</Label><Input type="number" step="0.01" value={form.hourlyRate ?? 0} onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })} /></div>
+            )}
             <div>
               <Label>Employment Type</Label>
               <Select value={form.employmentType ?? "casual"} onValueChange={(v) => setForm({ ...form, employmentType: v })}>
@@ -152,6 +180,40 @@ export default function Employees() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={save}>{editing ? "Update" : "Create"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={defaultsOpen} onOpenChange={setDefaultsOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Default Wage Settings</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Used to pre-fill new employees and as a fallback when calculating wages.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <Label>Default Pay Basis</Label>
+              <Select value={defaultsForm.defaultPayBasis} onValueChange={(v) => setDefaultsForm({ ...defaultsForm, defaultPayBasis: v as "hourly" | "salary" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hourly">Hourly</SelectItem>
+                  <SelectItem value="salary">Annual Salary</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>Default Hourly Rate ($)</Label><Input type="number" step="0.01" value={defaultsForm.defaultHourlyRate} onChange={(e) => setDefaultsForm({ ...defaultsForm, defaultHourlyRate: Number(e.target.value) })} /></div>
+            <div><Label>Default Annual Salary ($)</Label><Input type="number" step="0.01" value={defaultsForm.defaultAnnualSalary} onChange={(e) => setDefaultsForm({ ...defaultsForm, defaultAnnualSalary: Number(e.target.value) })} /></div>
+            <div><Label>Standard Hours / Week</Label><Input type="number" step="0.5" value={defaultsForm.defaultStandardHoursPerWeek} onChange={(e) => setDefaultsForm({ ...defaultsForm, defaultStandardHoursPerWeek: Number(e.target.value) })} /></div>
+            <div><Label>Default Super Rate (%)</Label><Input type="number" step="0.1" value={defaultsForm.defaultSuperRate} onChange={(e) => setDefaultsForm({ ...defaultsForm, defaultSuperRate: Number(e.target.value) })} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDefaultsOpen(false)}>Cancel</Button>
+            <Button onClick={async () => {
+              try { await saveDefaults(defaultsForm); toast.success("Defaults saved"); setDefaultsOpen(false); }
+              catch (e) { toast.error((e as Error).message); }
+            }}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
