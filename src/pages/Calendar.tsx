@@ -70,6 +70,25 @@ export default function CalendarPage() {
 
         <Card>
           <CardContent className="pt-6">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-xs">
+              <span className="text-muted-foreground font-medium">Legend:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-amber-500/30 border-l-2 border-amber-500/70" aria-hidden />
+                <span><span className="font-semibold">AM</span> — Morning</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-indigo-500/30 border-l-2 border-indigo-500/70" aria-hidden />
+                <span><span className="font-semibold">PM</span> — Afternoon</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-primary/25" aria-hidden />
+                <span>All-day</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-destructive/20" aria-hidden />
+                <span>Invoice due</span>
+              </div>
+            </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted-foreground mb-2">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d}>{d}</div>)}
             </div>
