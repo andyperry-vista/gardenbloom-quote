@@ -169,15 +169,23 @@ export default function Materials() {
                 <DialogDescription className="sr-only">Form to add a new material or search via Bunnings.</DialogDescription>
               </DialogHeader>
 
-              {/* Bunnings Search Section */}
+              {/* Live Supplier Search Section */}
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-primary">
                   <Globe className="w-4 h-4" />
-                  Search Bunnings Live
+                  Search Suppliers Live
                 </div>
+                <Select value={supplierId} onValueChange={(v) => { setSupplierId(v as SupplierId); setBunningsResults([]); }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {SUPPLIERS.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>{s.label} <span className="text-muted-foreground">· {s.location}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="e.g. garden soil, pavers, timber sleeper…"
+                    placeholder={supplierId === "bunnings" ? "e.g. garden soil, pavers, timber sleeper…" : "e.g. lomandra, dianella, advanced trees…"}
                     value={bunningsQuery}
                     onChange={(e) => setBunningsQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleBunningsSearch()}
@@ -196,7 +204,7 @@ export default function Materials() {
                   </Button>
                 </div>
                 {bunningsLoading && (
-                  <p className="text-xs text-muted-foreground">Searching Bunnings for real-time pricing…</p>
+                  <p className="text-xs text-muted-foreground">Searching {supplier.label} for product info…</p>
                 )}
                 {bunningsResults.length > 0 && (
                   <div className="space-y-2 max-h-48 overflow-y-auto">
