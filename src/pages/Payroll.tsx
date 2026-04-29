@@ -321,9 +321,10 @@ export default function Payroll() {
                     <p className="text-base font-bold">Net: ${totals.net.toFixed(2)}</p>
                     <p className="text-sm text-accent">Super ({employee.superRate}%): ${totals.superAmount.toFixed(2)}</p>
                   </div>
-                  <Button className="w-full" disabled={eligibleEntries.length === 0} onClick={handleCreatePayslip}>
+                  <Button className="w-full" disabled={eligibleEntries.length === 0 || !canApprove} onClick={handleCreatePayslip}>
                     <FileText className="w-4 h-4 mr-2" /> Create Payslip (Draft)
                   </Button>
+                  {!canApprove && <p className="text-xs text-muted-foreground text-center">Only admins or managers can create payslips.</p>}
                 </CardContent>
               </Card>
             </TabsContent>
