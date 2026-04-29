@@ -10,6 +10,7 @@ export interface Job {
   status: "scheduled" | "in_progress" | "completed" | "invoiced";
   scheduledDate: string | null;
   timeSlot: TimeSlot;
+  sortOrder: number;
   completedDate: string | null;
   notes: string;
   createdAt: string;
@@ -21,6 +22,7 @@ type JobUpdates = Partial<{
   status: string;
   scheduledDate: string;
   timeSlot: TimeSlot;
+  sortOrder: number;
   completedDate: string;
   notes: string;
 }>;
@@ -45,6 +47,7 @@ export function useJobs() {
         status: r.status,
         scheduledDate: r.scheduled_date,
         timeSlot: (r.time_slot ?? "all_day") as TimeSlot,
+        sortOrder: typeof r.sort_order === "number" ? r.sort_order : 0,
         completedDate: r.completed_date,
         notes: r.notes ?? "",
         createdAt: r.created_at,
@@ -86,6 +89,7 @@ export function useJobs() {
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.scheduledDate !== undefined) dbUpdates.scheduled_date = updates.scheduledDate;
       if (updates.timeSlot !== undefined) dbUpdates.time_slot = updates.timeSlot;
+      if (updates.sortOrder !== undefined) dbUpdates.sort_order = updates.sortOrder;
       if (updates.completedDate !== undefined) dbUpdates.completed_date = updates.completedDate;
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,6 +107,7 @@ export function useJobs() {
                 ...(updates.status !== undefined && { status: updates.status as Job["status"] }),
                 ...(updates.scheduledDate !== undefined && { scheduledDate: updates.scheduledDate }),
                 ...(updates.timeSlot !== undefined && { timeSlot: updates.timeSlot }),
+                ...(updates.sortOrder !== undefined && { sortOrder: updates.sortOrder }),
                 ...(updates.completedDate !== undefined && { completedDate: updates.completedDate }),
                 ...(updates.notes !== undefined && { notes: updates.notes }),
               }
@@ -125,12 +130,52 @@ export function useJobs() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
   });
 
+  const reorderJobsMut = useMutation({
+    mutationFn: async (
+      items: Array<{ id: string; sortOrder: number; scheduledDate?: string | null; timeSlot?: TimeSlot }>,
+    ) => {
+      const now = new Date().toISOString();
+      await Promise.all(
+        items.map((it) => {
+          const u: Record<string, unknown> = { sort_order: it.sortOrder, updated_at: now };
+          if (it.scheduledDate !== undefined) u.scheduled_date = it.scheduledDate;
+          if (it.timeSlot !== undefined) u.time_slot = it.timeSlot;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return supabase.from("jobs").update(u as any).eq("id", it.id);
+        }),
+      );
+    },
+    onMutate: async (items) => {
+      await qc.cancelQueries({ queryKey: ["jobs"] });
+      const previous = qc.getQueryData<Job[]>(["jobs"]);
+      const map = new Map(items.map((it) => [it.id, it]));
+      qc.setQueryData<Job[]>(["jobs"], (old) =>
+        old?.map((j) => {
+          const it = map.get(j.id);
+          if (!it) return j;
+          return {
+            ...j,
+            sortOrder: it.sortOrder,
+            ...(it.scheduledDate !== undefined && { scheduledDate: it.scheduledDate }),
+            ...(it.timeSlot !== undefined && { timeSlot: it.timeSlot }),
+          };
+        }) ?? [],
+      );
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) qc.setQueryData(["jobs"], ctx.previous);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
+  });
+
   return {
     jobs,
     isLoading,
     createJob: createJobMut.mutateAsync,
     updateJob: (id: string, updates: JobUpdates, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
+    reorderJobs: reorderJobsMut.mutate,
   };
 }
 

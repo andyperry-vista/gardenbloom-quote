@@ -24,12 +24,14 @@ function WeatherIcon({ code }: { code: number }) {
 }
 
 export default function CalendarPage() {
-  const { jobs, updateJob } = useJobs();
+  const { jobs, updateJob, reorderJobs } = useJobs();
   const { invoices } = useInvoices();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [weather, setWeather] = useState<WeatherDay[]>([]);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  // Drop target for inserting BEFORE a specific job: `${jobId}`
+  const [insertBeforeId, setInsertBeforeId] = useState<string | null>(null);
 
   const handleDragStart = (e: React.DragEvent, jobId: string) => {
     e.dataTransfer.setData("text/job-id", jobId);
@@ -40,22 +42,94 @@ export default function CalendarPage() {
   const handleDragEnd = () => {
     setDraggingId(null);
     setDropTarget(null);
+    setInsertBeforeId(null);
   };
 
   const handleDrop = (e: React.DragEvent, dateISO: string, slot: TimeSlot) => {
     e.preventDefault();
     const jobId = e.dataTransfer.getData("text/job-id") || draggingId;
+    const beforeId = insertBeforeId;
     setDraggingId(null);
     setDropTarget(null);
+    setInsertBeforeId(null);
     if (!jobId) return;
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return;
-    const sameDate = job.scheduledDate === dateISO;
-    const sameSlot = job.timeSlot === slot;
-    if (sameDate && sameSlot) return;
-    const updates: Parameters<typeof updateJob>[1] = { timeSlot: slot };
-    if (!sameDate) updates.scheduledDate = dateISO;
-    updateJob(job.id, updates);
+
+    // Build the destination lane (excluding the dragged job), then insert.
+    const destLane = jobs
+      .filter(
+        (j) =>
+          j.id !== job.id &&
+          j.scheduledDate === dateISO &&
+          j.timeSlot === slot,
+      )
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+
+    const insertIdx =
+      beforeId && destLane.some((j) => j.id === beforeId)
+        ? destLane.findIndex((j) => j.id === beforeId)
+        : destLane.length;
+
+    const movedJob = {
+      ...job,
+      scheduledDate: dateISO,
+      timeSlot: slot,
+    };
+    const newDestLane = [
+      ...destLane.slice(0, insertIdx),
+      movedJob,
+      ...destLane.slice(insertIdx),
+    ];
+
+    const updates: Array<{
+      id: string;
+      sortOrder: number;
+      scheduledDate?: string | null;
+      timeSlot?: TimeSlot;
+    }> = newDestLane.map((j, idx) => {
+      const u: { id: string; sortOrder: number; scheduledDate?: string | null; timeSlot?: TimeSlot } = {
+        id: j.id,
+        sortOrder: idx,
+      };
+      if (j.id === job.id) {
+        u.scheduledDate = dateISO;
+        u.timeSlot = slot;
+      } else if (j.sortOrder !== idx) {
+        // sort_order changed only
+      }
+      return u;
+    });
+
+    // If the source lane is different, also resequence the source lane.
+    const sourceChanged =
+      job.scheduledDate !== dateISO || job.timeSlot !== slot;
+    if (sourceChanged && job.scheduledDate) {
+      const sourceLane = jobs
+        .filter(
+          (j) =>
+            j.id !== job.id &&
+            j.scheduledDate === job.scheduledDate &&
+            j.timeSlot === job.timeSlot,
+        )
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+      sourceLane.forEach((j, idx) => {
+        if (j.sortOrder !== idx) {
+          updates.push({ id: j.id, sortOrder: idx });
+        }
+      });
+    }
+
+    // No-op guard: same lane, same position
+    if (!sourceChanged) {
+      const oldIdx = [...destLane, movedJob]
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .findIndex((j) => j.id === job.id);
+      const newIdx = newDestLane.findIndex((j) => j.id === job.id);
+      if (oldIdx === newIdx) return;
+    }
+
+    reorderJobs(updates);
     toast.success(
       `${job.jobNumber} → ${format(new Date(dateISO), "d MMM")} ${
         slot === "morning" ? "AM" : slot === "afternoon" ? "PM" : "All-day"
@@ -86,7 +160,11 @@ export default function CalendarPage() {
   const getJobsForDay = (date: Date) =>
     jobs
       .filter((j) => j.scheduledDate && isSameDay(new Date(j.scheduledDate), date))
-      .sort((a, b) => timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot));
+      .sort(
+        (a, b) =>
+          timeSlotOrder(a.timeSlot) - timeSlotOrder(b.timeSlot) ||
+          a.sortOrder - b.sortOrder,
+      );
   const getDueInvoices = (date: Date) => invoices.filter((i) => i.dueDate && isSameDay(new Date(i.dueDate), date) && i.status !== "paid");
   const getWeather = (date: Date) => weather.find((w) => isSameDay(new Date(w.date), date));
 
@@ -123,7 +201,7 @@ export default function CalendarPage() {
                 <span>Invoice due</span>
               </div>
               <span className="text-muted-foreground ml-auto hidden sm:inline">
-                Tip: drag a job between AM, PM or All-day to reschedule.
+                Tip: drag a job to reorder, or move it between AM, PM and All-day.
               </span>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted-foreground mb-2">
@@ -145,16 +223,30 @@ export default function CalendarPage() {
                     variant === "all"
                       ? "bg-primary/15 text-primary font-medium"
                       : "bg-background/70";
+                  const showInsertBar =
+                    insertBeforeId === j.id &&
+                    draggingId &&
+                    draggingId !== j.id;
                   return (
                     <div
                       key={j.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, j.id)}
                       onDragEnd={handleDragEnd}
+                      onDragOver={(e) => {
+                        if (!draggingId || draggingId === j.id) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = "move";
+                        if (insertBeforeId !== j.id) setInsertBeforeId(j.id);
+                      }}
+                      onDragLeave={(e) => {
+                        e.stopPropagation();
+                      }}
                       className={`group relative flex items-center gap-0.5 rounded px-1 py-0.5 truncate text-[10px] cursor-grab active:cursor-grabbing transition-opacity ${base} ${
                         draggingId === j.id ? "opacity-40" : "hover:opacity-80"
-                      }`}
-                      title="Drag to AM, PM or All-day"
+                      } ${showInsertBar ? "before:absolute before:left-0 before:right-0 before:-top-[3px] before:h-[2px] before:rounded before:bg-primary before:content-['']" : ""}`}
+                      title="Drag to reorder, or move to AM, PM or All-day"
                     >
                       <GripVertical className="w-2.5 h-2.5 shrink-0 opacity-40 group-hover:opacity-80" aria-hidden />
                       <Link
@@ -178,6 +270,8 @@ export default function CalendarPage() {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
                       if (dropTarget !== key) setDropTarget(key);
+                      // dragging over slot background = append (no insertBefore)
+                      if (insertBeforeId !== null) setInsertBeforeId(null);
                     },
                     onDragLeave: () => {
                       if (dropTarget === key) setDropTarget(null);
