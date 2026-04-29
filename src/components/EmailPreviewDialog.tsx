@@ -57,6 +57,31 @@ export default function EmailPreviewDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, quote.id]);
 
+  const lineItems = useMemo(
+    () =>
+      quote.items.map((item) => {
+        const unitClientPrice = item.unitCost * (1 + item.markupPercent / 100);
+        return {
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: formatAUD(unitClientPrice),
+          total: formatAUD(item.total),
+        };
+      }),
+    [quote.items],
+  );
+
+  const preDiscountTotal = useMemo(
+    () => quote.items.reduce((s, i) => s + i.total, 0),
+    [quote.items],
+  );
+
+  const discountAmountNum = useMemo(() => {
+    if (quote.discountType === "percentage") return preDiscountTotal * (quote.discountValue / 100);
+    if (quote.discountType === "fixed") return quote.discountValue;
+    return 0;
+  }, [quote.discountType, quote.discountValue, preDiscountTotal]);
+
   const templateData = useMemo(
     () => ({
       clientName,
@@ -65,8 +90,22 @@ export default function EmailPreviewDialog({
       propertyAddress,
       introMessage,
       subject, // used by subject() function in the template
+      lineItems,
+      subtotal: formatAUD(preDiscountTotal),
+      discountLabel:
+        quote.discountType === "percentage"
+          ? `Discount (${quote.discountValue}%)`
+          : quote.discountType === "fixed"
+          ? "Discount"
+          : undefined,
+      discountAmount: discountAmountNum > 0 ? formatAUD(discountAmountNum) : undefined,
+      notes: quote.notes,
     }),
-    [clientName, quoteNumber, quoteTotal, propertyAddress, introMessage, subject],
+    [
+      clientName, quoteNumber, quoteTotal, propertyAddress, introMessage, subject,
+      lineItems, preDiscountTotal, discountAmountNum,
+      quote.discountType, quote.discountValue, quote.notes,
+    ],
   );
 
   // Render email HTML via the edge function whenever editable fields change (debounced)
