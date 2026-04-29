@@ -24,10 +24,44 @@ function WeatherIcon({ code }: { code: number }) {
 }
 
 export default function CalendarPage() {
-  const { jobs } = useJobs();
+  const { jobs, updateJob } = useJobs();
   const { invoices } = useInvoices();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [weather, setWeather] = useState<WeatherDay[]>([]);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, jobId: string) => {
+    e.dataTransfer.setData("text/job-id", jobId);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggingId(jobId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingId(null);
+    setDropTarget(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, dateISO: string, slot: TimeSlot) => {
+    e.preventDefault();
+    const jobId = e.dataTransfer.getData("text/job-id") || draggingId;
+    setDraggingId(null);
+    setDropTarget(null);
+    if (!jobId) return;
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job) return;
+    const sameDate = job.scheduledDate === dateISO;
+    const sameSlot = job.timeSlot === slot;
+    if (sameDate && sameSlot) return;
+    const updates: Parameters<typeof updateJob>[1] = { timeSlot: slot };
+    if (!sameDate) updates.scheduledDate = dateISO;
+    updateJob(job.id, updates);
+    toast.success(
+      `${job.jobNumber} → ${format(new Date(dateISO), "d MMM")} ${
+        slot === "morning" ? "AM" : slot === "afternoon" ? "PM" : "All-day"
+      }`,
+    );
+  };
 
   useEffect(() => {
     fetch("https://api.open-meteo.com/v1/forecast?latitude=-37.76&longitude=145.12&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=Australia%2FSydney&forecast_days=14")
