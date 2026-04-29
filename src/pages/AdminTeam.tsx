@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, UserCog, Trash2, Loader2 } from "lucide-react";
+import { ShieldCheck, UserCog, Trash2, Loader2, Crown } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +26,36 @@ export default function AdminTeam() {
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<AppRole>("manager");
   const [adding, setAdding] = useState(false);
+
+  // Webmaster bootstrap
+  const [wmEmail, setWmEmail] = useState("");
+  const [wmPassword, setWmPassword] = useState("");
+  const [provisioning, setProvisioning] = useState(false);
+  const hasWebmaster = rows.some((r) => r.role === "webmaster");
+
+  const handleProvisionWebmaster = async () => {
+    if (!wmEmail.includes("@") || wmPassword.length < 8) {
+      toast.error("Email and password (8+ chars) required");
+      return;
+    }
+    setProvisioning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("provision-webmaster", {
+        body: { email: wmEmail.trim().toLowerCase(), password: wmPassword },
+      });
+      if (error) throw error;
+      const result = data as { error?: string; message?: string };
+      if (result?.error) throw new Error(result.error);
+      toast.success(result?.message || "Webmaster account ready");
+      setWmEmail("");
+      setWmPassword("");
+      load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setProvisioning(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
