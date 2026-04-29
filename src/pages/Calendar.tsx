@@ -94,11 +94,22 @@ export default function CalendarPage() {
                       )}
                     </div>
                     <div className="space-y-0.5 mt-1">
-                      {dayJobs.map((j) => (
-                        <Link key={j.id} to={`/admin/jobs/${j.id}`}>
-                          <div className="bg-primary/10 text-primary rounded px-1 truncate text-[10px]">{j.jobNumber}</div>
-                        </Link>
-                      ))}
+                      {dayJobs.map((j) => {
+                        const slotClass =
+                          j.timeSlot === "morning"
+                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                            : j.timeSlot === "afternoon"
+                            ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+                            : "bg-primary/10 text-primary";
+                        return (
+                          <Link key={j.id} to={`/admin/jobs/${j.id}`}>
+                            <div className={`${slotClass} rounded px-1 truncate text-[10px] flex items-center gap-1`}>
+                              <span className="font-semibold shrink-0">{timeSlotShort(j.timeSlot)}</span>
+                              <span className="truncate">{j.jobNumber}</span>
+                            </div>
+                          </Link>
+                        );
+                      })}
                       {dayInvoices.map((i) => (
                         <Link key={i.id} to={`/admin/invoices/${i.id}`}>
                           <div className="bg-destructive/10 text-destructive rounded px-1 truncate text-[10px]">{i.invoiceNumber} due</div>
