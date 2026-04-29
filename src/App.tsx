@@ -74,6 +74,7 @@ const App = () => (
             <Route path="/admin/employees" element={<AdminGuard><Employees /></AdminGuard>} />
             <Route path="/admin/employees/:id/time-log" element={<AdminGuard><EmployeeTimeLog /></AdminGuard>} />
             <Route path="/admin/payroll" element={<AdminGuard><Payroll /></AdminGuard>} />
+            <Route path="/admin/team" element={<AdminGuard><AdminTeam /></AdminGuard>} />
             <Route path="/agent/login" element={<AgentLogin />} />
             <Route path="/agent" element={<AgentGuard><AgentDashboard /></AgentGuard>} />
             <Route path="/agent/request" element={<AgentGuard><AgentQuoteRequest /></AgentGuard>} />
