@@ -53,7 +53,7 @@ const TaxInvoiceEmail = ({ clientName, invoiceNumber, amount, dueDate, notes }: 
         </Section>
         <Hr style={hr} />
         <Text style={text}>
-          Payment is due within 14 days. Please transfer to the bank details provided on the attached invoice, or reply to this email for alternative payment options.
+          Payment is required on or before the job completion date. Please transfer to the bank details provided on the attached invoice, or reply to this email for alternative payment options.
         </Text>
         <Text style={footer}>ABN: 22 046 912 532 | {SITE_NAME}</Text>
       </Container>
