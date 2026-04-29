@@ -17,6 +17,7 @@ import { usePayrollDefaults } from "@/hooks/usePayrollDefaults";
 import { effectiveHourlyRate } from "@/lib/employeeRate";
 import { supabase } from "@/integrations/supabase/client";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const makeBlank = (d: ReturnType<typeof usePayrollDefaults>["defaults"]): Partial<Employee> => ({
   name: "", email: "", phone: "", address: "",
