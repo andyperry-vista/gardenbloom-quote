@@ -12,6 +12,15 @@ export default function EmployeeGuard({ children }: { children: React.ReactNode 
     const check = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setStatus("unauthenticated"); return; }
+
+      // Webmaster bypass — full site access
+      const { data: wmRoles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "webmaster");
+      if ((wmRoles ?? []).length > 0) { setStatus("ok"); return; }
+
       const { data } = await supabase
         .from("employees")
         .select("id")

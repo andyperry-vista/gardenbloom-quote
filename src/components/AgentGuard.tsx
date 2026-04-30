@@ -13,6 +13,14 @@ export default function AgentGuard({ children }: { children: React.ReactNode }) 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setStatus("unauthenticated"); return; }
 
+      // Webmaster bypass — full site access
+      const { data: wmRoles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "webmaster");
+      if ((wmRoles ?? []).length > 0) { setStatus("approved"); return; }
+
       const { data } = await supabase
         .from("agent_profiles")
         .select("status")
