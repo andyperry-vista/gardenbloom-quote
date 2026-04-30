@@ -127,6 +127,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const perms = usePermissions();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
