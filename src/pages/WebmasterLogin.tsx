@@ -168,6 +168,15 @@ export default function WebmasterLogin() {
               Sign In
             </Button>
           </form>
+          <p className="text-xs text-muted-foreground text-center mt-4 pt-4 border-t">
+            Don't have webmaster access?{" "}
+            <a
+              href="mailto:nicholas@mayuragardenservices.com.au?subject=Webmaster%20access%20request"
+              className="text-primary underline hover:no-underline"
+            >
+              Contact an admin
+            </a>
+          </p>
         </CardContent>
       </Card>
     </div>
