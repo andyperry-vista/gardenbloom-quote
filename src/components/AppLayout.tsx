@@ -162,6 +162,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <NavDropdown key={group.label} group={group} pathname={location.pathname} />
               )
             )}
+            {perms.isWebmaster && (
+              <Link
+                to="/admin/webmaster"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${location.pathname === "/admin/webmaster" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"}`}
+              >
+                <Crown className="w-4 h-4 shrink-0" />
+                Webmaster
+              </Link>
+            )}
             <NotificationBell />
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
               <LogOut className="w-4 h-4" />
@@ -195,6 +204,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+              {perms.isWebmaster && (
+                <Link
+                  to="/admin/webmaster"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors col-span-2 ${location.pathname === "/admin/webmaster" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"}`}
+                >
+                  <Crown className="w-4 h-4 shrink-0" />
+                  Webmaster Console
+                </Link>
+              )}
               <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 justify-start col-span-2">
                 <LogOut className="w-4 h-4 mr-2" /> Logout
               </Button>
