@@ -13,6 +13,7 @@ import {
 import { usePermissions } from "@/hooks/usePermissions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { isAllowedRoute } from "@/lib/siteRoutes";
 
 interface Area {
   to: string;
@@ -136,6 +137,28 @@ export default function AdminWebmaster() {
 
   if (!perms.isWebmaster) return <Navigate to="/admin" replace />;
 
+  // Lock down: drop any link that is not in the registered route allowlist.
+  // Prevents typos or stale entries from sending the webmaster to a 404.
+  const safePortals = portals
+    .map((p) => {
+      const entryOk = isAllowedRoute(p.entry);
+      const safeAreas = p.areas.filter((a) => {
+        const ok = isAllowedRoute(a.to);
+        if (!ok && import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.warn(`[WebmasterConsole] dropping unknown route: ${a.to}`);
+        }
+        return ok;
+      });
+      if (!entryOk && import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.warn(`[WebmasterConsole] dropping unknown portal entry: ${p.entry}`);
+      }
+      return { ...p, entry: entryOk ? p.entry : "", areas: safeAreas };
+    })
+    .filter((p) => p.entry && p.areas.length > 0);
+
+
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto space-y-6">
@@ -155,7 +178,7 @@ export default function AdminWebmaster() {
           </Button>
         </div>
 
-        {portals.map((p) => (
+        {safePortals.map((p) => (
           <Card key={p.key}>
             <CardHeader>
               <div className="flex items-start justify-between gap-3 flex-wrap">
