@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import NotificationBell from "@/components/NotificationBell";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const navGroups = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
