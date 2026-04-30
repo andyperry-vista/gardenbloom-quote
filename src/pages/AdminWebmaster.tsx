@@ -1,4 +1,5 @@
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,11 @@ import {
   Crown, Loader2, ExternalLink, ShieldCheck, UserCheck, HardHat, Globe,
   LayoutDashboard, FilePlus, Inbox, Package, PackageCheck, Briefcase,
   CalendarDays, FileText, Wrench, Users, Calculator, Settings as SettingsIcon,
-  Home, FileSearch, Image as ImageIcon, Receipt, Phone, Clock,
+  Home, FileSearch, Image as ImageIcon, Receipt, Phone, Clock, LogOut,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Area {
   to: string;
