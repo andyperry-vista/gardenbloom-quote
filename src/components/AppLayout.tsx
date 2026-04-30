@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox, HardHat, Calculator, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox, HardHat, Calculator, ShieldCheck, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import NotificationBell from "@/components/NotificationBell";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const navGroups = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
@@ -126,6 +127,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const perms = usePermissions();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -160,6 +162,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <NavDropdown key={group.label} group={group} pathname={location.pathname} />
               )
             )}
+            {perms.isWebmaster && (
+              <Link
+                to="/admin/webmaster"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${location.pathname === "/admin/webmaster" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"}`}
+              >
+                <Crown className="w-4 h-4 shrink-0" />
+                Webmaster
+              </Link>
+            )}
             <NotificationBell />
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
               <LogOut className="w-4 h-4" />
@@ -193,6 +204,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+              {perms.isWebmaster && (
+                <Link
+                  to="/admin/webmaster"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors col-span-2 ${location.pathname === "/admin/webmaster" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"}`}
+                >
+                  <Crown className="w-4 h-4 shrink-0" />
+                  Webmaster Console
+                </Link>
+              )}
               <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 justify-start col-span-2">
                 <LogOut className="w-4 h-4 mr-2" /> Logout
               </Button>
