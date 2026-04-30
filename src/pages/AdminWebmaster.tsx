@@ -110,6 +110,19 @@ const portals: Portal[] = [
 
 export default function AdminWebmaster() {
   const perms = usePermissions();
+  const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+      setSigningOut(false);
+      return;
+    }
+    navigate("/webmaster/login", { replace: true });
+  };
 
   if (perms.loading) {
     return (
@@ -126,14 +139,20 @@ export default function AdminWebmaster() {
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-start gap-3">
-          <Crown className="w-8 h-8 text-primary mt-1 shrink-0" />
-          <div>
-            <h1 className="font-display text-3xl">Webmaster Console</h1>
-            <p className="text-muted-foreground mt-1">
-              Every area of the site, grouped by portal. As webmaster you can open and preview each one directly — guards will let you through. Use <em>View as</em> to open a portal in a new tab the way that role experiences it.
-            </p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-start gap-3">
+            <Crown className="w-8 h-8 text-primary mt-1 shrink-0" />
+            <div>
+              <h1 className="font-display text-3xl">Webmaster Console</h1>
+              <p className="text-muted-foreground mt-1">
+                Every area of the site, grouped by portal. As webmaster you can open and preview each one directly — guards will let you through. Use <em>View as</em> to open a portal in a new tab the way that role experiences it.
+              </p>
+            </div>
           </div>
+          <Button variant="outline" onClick={handleSignOut} disabled={signingOut}>
+            {signingOut ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <LogOut className="w-4 h-4 mr-2" />}
+            Sign Out
+          </Button>
         </div>
 
         {portals.map((p) => (
