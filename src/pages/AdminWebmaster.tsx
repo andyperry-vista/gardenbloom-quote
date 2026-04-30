@@ -178,7 +178,7 @@ export default function AdminWebmaster() {
           </Button>
         </div>
 
-        {portals.map((p) => (
+        {safePortals.map((p) => (
           <Card key={p.key}>
             <CardHeader>
               <div className="flex items-start justify-between gap-3 flex-wrap">
