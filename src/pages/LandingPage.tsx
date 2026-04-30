@@ -482,6 +482,10 @@ export default function LandingPage() {
             <a href="/admin/login" className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
               {t("admin")}
             </a>
+            <span className="text-foreground/20">·</span>
+            <a href="/webmaster/login" className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
+              Webmaster
+            </a>
           </div>
         </div>
       </footer>

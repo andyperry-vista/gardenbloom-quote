@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import LandingPage from "./pages/LandingPage";
 import AdminLogin from "./pages/AdminLogin";
+import WebmasterLogin from "./pages/WebmasterLogin";
 import AdminGuard from "./components/AdminGuard";
 import AgentGuard from "./components/AgentGuard";
 import Dashboard from "./pages/Dashboard";
@@ -56,6 +57,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/webmaster/login" element={<WebmasterLogin />} />
             <Route path="/admin" element={<AdminGuard><Dashboard /></AdminGuard>} />
             <Route path="/admin/quotes/new" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
             <Route path="/admin/quotes/:id" element={<AdminGuard><QuoteView /></AdminGuard>} />
