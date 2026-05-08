@@ -420,6 +420,16 @@ export default function QuoteEditor() {
           onOpenChange={setPreviewOpen}
         />
       )}
+
+      <QuickMaterialPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        defaultMarkup={settings.defaultMarkupPercent}
+        onAdd={(newLines) => {
+          pendingScrollId.current = newLines[newLines.length - 1]?.id ?? null;
+          setItems((prev) => [...prev, ...newLines]);
+        }}
+      />
     </AppLayout>
   );
 }
