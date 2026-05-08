@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles, Wand2, Download } from "lucide-react";
+import { generateQuoteRequestPdf } from "@/lib/generateQuoteRequestPdf";
+import { toast } from "sonner";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
