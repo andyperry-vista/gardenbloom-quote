@@ -14,9 +14,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail } from "lucide-react";
+import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail, Sparkles } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import EmailPreviewDialog from "@/components/EmailPreviewDialog";
+import QuickMaterialPicker from "@/components/QuickMaterialPicker";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
@@ -51,6 +52,7 @@ export default function QuoteEditor() {
   const [discountValue, setDiscountValue] = useState(existingQuote?.discountValue ?? 0);
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     if (existingQuote) {
@@ -197,6 +199,7 @@ export default function QuoteEditor() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle>Line Items</CardTitle>
               <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => setPickerOpen(true)} className="bg-accent text-accent-foreground hover:bg-accent/90"><Sparkles className="w-4 h-4 mr-1" /> Quick Picker</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("material")}><Plus className="w-4 h-4 mr-1" /> Material</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("labor")}><Plus className="w-4 h-4 mr-1" /> Labour</Button>
                 <Button variant="outline" size="sm" onClick={() => addLineItem("misc")}><Plus className="w-4 h-4 mr-1" /> Misc</Button>
@@ -417,6 +420,16 @@ export default function QuoteEditor() {
           onOpenChange={setPreviewOpen}
         />
       )}
+
+      <QuickMaterialPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        defaultMarkup={settings.defaultMarkupPercent}
+        onAdd={(newLines) => {
+          pendingScrollId.current = newLines[newLines.length - 1]?.id ?? null;
+          setItems((prev) => [...prev, ...newLines]);
+        }}
+      />
     </AppLayout>
   );
 }
