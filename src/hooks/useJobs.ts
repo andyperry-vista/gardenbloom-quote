@@ -172,6 +172,8 @@ export function useJobs() {
   return {
     jobs,
     isLoading,
+    isFetching,
+    refetch,
     createJob: createJobMut.mutateAsync,
     updateJob: (id: string, updates: JobUpdates, options?: Parameters<typeof updateJobMut.mutate>[1]) => updateJobMut.mutate({ id, updates }, options),
     deleteJob: (id: string) => deleteJobMut.mutate(id),
