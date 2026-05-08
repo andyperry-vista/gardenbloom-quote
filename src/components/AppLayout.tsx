@@ -184,13 +184,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Button>
           </nav>
 
-          <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            aria-controls="admin-mobile-menu"
+            className="lg:hidden text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 gap-1.5 px-3 h-9"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <span className="text-sm font-medium">Menu</span>
           </Button>
         </div>
 
         {mobileOpen && (
-          <div className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3">
+          <div id="admin-mobile-menu" className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3 max-h-[calc(100vh-3.5rem-env(safe-area-inset-top))] overflow-y-auto">
             <nav className="container grid grid-cols-2 gap-1 pt-2">
               {allNavItems.map((item) => {
                 const isActive = location.pathname === item.to;
