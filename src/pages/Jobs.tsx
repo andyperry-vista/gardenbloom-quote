@@ -260,6 +260,7 @@ export default function Jobs() {
           </Card>
         )}
       </div>
+      </PullToRefresh>
     </AppLayout>
   );
 }
