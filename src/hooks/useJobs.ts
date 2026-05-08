@@ -30,7 +30,7 @@ type JobUpdates = Partial<{
 export function useJobs() {
   const qc = useQueryClient();
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading, refetch, isFetching } = useQuery({
     queryKey: ["jobs"],
     queryFn: async () => {
       const { data, error } = await supabase
