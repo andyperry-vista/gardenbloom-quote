@@ -458,7 +458,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container text-center">
-          <img src={mayuraLogoHorizontal} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
+          <img src={mayuraLogoHorizontal} alt="Mayura" width={800} height={188} loading="lazy" decoding="async" className="h-16 w-auto mx-auto rounded mb-3" />
           <p className="text-sm text-foreground/70">
             {t("footerTagline")}
           </p>
