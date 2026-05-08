@@ -32,17 +32,17 @@ export default function QuoteRequests() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-3xl text-foreground">Quote Requests</h1>
-            <p className="text-muted-foreground mt-1">Manage inbound enquiries from your website</p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <h1 className="font-display text-2xl sm:text-3xl text-foreground">Quote Requests</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage inbound enquiries from your website</p>
           </div>
-          <Badge variant="secondary" className="text-sm">{requests.length} total</Badge>
+          <Badge variant="secondary" className="text-sm shrink-0">{requests.length} total</Badge>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
           {STATUS_OPTIONS.map((opt) => (
             <Button
               key={opt.value}
@@ -76,7 +76,7 @@ export default function QuoteRequests() {
             {filtered.map((req) => (
               <Card key={req.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-semibold text-foreground">{req.name}</span>
@@ -161,8 +161,8 @@ export default function QuoteRequests() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 shrink-0 flex-wrap mt-4 sm:mt-0 flex-col sm:flex-row items-end">
-                      <div className="mb-2 w-full sm:w-auto p-3 bg-muted/40 rounded-md border flex flex-col gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto sm:shrink-0 flex-col sm:items-end">
+                      <div className="w-full sm:w-auto p-3 bg-muted/40 rounded-md border flex flex-col gap-2">
                         <span className="text-sm font-medium text-foreground">Has site been viewed?</span>
                         <div className="flex gap-2 justify-end">
                           <Button 
@@ -178,7 +178,7 @@ export default function QuoteRequests() {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 flex-wrap justify-end">
+                      <div className="flex gap-2 flex-wrap sm:justify-end">
                         <Button
                           size="sm"
                           variant="default"
