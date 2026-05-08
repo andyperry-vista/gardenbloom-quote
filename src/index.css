@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+/* Google Fonts loaded asynchronously from index.html to avoid render-blocking */
 
 @tailwind base;
 @tailwind components;
