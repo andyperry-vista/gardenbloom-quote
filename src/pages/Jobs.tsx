@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AppLayout from "@/components/AppLayout";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-primary/10 text-primary",
@@ -43,6 +43,21 @@ export default function Jobs() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [, setTick] = useState(0);
+
+  // Tick every 30s so relative time stays fresh
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Set initial timestamp once jobs first load
+  useEffect(() => {
+    if (!isLoading && !isFetching && lastRefreshed === null) {
+      setLastRefreshed(new Date());
+    }
+  }, [isLoading, isFetching, lastRefreshed]);
 
   const filteredJobs = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -89,6 +104,7 @@ export default function Jobs() {
       onSuccess: async () => {
         toast.success(`Status updated to ${status.replace(/_/g, " ")}`);
         await refetch();
+        setLastRefreshed(new Date());
       },
       onError: () => toast.error("Failed to update job status"),
     });
@@ -96,6 +112,7 @@ export default function Jobs() {
 
   const handleRefresh = async () => {
     await refetch();
+    setLastRefreshed(new Date());
     toast.success("Jobs refreshed");
   };
 
@@ -107,6 +124,11 @@ export default function Jobs() {
           <div>
             <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+            {lastRefreshed && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Last refreshed {formatDistanceToNow(lastRefreshed, { addSuffix: true })}
+              </p>
+            )}
           </div>
           <Button
             variant="outline"
