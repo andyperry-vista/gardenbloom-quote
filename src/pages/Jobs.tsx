@@ -90,12 +90,31 @@ export default function Jobs() {
     });
   };
 
+  const handleRefresh = async () => {
+    await refetch();
+    toast.success("Jobs refreshed");
+  };
+
   return (
     <AppLayout>
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="space-y-5">
-        <div>
-          <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 shrink-0"
+            onClick={handleRefresh}
+            disabled={isFetching}
+            aria-label="Refresh jobs"
+          >
+            <RefreshCw className={`w-4 h-4 sm:mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </Button>
         </div>
 
         {/* Search + sort row — stacks on phones */}
