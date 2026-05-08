@@ -130,6 +130,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const perms = usePermissions();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
+
+  // Close mobile menu on Escape and return focus to the toggle button
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    // Move focus into the menu so keyboard users can tab through it
+    firstMenuLinkRef.current?.focus();
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  // Close menu when navigating to a new route
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -185,9 +208,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <Button
+            ref={menuButtonRef}
             variant="ghost"
             size="sm"
-            aria-label="Open menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="admin-mobile-menu"
             className="lg:hidden text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 gap-1.5 px-3 h-9"
@@ -199,14 +223,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {mobileOpen && (
-          <div id="admin-mobile-menu" className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3 max-h-[calc(100vh-3.5rem-env(safe-area-inset-top))] overflow-y-auto">
+          <div id="admin-mobile-menu" role="dialog" aria-modal="false" aria-label="Main menu" className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3 max-h-[calc(100vh-3.5rem-env(safe-area-inset-top))] overflow-y-auto">
             <nav className="container grid grid-cols-2 gap-1 pt-2">
-              {allNavItems.map((item) => {
+              {allNavItems.map((item, idx) => {
                 const isActive = location.pathname === item.to;
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
+                    ref={idx === 0 ? firstMenuLinkRef : undefined}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
