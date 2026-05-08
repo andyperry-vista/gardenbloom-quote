@@ -104,6 +104,7 @@ export default function Jobs() {
       onSuccess: async () => {
         toast.success(`Status updated to ${status.replace(/_/g, " ")}`);
         await refetch();
+        setLastRefreshed(new Date());
       },
       onError: () => toast.error("Failed to update job status"),
     });
@@ -111,6 +112,7 @@ export default function Jobs() {
 
   const handleRefresh = async () => {
     await refetch();
+    setLastRefreshed(new Date());
     toast.success("Jobs refreshed");
   };
 
@@ -122,6 +124,11 @@ export default function Jobs() {
           <div>
             <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+            {lastRefreshed && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Last refreshed {formatDistanceToNow(lastRefreshed, { addSuffix: true })}
+              </p>
+            )}
           </div>
           <Button
             variant="outline"
