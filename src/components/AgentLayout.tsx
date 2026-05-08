@@ -23,6 +23,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const location = useLocation();
   const navigate = useNavigate();
   const { profile } = useAgentProfile();
+  const [pwOpen, setPwOpen] = useState(false);
 
   const navItems = profile?.commissionEnabled
     ? [...baseNavItems, referralNavItem]
