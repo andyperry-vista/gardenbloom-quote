@@ -208,9 +208,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <Button
+            ref={menuButtonRef}
             variant="ghost"
             size="sm"
-            aria-label="Open menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="admin-mobile-menu"
             className="lg:hidden text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 gap-1.5 px-3 h-9"
