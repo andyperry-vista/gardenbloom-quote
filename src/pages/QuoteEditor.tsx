@@ -53,6 +53,7 @@ export default function QuoteEditor() {
   const [discountValue, setDiscountValue] = useState(existingQuote?.discountValue ?? 0);
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [quotePreviewOpen, setQuotePreviewOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
