@@ -5,15 +5,17 @@ import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 
+// `label` shown on desktop, `short` shown in the phone bottom nav so 5–6 tabs
+// fit comfortably on a 360px screen without wrapping.
 const baseNavItems = [
-  { to: "/agent", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/agent/request", label: "New Request", icon: FilePlus },
-  { to: "/agent/jobs", label: "My Jobs", icon: Briefcase },
-  { to: "/agent/gallery", label: "Gallery", icon: Image },
-  { to: "/agent/contact", label: "Contact Us", icon: MessageCircle },
+  { to: "/agent", label: "Dashboard", short: "Home", icon: LayoutDashboard },
+  { to: "/agent/request", label: "New Request", short: "Request", icon: FilePlus },
+  { to: "/agent/jobs", label: "My Jobs", short: "Jobs", icon: Briefcase },
+  { to: "/agent/gallery", label: "Gallery", short: "Gallery", icon: Image },
+  { to: "/agent/contact", label: "Contact Us", short: "Contact", icon: MessageCircle },
 ];
 
-const referralNavItem = { to: "/agent/referrals", label: "Referrals", icon: DollarSign };
+const referralNavItem = { to: "/agent/referrals", label: "Referrals", short: "Earn", icon: DollarSign };
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -82,12 +84,13 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors ${
+                className={`flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium transition-colors active:bg-muted/60 ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
+                aria-current={isActive ? "page" : undefined}
               >
                 <item.icon className={`w-5 h-5 ${isActive ? "scale-110" : ""} transition-transform`} />
-                {item.label}
+                <span className="truncate max-w-full px-1">{item.short}</span>
               </Link>
             );
           })}
