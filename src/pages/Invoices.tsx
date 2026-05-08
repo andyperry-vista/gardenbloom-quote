@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Loader2, Filter } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useInvoices } from "@/hooks/useInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/AppLayout";
 
 const statusColors: Record<string, string> = {
@@ -12,8 +14,34 @@ const statusColors: Record<string, string> = {
   overdue: "bg-destructive/10 text-destructive",
 };
 
+const FILTERS = [
+  { value: "all", label: "All" },
+  { value: "unpaid", label: "Unpaid" },
+  { value: "sent", label: "Sent" },
+  { value: "paid", label: "Paid" },
+  { value: "overdue", label: "Overdue" },
+] as const;
+
 export default function Invoices() {
   const { invoices, isLoading } = useInvoices();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validStatuses = FILTERS.map((f) => f.value);
+  const initial = searchParams.get("status");
+  const [filter, setFilterState] = useState<string>(
+    initial && validStatuses.includes(initial as typeof validStatuses[number]) ? initial : "all"
+  );
+  const setFilter = (next: string) => {
+    setFilterState(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("status");
+    else params.set("status", next);
+    setSearchParams(params, { replace: true });
+  };
+
+  const filtered = useMemo(
+    () => (filter === "all" ? invoices : invoices.filter((i) => i.status === filter)),
+    [invoices, filter]
+  );
 
   return (
     <AppLayout>
@@ -23,20 +51,45 @@ export default function Invoices() {
           <p className="text-muted-foreground mt-1">Track invoices and payments</p>
         </div>
 
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
+          {FILTERS.map((f) => {
+            const count = f.value === "all" ? invoices.length : invoices.filter((i) => i.status === f.value).length;
+            return (
+              <Button
+                key={f.value}
+                size="sm"
+                variant={filter === f.value ? "default" : "outline"}
+                onClick={() => setFilter(f.value)}
+              >
+                {f.label} <span className="ml-1 opacity-70">({count})</span>
+              </Button>
+            );
+          })}
+        </div>
+
         {isLoading ? (
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto my-8" />
-        ) : invoices.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <Card className="py-16 text-center">
             <CardContent>
-              <p className="text-muted-foreground">No invoices yet. Generate one from a completed job.</p>
+              <p className="text-muted-foreground">
+                {invoices.length === 0
+                  ? "No invoices yet. Generate one from a completed job."
+                  : "No invoices match this filter."}
+              </p>
             </CardContent>
           </Card>
         ) : (
           <Card>
-            <CardHeader><CardTitle>All Invoices</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>
+                {filter === "all" ? "All Invoices" : FILTERS.find((f) => f.value === filter)?.label} ({filtered.length})
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {invoices.map((inv) => (
+                {filtered.map((inv) => (
                   <Link
                     key={inv.id}
                     to={`/admin/invoices/${inv.id}`}
