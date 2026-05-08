@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
