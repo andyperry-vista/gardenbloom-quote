@@ -111,9 +111,14 @@ export default function Jobs() {
   };
 
   const handleRefresh = async () => {
-    await refetch();
-    setLastRefreshed(new Date());
-    toast.success("Jobs refreshed");
+    try {
+      const result = await refetch();
+      if (result.error) throw result.error;
+      setLastRefreshed(new Date());
+      toast.success("Jobs refreshed");
+    } catch {
+      toast.error("Failed to refresh jobs");
+    }
   };
 
   return (
