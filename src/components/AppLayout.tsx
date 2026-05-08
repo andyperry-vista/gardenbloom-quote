@@ -130,6 +130,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const perms = usePermissions();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
+
+  // Close mobile menu on Escape and return focus to the toggle button
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    // Move focus into the menu so keyboard users can tab through it
+    firstMenuLinkRef.current?.focus();
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  // Close menu when navigating to a new route
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
