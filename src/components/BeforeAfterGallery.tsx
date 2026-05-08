@@ -6,12 +6,12 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { TranslationKey } from "@/i18n/translations";
 import { useSettings } from "@/hooks/useSettings";
 
-import before1 from "@/assets/gallery/before-1.jpg";
-import after1 from "@/assets/gallery/after-1.jpg";
-import before2 from "@/assets/gallery/before-2.jpg";
-import after2 from "@/assets/gallery/after-2.jpg";
-import before3 from "@/assets/gallery/before-3.jpg";
-import after3 from "@/assets/gallery/after-3.jpg";
+import before1 from "@/assets/gallery/before-1.webp";
+import after1 from "@/assets/gallery/after-1.webp";
+import before2 from "@/assets/gallery/before-2.webp";
+import after2 from "@/assets/gallery/after-2.webp";
+import before3 from "@/assets/gallery/before-3.webp";
+import after3 from "@/assets/gallery/after-3.webp";
 
 export default function BeforeAfterGallery() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useSettings } from "@/hooks/useSettings";
-import heroBefore from "@/assets/gallery/hero-before.jpg";
-import heroAfter from "@/assets/gallery/hero-after.jpg";
-import heroProfessional from "@/assets/gallery/hero-professional.jpg";
+import heroBefore from "@/assets/gallery/hero-before.webp";
+import heroAfter from "@/assets/gallery/hero-after.webp";
+import heroProfessional from "@/assets/gallery/hero-professional.webp";
 
 export default function BeforeAfterReveal() {
   const [current, setCurrent] = useState(0);
