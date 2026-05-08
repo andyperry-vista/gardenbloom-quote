@@ -1,8 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutGrid, Briefcase, Clock, LogOut } from "lucide-react";
+import { LayoutGrid, Briefcase, Clock, LogOut, KeyRound } from "lucide-react";
+import { useState } from "react";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 
 const tabs = [
   { to: "/employee", label: "Today", icon: LayoutGrid },
@@ -13,6 +15,7 @@ const tabs = [
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [pwOpen, setPwOpen] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -27,9 +30,14 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
             <img src={mayuraLogo} alt="Mayura" className="h-8 w-auto" />
             <span className="text-primary-foreground/70 text-xs">Crew</span>
           </Link>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10">
-            <LogOut className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setPwOpen(true)} className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10" aria-label="Change password">
+              <KeyRound className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
