@@ -216,6 +216,21 @@ export default function QuoteRequests() {
                             <CheckCircle className="w-3 h-3 mr-1" /> Converted
                           </Button>
                         )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full sm:w-auto min-h-10"
+                          onClick={async () => {
+                            try {
+                              await generateQuoteRequestPdf(req);
+                              toast.success("PDF downloaded");
+                            } catch (e) {
+                              toast.error("Failed to generate PDF");
+                            }
+                          }}
+                        >
+                          <Download className="w-3 h-3 mr-1" /> PDF
+                        </Button>
                       </div>
                     </div>
                   </div>
