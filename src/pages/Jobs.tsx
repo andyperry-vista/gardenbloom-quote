@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
@@ -40,7 +40,19 @@ type SortKey = (typeof sortOptions)[number]["value"];
 
 export default function Jobs() {
   const { jobs, isLoading, isFetching, refetch, updateJob } = useJobs();
-  const [filter, setFilter] = useState<string>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validStatuses = ["all", "scheduled", "in_progress", "completed", "invoiced"];
+  const initialStatus = searchParams.get("status");
+  const [filter, setFilterState] = useState<string>(
+    initialStatus && validStatuses.includes(initialStatus) ? initialStatus : "all"
+  );
+  const setFilter = (next: string) => {
+    setFilterState(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("status");
+    else params.set("status", next);
+    setSearchParams(params, { replace: true });
+  };
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);

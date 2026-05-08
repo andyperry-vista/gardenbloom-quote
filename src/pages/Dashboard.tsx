@@ -43,7 +43,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Link to="/admin/quotes/new" aria-label="View quotes">
+          <Link to="/admin/quote-requests?status=new" aria-label="View new quote requests">
             <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Quotes</CardTitle>
@@ -52,7 +52,7 @@ export default function Dashboard() {
               <CardContent><div className="text-2xl font-bold">{quotes.length}</div></CardContent>
             </Card>
           </Link>
-          <Link to="/admin/quotes/new" aria-label="View total quoted">
+          <Link to="/admin/quote-requests" aria-label="View all quote requests">
             <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Quoted</CardTitle>
@@ -61,7 +61,7 @@ export default function Dashboard() {
               <CardContent><div className="text-2xl font-bold">${totalQuoted.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
             </Card>
           </Link>
-          <Link to="/admin/jobs" aria-label="View active jobs">
+          <Link to="/admin/jobs?status=in_progress" aria-label="View in-progress jobs">
             <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Active Jobs</CardTitle>
@@ -70,7 +70,7 @@ export default function Dashboard() {
               <CardContent><div className="text-2xl font-bold">{upcomingJobs.length}</div></CardContent>
             </Card>
           </Link>
-          <Link to="/admin/invoices" aria-label="View paid revenue">
+          <Link to="/admin/invoices?status=paid" aria-label="View paid invoices">
             <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Revenue (Paid)</CardTitle>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuoteRequests } from "@/hooks/useQuoteRequests";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +26,19 @@ const statusBadge: Record<string, string> = {
 export default function QuoteRequests() {
   const navigate = useNavigate();
   const { requests, isLoading, updateStatus, runAnalyzer, isAnalyzing, analyzingId } = useQuoteRequests();
-  const [filter, setFilter] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validStatuses = STATUS_OPTIONS.map((o) => o.value);
+  const initial = searchParams.get("status");
+  const [filter, setFilterState] = useState(
+    initial && validStatuses.includes(initial) ? initial : "all"
+  );
+  const setFilter = (next: string) => {
+    setFilterState(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("status");
+    else params.set("status", next);
+    setSearchParams(params, { replace: true });
+  };
   const [siteViewedMap, setSiteViewedMap] = useState<Record<string, boolean>>({});
 
   const filtered = filter === "all" ? requests : requests.filter((r) => r.status === filter);
