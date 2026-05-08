@@ -85,7 +85,10 @@ export default function Jobs() {
     const updates: Partial<{ status: string; completedDate: string }> = { status };
     if (status === "completed") updates.completedDate = format(new Date(), "yyyy-MM-dd");
     updateJob(jobId, updates, {
-      onSuccess: () => toast.success(`Status updated to ${status.replace(/_/g, " ")}`),
+      onSuccess: async () => {
+        toast.success(`Status updated to ${status.replace(/_/g, " ")}`);
+        await refetch();
+      },
       onError: () => toast.error("Failed to update job status"),
     });
   };
