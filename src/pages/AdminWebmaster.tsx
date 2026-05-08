@@ -73,7 +73,7 @@ const portals: Portal[] = [
       { to: "/agent/request", label: "Request Quote", icon: FilePlus, description: "Submit a new quote request for a property." },
       { to: "/agent/jobs", label: "My Referred Jobs", icon: Briefcase, description: "Jobs originating from this agent." },
       { to: "/agent/gallery", label: "Before/After Gallery", icon: ImageIcon, description: "Showcase of completed transformations." },
-      { to: "/agent/referrals", label: "Referrals & Commission", icon: Receipt, description: "Commission tracking and payouts." },
+      
       { to: "/agent/contact", label: "Contact", icon: Phone, description: "Get in touch with the team." },
     ],
   },
