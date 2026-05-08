@@ -1,9 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle, KeyRound } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 
 // `label` shown on desktop, `short` shown in the phone bottom nav so 5–6 tabs
 // fit comfortably on a 360px screen without wrapping.
