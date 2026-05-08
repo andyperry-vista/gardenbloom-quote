@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Search, ArrowUpDown } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -15,19 +16,68 @@ const statusColors: Record<string, string> = {
   invoiced: "bg-muted text-muted-foreground",
 };
 
+// "new" maps to scheduled (newly created/accepted, not yet started).
 const filters = [
   { value: "all", label: "All" },
-  { value: "scheduled", label: "Scheduled" },
+  { value: "scheduled", label: "New" },
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
   { value: "invoiced", label: "Invoiced" },
 ] as const;
 
+const sortOptions = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "scheduled_asc", label: "Scheduled (soonest)" },
+  { value: "scheduled_desc", label: "Scheduled (latest)" },
+  { value: "value_desc", label: "Quote value (high → low)" },
+  { value: "value_asc", label: "Quote value (low → high)" },
+] as const;
+type SortKey = (typeof sortOptions)[number]["value"];
+
 export default function Jobs() {
   const { jobs, isLoading, updateJob } = useJobs();
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortKey>("newest");
 
-  const filteredJobs = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
+  const filteredJobs = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
+
+    if (q) {
+      list = list.filter((j) =>
+        j.jobNumber.toLowerCase().includes(q) ||
+        (j.client?.name ?? "").toLowerCase().includes(q) ||
+        (j.client?.address ?? "").toLowerCase().includes(q)
+      );
+    }
+
+    const farFuture = 8640000000000000;
+    const sorted = [...list].sort((a, b) => {
+      switch (sort) {
+        case "newest":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "scheduled_asc": {
+          const ad = a.scheduledDate ? new Date(a.scheduledDate).getTime() : farFuture;
+          const bd = b.scheduledDate ? new Date(b.scheduledDate).getTime() : farFuture;
+          return ad - bd;
+        }
+        case "scheduled_desc": {
+          const ad = a.scheduledDate ? new Date(a.scheduledDate).getTime() : -1;
+          const bd = b.scheduledDate ? new Date(b.scheduledDate).getTime() : -1;
+          return bd - ad;
+        }
+        case "value_desc":
+          return (b.quoteTotal ?? 0) - (a.quoteTotal ?? 0);
+        case "value_asc":
+          return (a.quoteTotal ?? 0) - (b.quoteTotal ?? 0);
+      }
+    });
+    return sorted;
+  }, [jobs, filter, search, sort]);
 
   const handleStatusChange = (jobId: string, status: string) => {
     const updates: Partial<{ status: string; completedDate: string }> = { status };
@@ -40,29 +90,62 @@ export default function Jobs() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div>
-          <h1 className="font-display text-4xl text-foreground">Jobs</h1>
-          <p className="text-muted-foreground mt-1">Manage your active and completed jobs</p>
+          <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
         </div>
 
-        <div className="flex gap-2 flex-wrap">
-          {filters.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                filter === f.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              {f.label}
-              <span className="ml-1.5 opacity-70">
-                {f.value === "all" ? jobs.length : jobs.filter((j) => j.status === f.value).length}
-              </span>
-            </button>
-          ))}
+        {/* Search + sort row — stacks on phones */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by job #, client or address…"
+              className="pl-9 h-11"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              inputMode="search"
+            />
+          </div>
+          <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+            <SelectTrigger className="w-full sm:w-56 h-11">
+              <ArrowUpDown className="w-4 h-4 mr-1 opacity-60" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Filter chips — horizontally scrollable on phones, no wrap */}
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
+          <div className="flex gap-2 min-w-max sm:flex-wrap sm:min-w-0">
+            {filters.map((f) => {
+              const count = f.value === "all"
+                ? jobs.length
+                : jobs.filter((j) => j.status === f.value).length;
+              const active = filter === f.value;
+              return (
+                <button
+                  key={f.value}
+                  onClick={() => setFilter(f.value)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                  aria-pressed={active}
+                >
+                  {f.label}
+                  <span className="ml-1.5 opacity-70">{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {isLoading ? (
@@ -73,14 +156,14 @@ export default function Jobs() {
               <p className="text-muted-foreground">
                 {jobs.length === 0
                   ? "No jobs yet. Accept a quote to create your first job."
-                  : "No jobs match this filter."}
+                  : "No jobs match your filters."}
               </p>
             </CardContent>
           </Card>
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="text-lg">
                 {filter === "all" ? "All Jobs" : filters.find((f) => f.value === filter)?.label} ({filteredJobs.length})
               </CardTitle>
             </CardHeader>
@@ -89,17 +172,28 @@ export default function Jobs() {
                 {filteredJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                   >
-                    <Link to={`/admin/jobs/${job.id}`} className="flex-1 min-w-0">
+                    <Link to={`/admin/jobs/${job.id}`} className="flex-1 min-w-0 block">
                       <p className="font-medium">{job.jobNumber}</p>
-                      <p className="text-sm text-muted-foreground">{job.client?.name ?? "Unknown client"} — {job.client?.address ?? ""}</p>
-                      {job.scheduledDate && <p className="text-xs text-muted-foreground">Scheduled: {new Date(job.scheduledDate).toLocaleDateString("en-AU")}</p>}
+                      <p className="text-sm text-muted-foreground truncate">
+                        {job.client?.name ?? "Unknown client"} — {job.client?.address ?? ""}
+                      </p>
+                      {job.scheduledDate && (
+                        <p className="text-xs text-muted-foreground">
+                          Scheduled: {new Date(job.scheduledDate).toLocaleDateString("en-AU")}
+                        </p>
+                      )}
                     </Link>
-                    <div className="flex items-center gap-4">
-                      {job.quoteTotal && <span className="font-semibold">${job.quoteTotal.toFixed(2)}</span>}
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0">
+                      {job.quoteTotal != null && (
+                        <span className="font-semibold">${job.quoteTotal.toFixed(2)}</span>
+                      )}
                       <Select value={job.status} onValueChange={(val) => handleStatusChange(job.id, val)}>
-                        <SelectTrigger className={`w-32 text-xs h-8 ${statusColors[job.status]}`} onClick={(e) => e.stopPropagation()}>
+                        <SelectTrigger
+                          className={`w-32 text-xs h-9 ${statusColors[job.status]}`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
