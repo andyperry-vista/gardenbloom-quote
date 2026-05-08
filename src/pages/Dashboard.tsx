@@ -43,34 +43,42 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Quotes</CardTitle>
-              <FileText className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold">{quotes.length}</div></CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Quoted</CardTitle>
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold">${totalQuoted.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Jobs</CardTitle>
-              <Briefcase className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold">{upcomingJobs.length}</div></CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Revenue (Paid)</CardTitle>
-              <TrendingUp className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold">${paidTotal.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
-          </Card>
+          <Link to="/admin/quotes/new" aria-label="View quotes">
+            <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Quotes</CardTitle>
+                <FileText className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent><div className="text-2xl font-bold">{quotes.length}</div></CardContent>
+            </Card>
+          </Link>
+          <Link to="/admin/quotes/new" aria-label="View total quoted">
+            <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Quoted</CardTitle>
+                <DollarSign className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent><div className="text-2xl font-bold">${totalQuoted.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
+            </Card>
+          </Link>
+          <Link to="/admin/jobs" aria-label="View active jobs">
+            <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Active Jobs</CardTitle>
+                <Briefcase className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent><div className="text-2xl font-bold">{upcomingJobs.length}</div></CardContent>
+            </Card>
+          </Link>
+          <Link to="/admin/invoices" aria-label="View paid revenue">
+            <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Revenue (Paid)</CardTitle>
+                <TrendingUp className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent><div className="text-2xl font-bold">${paidTotal.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</div></CardContent>
+            </Card>
+          </Link>
         </div>
 
         {newRequests.length > 0 && (
