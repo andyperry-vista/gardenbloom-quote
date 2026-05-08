@@ -44,6 +44,49 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Authorization: allow admins/managers anytime, OR allow public callers
+    // only when the target quote_request was just created (within 10 minutes)
+    // and has no analyzer_result yet. This prevents anonymous overwrites of
+    // arbitrary rows while still letting the public form trigger an analysis
+    // immediately after submission.
+    const authHeader = req.headers.get("Authorization") || "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    let isPrivileged = false;
+    if (token) {
+      const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: claimsData } = await userClient.auth.getClaims(token);
+      const sub = claimsData?.claims?.sub;
+      if (sub) {
+        const { data: ok } = await supabase.rpc("is_admin_or_manager", { _user_id: sub });
+        isPrivileged = !!ok;
+      }
+    }
+
+    const { data: existing, error: lookupErr } = await supabase
+      .from("quote_requests")
+      .select("id, created_at, analyzer_result")
+      .eq("id", quoteRequestId)
+      .maybeSingle();
+
+    if (lookupErr || !existing) {
+      return new Response(JSON.stringify({ error: "Quote request not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isPrivileged) {
+      const ageMs = Date.now() - new Date(existing.created_at).getTime();
+      if (existing.analyzer_result || ageMs > 10 * 60 * 1000) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     // Build image content parts for the vision model
     const imageParts = photoUrls.map((url: string) => ({
       type: "image_url" as const,
