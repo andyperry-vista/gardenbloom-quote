@@ -173,8 +173,33 @@ export default function Jobs() {
           </div>
         </div>
 
-        {isLoading ? (
-          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto my-8" />
+        {isLoading || isFetching ? (
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-lg border"
+                  >
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-3/4" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0">
+                      <Skeleton className="h-5 w-16" />
+                      <Skeleton className="h-9 w-32" />
+                      <Skeleton className="h-9 w-20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         ) : filteredJobs.length === 0 ? (
           <Card className="py-16 text-center">
             <CardContent>
