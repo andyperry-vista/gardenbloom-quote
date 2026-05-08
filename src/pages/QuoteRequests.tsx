@@ -32,17 +32,17 @@ export default function QuoteRequests() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-3xl text-foreground">Quote Requests</h1>
-            <p className="text-muted-foreground mt-1">Manage inbound enquiries from your website</p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <h1 className="font-display text-2xl sm:text-3xl text-foreground">Quote Requests</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage inbound enquiries from your website</p>
           </div>
-          <Badge variant="secondary" className="text-sm">{requests.length} total</Badge>
+          <Badge variant="secondary" className="text-sm shrink-0">{requests.length} total</Badge>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
           {STATUS_OPTIONS.map((opt) => (
             <Button
               key={opt.value}
