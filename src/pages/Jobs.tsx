@@ -38,7 +38,7 @@ const sortOptions = [
 type SortKey = (typeof sortOptions)[number]["value"];
 
 export default function Jobs() {
-  const { jobs, isLoading, updateJob } = useJobs();
+  const { jobs, isLoading, isFetching, refetch, updateJob } = useJobs();
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
