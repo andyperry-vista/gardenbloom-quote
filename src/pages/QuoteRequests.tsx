@@ -161,27 +161,30 @@ export default function QuoteRequests() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 w-full sm:w-auto sm:shrink-0 flex-col sm:items-end">
+                    <div className="flex gap-3 w-full sm:w-auto sm:shrink-0 flex-col sm:items-end">
                       <div className="w-full sm:w-auto p-3 bg-muted/40 rounded-md border flex flex-col gap-2">
                         <span className="text-sm font-medium text-foreground">Has site been viewed?</span>
-                        <div className="flex gap-2 justify-end">
+                        <div className="flex gap-2 sm:justify-end">
                           <Button 
                             size="sm" 
+                            className="flex-1 sm:flex-none min-h-10"
                             variant={siteViewedMap[req.id] === true ? "default" : "outline"} 
                             onClick={() => setSiteViewedMap(prev => ({ ...prev, [req.id]: true }))}
                           >Yes</Button>
                           <Button 
                             size="sm" 
+                            className="flex-1 sm:flex-none min-h-10"
                             variant={siteViewedMap[req.id] === false ? "default" : "outline"} 
                             onClick={() => setSiteViewedMap(prev => ({ ...prev, [req.id]: false }))}
                           >No</Button>
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 flex-wrap sm:justify-end">
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:flex-wrap sm:justify-end">
                         <Button
                           size="sm"
                           variant="default"
+                          className="w-full sm:w-auto min-h-10"
                           onClick={() => {
                             const isViewed = siteViewedMap[req.id];
                             const disclaimer = isViewed === false ? "\n\nQuote is subject to viewing by Mayura Garden Services (site inspection)." : "";
