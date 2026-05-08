@@ -43,6 +43,21 @@ export default function Jobs() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [, setTick] = useState(0);
+
+  // Tick every 30s so relative time stays fresh
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Set initial timestamp once jobs first load
+  useEffect(() => {
+    if (!isLoading && !isFetching && lastRefreshed === null) {
+      setLastRefreshed(new Date());
+    }
+  }, [isLoading, isFetching, lastRefreshed]);
 
   const filteredJobs = useMemo(() => {
     const q = search.trim().toLowerCase();
