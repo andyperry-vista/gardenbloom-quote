@@ -30,6 +30,11 @@ export default function BeforeAfterReveal() {
             key={i}
             src={slide.src}
             alt={slide.label}
+            width={1600}
+            height={800}
+            fetchPriority={i === 0 ? "high" : "low"}
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding={i === 0 ? "sync" : "async"}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
             style={{ opacity: current === i ? 1 : 0 }}
           />
