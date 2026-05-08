@@ -68,6 +68,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
           })}
         </div>
       </nav>
+      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
     </div>
   );
 }
