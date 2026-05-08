@@ -137,8 +137,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-primary sticky top-0 z-50">
+    <div className="min-h-screen bg-background" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <header className="border-b bg-primary sticky top-0 z-50" style={{ top: "env(safe-area-inset-top)" }}>
         <div className="container flex items-center justify-between h-14">
           <Link to="/admin" className="flex items-center gap-3 shrink-0">
             <img src={mayuraLogo} alt="Mayura Garden Services" className="h-9 w-auto" />
