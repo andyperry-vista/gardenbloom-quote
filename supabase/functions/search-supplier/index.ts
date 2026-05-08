@@ -86,6 +86,9 @@ const SUPPLIERS: Record<string, SupplierConfig> = {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const denied = await requireAdminOrManager(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const query: string = body?.query ?? '';
