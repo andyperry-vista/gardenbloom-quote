@@ -14,9 +14,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail } from "lucide-react";
+import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail, Sparkles } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import EmailPreviewDialog from "@/components/EmailPreviewDialog";
+import QuickMaterialPicker from "@/components/QuickMaterialPicker";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
