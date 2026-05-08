@@ -37,7 +37,7 @@ const steps: { num: string; titleKey: TranslationKey; descKey: TranslationKey }[
 
 export default function LandingPage() {
   const { t } = useLanguage();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "", referralCode: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", message: "" });
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -94,7 +94,7 @@ export default function LandingPage() {
         address: form.address,
         message: form.message,
         photo_urls: photoUrls,
-        referral_code: form.referralCode || "",
+        referral_code: "",
       });
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
@@ -342,7 +342,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   {t("thankYouMessage")}
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "", referralCode: "" }); clearPhotos(); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", address: "", message: "" }); clearPhotos(); }}>
                   {t("submitAnother")}
                 </Button>
               </CardContent>
@@ -391,15 +391,6 @@ export default function LandingPage() {
                         onChange={(e) => setForm({ ...form, address: e.target.value })}
                         placeholder="12 River Rd, Lower Templestowe VIC 3107"
                         maxLength={200}
-                      />
-                    </div>
-                    <div>
-                      <Label>Referral Code <span className="text-muted-foreground text-xs">(optional)</span></Label>
-                      <Input
-                        value={form.referralCode}
-                        onChange={(e) => setForm({ ...form, referralCode: e.target.value })}
-                        placeholder="e.g. ABC123"
-                        maxLength={20}
                       />
                     </div>
                   </div>

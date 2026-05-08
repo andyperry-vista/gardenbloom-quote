@@ -28,7 +28,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import AgentQuoteRequest from "./pages/AgentQuoteRequest";
 import AgentJobs from "./pages/AgentJobs";
 import AgentGallery from "./pages/AgentGallery";
-import AgentReferrals from "./pages/AgentReferrals";
+
 import AdminAgents from "./pages/AdminAgents";
 import AdminPackages from "./pages/AdminPackages";
 import QuoteRequests from "./pages/QuoteRequests";
@@ -84,7 +84,7 @@ const App = () => (
             <Route path="/agent/request" element={<AgentGuard><AgentQuoteRequest /></AgentGuard>} />
             <Route path="/agent/jobs" element={<AgentGuard><AgentJobs /></AgentGuard>} />
             <Route path="/agent/gallery" element={<AgentGuard><AgentGallery /></AgentGuard>} />
-            <Route path="/agent/referrals" element={<AgentGuard><AgentReferrals /></AgentGuard>} />
+            
             <Route path="/agent/contact" element={<AgentGuard><AgentContact /></AgentGuard>} />
             <Route path="/employee/login" element={<EmployeeLogin />} />
             <Route path="/employee" element={<EmployeeGuard><EmployeeHome /></EmployeeGuard>} />

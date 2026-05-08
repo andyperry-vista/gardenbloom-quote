@@ -48,7 +48,7 @@ export const REGISTERED_ROUTES = [
   "/agent/request",
   "/agent/jobs",
   "/agent/gallery",
-  "/agent/referrals",
+  
   "/agent/contact",
 
   // Employee

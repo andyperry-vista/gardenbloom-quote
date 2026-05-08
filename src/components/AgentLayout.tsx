@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle, KeyRound } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, LogOut, MessageCircle, KeyRound } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
@@ -17,17 +17,13 @@ const baseNavItems = [
   { to: "/agent/contact", label: "Contact Us", short: "Contact", icon: MessageCircle },
 ];
 
-const referralNavItem = { to: "/agent/referrals", label: "Referrals", short: "Earn", icon: DollarSign };
-
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile } = useAgentProfile();
   const [pwOpen, setPwOpen] = useState(false);
 
-  const navItems = profile?.commissionEnabled
-    ? [...baseNavItems, referralNavItem]
-    : baseNavItems;
+  const navItems = baseNavItems;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
