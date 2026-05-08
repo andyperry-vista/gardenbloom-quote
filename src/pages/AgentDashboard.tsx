@@ -70,12 +70,12 @@ export default function AgentDashboard() {
           )}
         </div>
 
-        <div className="flex gap-3">
-          <Link to="/agent/request">
-            <Button>New Quote Request</Button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link to="/agent/request" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto h-11">New Quote Request</Button>
           </Link>
-          <Link to="/agent/jobs">
-            <Button variant="outline">View Jobs</Button>
+          <Link to="/agent/jobs" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto h-11">View Jobs</Button>
           </Link>
         </div>
 
