@@ -205,12 +205,12 @@ export default function QuoteRequests() {
                           <FileText className="w-3 h-3 mr-1" /> Create Quote
                         </Button>
                         {req.status === "new" && (
-                          <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
+                          <Button size="sm" variant="outline" className="w-full sm:w-auto min-h-10" onClick={() => updateStatus(req.id, "contacted")}>
                             <Eye className="w-3 h-3 mr-1" /> Contacted
                           </Button>
                         )}
                         {(req.status === "new" || req.status === "contacted") && (
-                          <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "converted")}>
+                          <Button size="sm" variant="outline" className="w-full sm:w-auto min-h-10" onClick={() => updateStatus(req.id, "converted")}>
                             <CheckCircle className="w-3 h-3 mr-1" /> Converted
                           </Button>
                         )}
