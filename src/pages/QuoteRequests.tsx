@@ -161,7 +161,7 @@ export default function QuoteRequests() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 shrink-0 flex-wrap mt-4 sm:mt-0 flex-col sm:flex-row items-end">
+                    <div className="flex gap-2 w-full sm:w-auto sm:shrink-0 flex-col sm:items-end">
                       <div className="mb-2 w-full sm:w-auto p-3 bg-muted/40 rounded-md border flex flex-col gap-2">
                         <span className="text-sm font-medium text-foreground">Has site been viewed?</span>
                         <div className="flex gap-2 justify-end">
