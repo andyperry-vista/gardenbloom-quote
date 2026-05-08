@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Loader2, Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import AppLayout from "@/components/AppLayout";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -37,7 +38,7 @@ const sortOptions = [
 type SortKey = (typeof sortOptions)[number]["value"];
 
 export default function Jobs() {
-  const { jobs, isLoading, updateJob } = useJobs();
+  const { jobs, isLoading, isFetching, refetch, updateJob } = useJobs();
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
@@ -89,12 +90,31 @@ export default function Jobs() {
     });
   };
 
+  const handleRefresh = async () => {
+    await refetch();
+    toast.success("Jobs refreshed");
+  };
+
   return (
     <AppLayout>
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="space-y-5">
-        <div>
-          <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-3xl sm:text-4xl text-foreground">Jobs</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your active and completed jobs</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 shrink-0"
+            onClick={handleRefresh}
+            disabled={isFetching}
+            aria-label="Refresh jobs"
+          >
+            <RefreshCw className={`w-4 h-4 sm:mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </Button>
         </div>
 
         {/* Search + sort row — stacks on phones */}
@@ -240,6 +260,7 @@ export default function Jobs() {
           </Card>
         )}
       </div>
+      </PullToRefresh>
     </AppLayout>
   );
 }
