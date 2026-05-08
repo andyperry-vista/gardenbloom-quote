@@ -31,18 +31,18 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
-        <div className="flex items-end justify-between">
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <h1 className="font-display text-4xl text-foreground">Mayura</h1>
+            <h1 className="font-display text-3xl sm:text-4xl text-foreground">Mayura</h1>
             <p className="text-muted-foreground mt-1">Garden Service — Dashboard</p>
           </div>
-          <Link to="/admin/quotes/new">
-            <Button><FilePlus className="w-4 h-4 mr-2" /> New Quote</Button>
+          <Link to="/admin/quotes/new" className="sm:w-auto">
+            <Button className="w-full sm:w-auto"><FilePlus className="w-4 h-4 mr-2" /> New Quote</Button>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Link to="/admin/quote-requests?status=new" aria-label="View new quote requests">
             <Card className="hover:shadow-md hover:border-primary/40 transition-all cursor-pointer h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -92,17 +92,17 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2">
                 {newRequests.map((req) => (
-                  <div key={req.id} className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="space-y-1 flex-1">
-                      <div className="flex items-center gap-2">
+                  <div key={req.id} className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="font-medium">{req.name}</span>
-                        <span className="text-sm text-muted-foreground">{req.email}</span>
+                        <span className="text-sm text-muted-foreground break-all">{req.email}</span>
                         {req.phone && <span className="text-sm text-muted-foreground">· {req.phone}</span>}
                       </div>
                       {req.address && <p className="text-sm text-muted-foreground">{req.address}</p>}
                       {req.message && <p className="text-sm text-foreground/80 line-clamp-2">{req.message}</p>}
                       {req.photoUrls && req.photoUrls.length > 0 && (
-                        <div className="flex gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2">
                           {req.photoUrls.slice(0, 4).map((url, i) => (
                             <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="relative block w-14 h-14 rounded-md overflow-hidden border hover:ring-2 hover:ring-primary transition-all">
                               <img src={url} alt={`Garden photo ${i + 1}`} className="w-full h-full object-cover" />
@@ -117,11 +117,11 @@ export default function Dashboard() {
                       )}
                       <p className="text-xs text-muted-foreground">{new Date(req.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     </div>
-                    <div className="flex gap-2 ml-4 shrink-0">
-                      <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "contacted")}>
+                    <div className="flex gap-2 sm:ml-4 sm:shrink-0 w-full sm:w-auto">
+                      <Button size="sm" variant="outline" className="flex-1 sm:flex-none" onClick={() => updateStatus(req.id, "contacted")}>
                         <Eye className="w-3 h-3 mr-1" /> Contacted
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => updateStatus(req.id, "converted")}>
+                      <Button size="sm" variant="outline" className="flex-1 sm:flex-none" onClick={() => updateStatus(req.id, "converted")}>
                         <CheckCircle className="w-3 h-3 mr-1" /> Done
                       </Button>
                     </div>
@@ -140,8 +140,8 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2">
                 {overdueInvoices.map((inv) => (
-                  <Link key={inv.id} to={`/admin/invoices/${inv.id}`} className="flex justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <span className="font-medium">{inv.invoiceNumber} — {inv.client?.name}</span>
+                  <Link key={inv.id} to={`/admin/invoices/${inv.id}`} className="flex flex-col sm:flex-row sm:justify-between gap-1 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <span className="font-medium break-words">{inv.invoiceNumber} — {inv.client?.name}</span>
                     <span className="text-destructive font-semibold">${inv.totalWithGst.toFixed(2)}</span>
                   </Link>
                 ))}
@@ -156,8 +156,8 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2">
                 {upcomingJobs.slice(0, 5).map((job) => (
-                  <Link key={job.id} to={`/admin/jobs/${job.id}`} className="flex justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div>
+                  <Link key={job.id} to={`/admin/jobs/${job.id}`} className="flex flex-col sm:flex-row sm:justify-between gap-1 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="min-w-0">
                       <span className="font-medium">{job.jobNumber}</span>
                       <span className="text-sm text-muted-foreground ml-2">{job.client?.name}</span>
                     </div>
@@ -180,12 +180,12 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {quotes.slice(0, 10).map((quote) => (
-                  <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                    <div>
+                  <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                    <div className="min-w-0">
                       <p className="font-medium">{quote.client.name}</p>
-                      <p className="text-sm text-muted-foreground">{quote.client.address}</p>
+                      <p className="text-sm text-muted-foreground break-words">{quote.client.address}</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between sm:justify-end gap-4">
                       <span className="font-semibold">${quote.grandTotal.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</span>
                       <Badge className={statusColors[quote.status]} variant="secondary">{quote.status}</Badge>
                     </div>
