@@ -60,15 +60,24 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+            <Button variant="ghost" size="sm" onClick={() => setPwOpen(true)} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+              <KeyRound className="w-4 h-4" />
+              <span className="ml-1.5">Password</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10">
               <LogOut className="w-4 h-4" />
               <span className="ml-1.5">Logout</span>
             </Button>
           </nav>
 
-          <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
-          </Button>
+          <div className="lg:hidden flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="text-primary-foreground" onClick={() => setPwOpen(true)} aria-label="Change password">
+              <KeyRound className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="text-primary-foreground" onClick={handleLogout}>
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -98,6 +107,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
           })}
         </div>
       </nav>
+      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
     </div>
   );
 }
