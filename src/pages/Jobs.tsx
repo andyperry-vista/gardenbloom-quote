@@ -170,43 +170,71 @@ export default function Jobs() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {filteredJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-lg border hover:bg-muted/50 transition-colors"
-                  >
-                    <Link to={`/admin/jobs/${job.id}`} className="flex-1 min-w-0 block">
-                      <p className="font-medium">{job.jobNumber}</p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {job.client?.name ?? "Unknown client"} — {job.client?.address ?? ""}
-                      </p>
-                      {job.scheduledDate && (
-                        <p className="text-xs text-muted-foreground">
-                          Scheduled: {new Date(job.scheduledDate).toLocaleDateString("en-AU")}
+                {filteredJobs.map((job) => {
+                  const nextAction =
+                    job.status === "scheduled"
+                      ? { label: "Start", icon: Play, next: "in_progress" }
+                      : job.status === "in_progress"
+                      ? { label: "Complete", icon: CheckCircle2, next: "completed" }
+                      : job.status === "completed"
+                      ? { label: "Mark Invoiced", icon: FileText, next: "invoiced" }
+                      : null;
+                  return (
+                    <div
+                      key={job.id}
+                      className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                    >
+                      <Link to={`/admin/jobs/${job.id}`} className="flex-1 min-w-0 block">
+                        <p className="font-medium">{job.jobNumber}</p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {job.client?.name ?? "Unknown client"} — {job.client?.address ?? ""}
                         </p>
-                      )}
-                    </Link>
-                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0">
-                      {job.quoteTotal != null && (
-                        <span className="font-semibold">${job.quoteTotal.toFixed(2)}</span>
-                      )}
-                      <Select value={job.status} onValueChange={(val) => handleStatusChange(job.id, val)}>
-                        <SelectTrigger
-                          className={`w-32 text-xs h-9 ${statusColors[job.status]}`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="scheduled">Scheduled</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="invoiced">Invoiced</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        {job.scheduledDate && (
+                          <p className="text-xs text-muted-foreground">
+                            Scheduled: {new Date(job.scheduledDate).toLocaleDateString("en-AU")}
+                          </p>
+                        )}
+                      </Link>
+                      <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0 flex-wrap">
+                        {job.quoteTotal != null && (
+                          <span className="font-semibold">${job.quoteTotal.toFixed(2)}</span>
+                        )}
+                        <Select value={job.status} onValueChange={(val) => handleStatusChange(job.id, val)}>
+                          <SelectTrigger
+                            className={`w-32 text-xs h-9 ${statusColors[job.status]}`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="scheduled">Scheduled</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="invoiced">Invoiced</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <div className="flex items-center gap-1.5">
+                          {nextAction && (
+                            <Button
+                              size="sm"
+                              className="h-9"
+                              onClick={() => handleStatusChange(job.id, nextAction.next)}
+                            >
+                              <nextAction.icon className="w-4 h-4 sm:mr-1.5" />
+                              <span className="hidden sm:inline">{nextAction.label}</span>
+                            </Button>
+                          )}
+                          <Button asChild size="sm" variant="outline" className="h-9">
+                            <Link to={`/admin/jobs/${job.id}`} aria-label="View job details">
+                              <Eye className="w-4 h-4 sm:mr-1.5" />
+                              <span className="hidden sm:inline">View</span>
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
