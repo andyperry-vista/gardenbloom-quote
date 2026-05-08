@@ -8,7 +8,7 @@ import {
   Crown, Loader2, ExternalLink, ShieldCheck, UserCheck, HardHat, Globe,
   LayoutDashboard, FilePlus, Inbox, Package, PackageCheck, Briefcase,
   CalendarDays, FileText, Wrench, Users, Calculator, Settings as SettingsIcon,
-  Home, FileSearch, Image as ImageIcon, Receipt, Phone, Clock, LogOut,
+  Home, FileSearch, Image as ImageIcon, Phone, Clock, LogOut,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { supabase } from "@/integrations/supabase/client";
