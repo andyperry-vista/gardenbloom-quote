@@ -12,6 +12,19 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Authentication: this endpoint is only callable by the database webhook,
+    // which authenticates with the project service-role key. Reject any caller
+    // that does not present a service-role JWT.
+    const authHeader = req.headers.get("Authorization") || "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    if (!token || token !== serviceRoleKey) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { type, table, record, old_record } = await req.json();
 
     const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY")!;

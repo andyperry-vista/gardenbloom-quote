@@ -30,9 +30,11 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth note: this function is called both by anonymous public visitors
+// (e.g., the landing-page quote-request form) and by authenticated admins.
+// To prevent abuse, anonymous callers may only send templates listed in
+// PUBLIC_TEMPLATES below; all other templates require an admin/manager role.
+const PUBLIC_TEMPLATES = new Set<string>(['quote-request'])
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -96,6 +98,32 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
+  }
+
+  // Authorization: anonymous callers may only invoke PUBLIC_TEMPLATES.
+  // Any other template requires an admin/manager session.
+  if (!PUBLIC_TEMPLATES.has(templateName)) {
+    const authHeader = req.headers.get('Authorization') || ''
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim()
+    let isPrivileged = false
+    if (token) {
+      const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') || '', {
+        global: { headers: { Authorization: authHeader } },
+      })
+      const { data: claimsData } = await userClient.auth.getClaims(token)
+      const sub = claimsData?.claims?.sub
+      if (sub) {
+        const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+        const { data: ok } = await adminClient.rpc('is_admin_or_manager', { _user_id: sub })
+        isPrivileged = !!ok
+      }
+    }
+    if (!isPrivileged) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
   }
 
   // 1. Look up template from registry (early — needed to resolve recipient)
