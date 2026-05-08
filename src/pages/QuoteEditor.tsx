@@ -14,9 +14,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, Minus, ChevronUp, ChevronDown, Mail, Sparkles, Eye } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import EmailPreviewDialog from "@/components/EmailPreviewDialog";
+import QuotePreviewDrawer from "@/components/QuotePreviewDrawer";
 import QuickMaterialPicker from "@/components/QuickMaterialPicker";
 import type { Quote, QuoteLineItem, Client } from "@/types/quote";
 import { toast } from "sonner";
@@ -52,6 +53,7 @@ export default function QuoteEditor() {
   const [discountValue, setDiscountValue] = useState(existingQuote?.discountValue ?? 0);
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [quotePreviewOpen, setQuotePreviewOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
@@ -386,22 +388,46 @@ export default function QuoteEditor() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => navigate(isEditing ? `/admin/quotes/${id}` : "/admin")}>Cancel</Button>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+          <Button variant="outline" className="min-h-11" onClick={() => navigate(isEditing ? `/admin/quotes/${id}` : "/admin")}>Cancel</Button>
+          <Button
+            variant="secondary"
+            className="min-h-11"
+            onClick={() => setQuotePreviewOpen(true)}
+            disabled={items.length === 0 || !client.name}
+          >
+            <Eye className="w-4 h-4 mr-2" /> Preview Quote
+          </Button>
           {isEditing && existingQuote && client.email && (
             <Button
               variant="secondary"
+              className="min-h-11"
               onClick={() => setPreviewOpen(true)}
               disabled={items.length === 0}
             >
               <Mail className="w-4 h-4 mr-2" /> Preview Email
             </Button>
           )}
-          <Button onClick={handleSave} disabled={!client.name || items.length === 0 || saving}>
+          <Button className="min-h-11" onClick={handleSave} disabled={!client.name || items.length === 0 || saving}>
             <Save className="w-4 h-4 mr-2" /> {isEditing ? "Update Quote" : "Save Quote"}
           </Button>
         </div>
       </div>
+
+      <QuotePreviewDrawer
+        open={quotePreviewOpen}
+        onOpenChange={setQuotePreviewOpen}
+        client={client}
+        items={items}
+        notes={notes}
+        subtotal={subtotal}
+        markupTotal={markupTotal}
+        grandTotal={grandTotal}
+        discountType={discountType}
+        discountValue={discountValue}
+        quoteId={existingQuote?.id}
+        createdAt={existingQuote?.createdAt}
+      />
 
       {isEditing && existingQuote && (
         <EmailPreviewDialog
