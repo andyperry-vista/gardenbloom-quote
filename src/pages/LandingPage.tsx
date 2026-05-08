@@ -393,15 +393,6 @@ export default function LandingPage() {
                         maxLength={200}
                       />
                     </div>
-                    <div>
-                      <Label>Referral Code <span className="text-muted-foreground text-xs">(optional)</span></Label>
-                      <Input
-                        value={form.referralCode}
-                        onChange={(e) => setForm({ ...form, referralCode: e.target.value })}
-                        placeholder="e.g. ABC123"
-                        maxLength={20}
-                      />
-                    </div>
                   </div>
                   <div>
                     <Label>{t("projectDescription")}</Label>
