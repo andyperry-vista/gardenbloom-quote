@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Loader2, Search, ArrowUpDown } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
