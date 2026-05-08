@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Loader2, Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, Eye, Play, CheckCircle2, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { useJobs } from "@/hooks/useJobs";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import AppLayout from "@/components/AppLayout";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
