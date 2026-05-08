@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Inbox, Eye, CheckCircle, Trash2, Filter, FileText, Loader2, Sparkles, Wand2, Download } from "lucide-react";
+import { generateQuoteRequestPdf } from "@/lib/generateQuoteRequestPdf";
+import { toast } from "sonner";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All" },
@@ -214,6 +216,21 @@ export default function QuoteRequests() {
                             <CheckCircle className="w-3 h-3 mr-1" /> Converted
                           </Button>
                         )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full sm:w-auto min-h-10"
+                          onClick={async () => {
+                            try {
+                              await generateQuoteRequestPdf(req);
+                              toast.success("PDF downloaded");
+                            } catch (e) {
+                              toast.error("Failed to generate PDF");
+                            }
+                          }}
+                        >
+                          <Download className="w-3 h-3 mr-1" /> PDF
+                        </Button>
                       </div>
                     </div>
                   </div>
