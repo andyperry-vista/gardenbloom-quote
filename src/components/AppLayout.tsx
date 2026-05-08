@@ -223,7 +223,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {mobileOpen && (
-          <div id="admin-mobile-menu" role="dialog" aria-modal="false" aria-label="Main menu" className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3 max-h-[calc(100vh-3.5rem-env(safe-area-inset-top))] overflow-y-auto">
+          <div id="admin-mobile-menu" role="dialog" aria-modal="false" aria-label="Main menu" className="lg:hidden border-t border-primary-foreground/10 bg-primary pb-3 max-h-[calc(100vh-3.5rem-env(safe-area-inset-top))] overflow-y-auto origin-top animate-slide-down">
             <nav className="container grid grid-cols-2 gap-1 pt-2">
               {allNavItems.map((item, idx) => {
                 const isActive = location.pathname === item.to;
