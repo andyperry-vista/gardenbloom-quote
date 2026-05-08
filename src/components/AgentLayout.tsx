@@ -1,9 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle } from "lucide-react";
+import { LayoutDashboard, FilePlus, Briefcase, Image, DollarSign, LogOut, MessageCircle, KeyRound } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 
 // `label` shown on desktop, `short` shown in the phone bottom nav so 5–6 tabs
 // fit comfortably on a 360px screen without wrapping.
@@ -21,6 +23,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const location = useLocation();
   const navigate = useNavigate();
   const { profile } = useAgentProfile();
+  const [pwOpen, setPwOpen] = useState(false);
 
   const navItems = profile?.commissionEnabled
     ? [...baseNavItems, referralNavItem]
@@ -58,15 +61,24 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+            <Button variant="ghost" size="sm" onClick={() => setPwOpen(true)} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+              <KeyRound className="w-4 h-4" />
+              <span className="ml-1.5">Password</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10">
               <LogOut className="w-4 h-4" />
               <span className="ml-1.5">Logout</span>
             </Button>
           </nav>
 
-          <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
-          </Button>
+          <div className="lg:hidden flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="text-primary-foreground" onClick={() => setPwOpen(true)} aria-label="Change password">
+              <KeyRound className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="text-primary-foreground" onClick={handleLogout}>
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -96,6 +108,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
           })}
         </div>
       </nav>
+      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
     </div>
   );
 }
