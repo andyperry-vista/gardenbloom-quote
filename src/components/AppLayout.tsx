@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox, HardHat, Calculator, ShieldCheck, Crown } from "lucide-react";
+import { LayoutDashboard, FilePlus, Package, LogOut, Wrench, Settings, Briefcase, FileText, CalendarDays, Menu, X, Users, UserCheck, PackageCheck, ChevronDown, Inbox, HardHat, Calculator, ShieldCheck, Crown, KeyRound } from "lucide-react";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import { Button } from "@/components/ui/button";
 import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,6 +128,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
   const perms = usePermissions();
 
   const handleLogout = async () => {
@@ -172,7 +174,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             )}
             <NotificationBell />
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+            <Button variant="ghost" size="sm" onClick={() => setPwOpen(true)} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 ml-1">
+              <KeyRound className="w-4 h-4" />
+              <span className="ml-1.5">Password</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10">
               <LogOut className="w-4 h-4" />
               <span className="ml-1.5">Logout</span>
             </Button>
@@ -214,6 +220,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   Webmaster Console
                 </Link>
               )}
+              <Button variant="ghost" size="sm" onClick={() => { setPwOpen(true); setMobileOpen(false); }} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 justify-start col-span-2">
+                <KeyRound className="w-4 h-4 mr-2" /> Change password
+              </Button>
               <Button variant="ghost" size="sm" onClick={handleLogout} className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 justify-start col-span-2">
                 <LogOut className="w-4 h-4 mr-2" /> Logout
               </Button>
@@ -224,6 +233,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <main className="container py-6 pb-24 md:pb-8 animate-fade-in">{children}</main>
       <MobileBottomNav />
+      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
     </div>
   );
 }
