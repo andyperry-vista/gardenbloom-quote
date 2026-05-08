@@ -315,7 +315,7 @@ export default function LandingPage() {
           <div className="grid gap-8 md:grid-cols-3 max-w-3xl mx-auto">
             {steps.map((step) => (
               <div key={step.num} className="text-center">
-                <div className="text-4xl font-bold text-primary/20 mb-2">{step.num}</div>
+                <div className="text-4xl font-bold text-accent mb-2">{step.num}</div>
                 <h3 className="font-semibold text-lg mb-1">{t(step.titleKey)}</h3>
                 <p className="text-sm text-muted-foreground">{t(step.descKey)}</p>
               </div>
@@ -462,19 +462,19 @@ export default function LandingPage() {
           <p className="text-sm text-foreground/70">
             {t("footerTagline")}
           </p>
-          <p className="text-xs text-foreground/50 mt-2">
+          <p className="text-xs text-foreground/80 mt-2">
             {t("footerRights", { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center justify-center gap-4 mt-3">
-            <a href="/agent/login" className="text-xs text-foreground/40 hover:text-foreground/60 transition-colors">
+            <a href="/agent/login" className="text-xs text-foreground/80 hover:text-foreground transition-colors">
               Agent Portal
             </a>
-            <span className="text-foreground/20">·</span>
-            <a href="/admin/login" className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
+            <span className="text-foreground/40">·</span>
+            <a href="/admin/login" className="text-xs text-foreground/80 hover:text-foreground transition-colors">
               {t("admin")}
             </a>
-            <span className="text-foreground/20">·</span>
-            <a href="/webmaster/login" className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors">
+            <span className="text-foreground/40">·</span>
+            <a href="/webmaster/login" className="text-xs text-foreground/80 hover:text-foreground transition-colors">
               Webmaster
             </a>
           </div>
