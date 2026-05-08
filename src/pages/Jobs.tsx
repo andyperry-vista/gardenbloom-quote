@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AppLayout from "@/components/AppLayout";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-primary/10 text-primary",
