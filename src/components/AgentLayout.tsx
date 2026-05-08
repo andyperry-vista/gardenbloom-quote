@@ -84,12 +84,13 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors ${
+                className={`flex flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] text-[10px] font-medium transition-colors active:bg-muted/60 ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
+                aria-current={isActive ? "page" : undefined}
               >
                 <item.icon className={`w-5 h-5 ${isActive ? "scale-110" : ""} transition-transform`} />
-                {item.label}
+                <span className="truncate max-w-full px-1">{item.short}</span>
               </Link>
             );
           })}
