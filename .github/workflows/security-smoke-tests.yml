@@ -1,0 +1,62 @@
+name: Security Smoke Tests
+
+# Runs the RLS / JWT / storage security smoke tests on every pull request and
+# on pushes to main. These tests assert the negative invariants that would
+# indicate a catastrophic RLS regression (anon reading PII, anon writing into
+# tenant folders, forged JWTs being accepted, etc.).
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   VITE_SUPABASE_URL              — public project URL
+#   VITE_SUPABASE_PUBLISHABLE_KEY  — public anon/publishable key
+#
+# Both values are public/publishable — safe to expose, but stored as secrets
+# so the workflow file doesn't pin them to a specific environment.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: security-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-tests:
+    name: RLS / JWT / Storage smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Write .env for tests
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY repo secret."
+            exit 1
+          fi
+          {
+            echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL"
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY"
+          } > .env
+
+      - name: Run security-smoke-tests (RLS for quote_requests / employees / roles)
+        run: deno test --allow-net --allow-env --allow-read supabase/functions/security-smoke-tests/
+
+      - name: Run storage-rls-regression (garden-photos tenant scoping)
+        run: deno test --allow-net --allow-env --allow-read supabase/functions/storage-rls-regression/
+
+      - name: Run process-email-queue tests (JWT verification)
+        run: deno test --allow-net --allow-env --allow-read supabase/functions/process-email-queue/
