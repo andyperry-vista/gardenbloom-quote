@@ -178,7 +178,7 @@ export default function QuoteRequests() {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 flex-wrap justify-end">
+                      <div className="flex gap-2 flex-wrap sm:justify-end">
                         <Button
                           size="sm"
                           variant="default"
