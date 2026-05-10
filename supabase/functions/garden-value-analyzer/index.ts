@@ -87,8 +87,28 @@ serve(async (req) => {
       }
     }
 
+    // Use photo URLs from the DB record (not caller-supplied) to prevent
+    // arbitrary URL submission to the AI vision model.
+    const dbPhotoUrls = Array.isArray(existing.photo_urls) ? existing.photo_urls as string[] : [];
+    const supabaseHost = new URL(supabaseUrl).host;
+    const safePhotoUrls = dbPhotoUrls.filter((u) => {
+      try {
+        const parsed = new URL(u);
+        return parsed.protocol === "https:" && parsed.host === supabaseHost && parsed.pathname.includes("/garden-photos/");
+      } catch {
+        return false;
+      }
+    });
+
+    if (safePhotoUrls.length === 0) {
+      return new Response(JSON.stringify({ error: "No valid photos to analyze" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Build image content parts for the vision model
-    const imageParts = photoUrls.map((url: string) => ({
+    const imageParts = safePhotoUrls.map((url: string) => ({
       type: "image_url" as const,
       image_url: { url },
     }));
