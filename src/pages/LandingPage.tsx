@@ -45,11 +45,14 @@ export default function LandingPage() {
   const [sent, setSent] = useState(false);
   const MAX_PHOTOS = 5;
 
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const remaining = MAX_PHOTOS - photos.length;
     const toAdd = files.slice(0, remaining);
     const valid = toAdd.filter(f => {
+      if (!ALLOWED_IMAGE_TYPES.includes(f.type)) { toast.error(`${f.name} is not a supported image (JPEG, PNG, WebP, GIF)`); return false; }
       if (f.size > 10 * 1024 * 1024) { toast.error(`${f.name} is over 10MB`); return false; }
       return true;
     });
