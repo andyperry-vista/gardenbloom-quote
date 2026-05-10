@@ -66,7 +66,7 @@ serve(async (req) => {
 
     const { data: existing, error: lookupErr } = await supabase
       .from("quote_requests")
-      .select("id, created_at, analyzer_result")
+      .select("id, created_at, analyzer_result, photo_urls")
       .eq("id", quoteRequestId)
       .maybeSingle();
 
