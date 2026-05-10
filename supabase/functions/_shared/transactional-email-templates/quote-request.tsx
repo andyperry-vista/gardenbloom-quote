@@ -68,9 +68,17 @@ const QuoteRequestEmail = ({ name, email, phone, address, message, photoUrl, pho
   );
 }
 
+// Fixed admin recipient — this template is an admin notification, NOT a customer
+// acknowledgement. The recipient is hardcoded server-side so anonymous callers
+// cannot use this public endpoint to send mail to arbitrary addresses (which
+// would otherwise turn the verified domain into a phishing/spam relay).
+const ADMIN_RECIPIENT =
+  Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'nicholas@mayuragardenservices.com.au'
+
 export const template = {
   component: QuoteRequestEmail,
   subject: (data: Record<string, any>) => `New Quote Request from ${data.name || 'Website Visitor'}`,
+  to: ADMIN_RECIPIENT,
   displayName: 'Quote request notification',
   previewData: { name: 'Jane Smith', email: 'jane@example.com', phone: '021 123 4567', address: '42 Garden Lane, Auckland', message: 'Looking to tidy up the front garden before listing.', photoUrl: 'https://placehold.co/600x400/2d5a3d/ffffff?text=Garden+Photo' },
 } satisfies TemplateEntry
