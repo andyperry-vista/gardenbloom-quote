@@ -45,11 +45,14 @@ export default function LandingPage() {
   const [sent, setSent] = useState(false);
   const MAX_PHOTOS = 5;
 
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const remaining = MAX_PHOTOS - photos.length;
     const toAdd = files.slice(0, remaining);
     const valid = toAdd.filter(f => {
+      if (!ALLOWED_IMAGE_TYPES.includes(f.type)) { toast.error(`${f.name} is not a supported image (JPEG, PNG, WebP, GIF)`); return false; }
       if (f.size > 10 * 1024 * 1024) { toast.error(`${f.name} is over 10MB`); return false; }
       return true;
     });
@@ -78,9 +81,19 @@ export default function LandingPage() {
       const photoUrls: string[] = [];
 
       for (let i = 0; i < photos.length; i++) {
-        const ext = photos[i].name.split(".").pop() || "jpg";
+        const file = photos[i];
+        const mimeToExt: Record<string, string> = {
+          "image/jpeg": "jpg",
+          "image/png": "png",
+          "image/webp": "webp",
+          "image/gif": "gif",
+        };
+        const ext = mimeToExt[file.type];
+        if (!ext) { toast.error(`${file.name} is not a supported image type`); continue; }
         const path = `quotes/${id}-${i}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photos[i]);
+        const { error: uploadError } = await supabase.storage
+          .from("garden-photos")
+          .upload(path, file, { contentType: file.type });
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
         photoUrls.push(urlData.publicUrl);

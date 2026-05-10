@@ -81,12 +81,16 @@ Deno.serve(async (req) => {
       const { error: roleInsertErr } = await admin
         .from("user_roles")
         .insert({ user_id: authUserId, role: "employee" });
-      if (roleInsertErr) return json({ error: roleInsertErr.message }, 500);
+      if (roleInsertErr) {
+        console.error("invite-employee role insert error:", roleInsertErr);
+        return json({ error: "An internal error occurred. Please try again." }, 500);
+      }
     }
 
     return json({ ok: true, alreadyHadAccount: !!existing, authUserId });
   } catch (e) {
-    return json({ error: (e as Error).message }, 500);
+    console.error("invite-employee error:", e);
+    return json({ error: "An internal error occurred. Please try again." }, 500);
   }
 });
 
