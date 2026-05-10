@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import mayuraLogoHorizontal from "@/assets/mayura-logo-horizontal.webp";
 import mayuraLogoStacked from "@/assets/mayura-logo-stacked.webp";
 import { supabase } from "@/integrations/supabase/client";
@@ -399,11 +400,11 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <Label>{t("propertyAddress")}</Label>
-                      <Input
+                      <AddressAutocomplete
                         value={form.address}
-                        onChange={(e) => setForm({ ...form, address: e.target.value })}
+                        onChange={(v) => setForm({ ...form, address: v })}
                         placeholder="12 River Rd, Lower Templestowe VIC 3107"
-                        maxLength={200}
+                        required
                       />
                     </div>
                   </div>
