@@ -81,9 +81,19 @@ export default function LandingPage() {
       const photoUrls: string[] = [];
 
       for (let i = 0; i < photos.length; i++) {
-        const ext = photos[i].name.split(".").pop() || "jpg";
+        const file = photos[i];
+        const mimeToExt: Record<string, string> = {
+          "image/jpeg": "jpg",
+          "image/png": "png",
+          "image/webp": "webp",
+          "image/gif": "gif",
+        };
+        const ext = mimeToExt[file.type];
+        if (!ext) { toast.error(`${file.name} is not a supported image type`); continue; }
         const path = `quotes/${id}-${i}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from("garden-photos").upload(path, photos[i]);
+        const { error: uploadError } = await supabase.storage
+          .from("garden-photos")
+          .upload(path, file, { contentType: file.type });
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("garden-photos").getPublicUrl(path);
         photoUrls.push(urlData.publicUrl);
