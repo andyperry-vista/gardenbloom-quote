@@ -88,7 +88,24 @@ Deno.serve(async (req) => {
       if (createErr) throw createErr;
       targetUserId = created.user!.id;
     } else {
-      // Reset password for existing account so caller knows the credentials
+      // Refuse to reset the password of an existing user unless they ALREADY hold a
+      // privileged role. Otherwise an admin (or compromised admin) could overwrite
+      // any customer's password and hijack the account.
+      const { data: targetRoles } = await admin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", targetUserId);
+      const targetRoleSet = new Set((targetRoles ?? []).map((r) => r.role));
+      const targetIsPrivileged =
+        targetRoleSet.has("admin") ||
+        targetRoleSet.has("webmaster") ||
+        targetRoleSet.has("manager");
+      if (!targetIsPrivileged) {
+        return new Response(JSON.stringify({
+          error: "An account with this email already exists and is not a privileged user. Refusing to reset its password.",
+        }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      // Reset password for existing privileged account so caller knows the credentials
       const { error: updErr } = await admin.auth.admin.updateUserById(targetUserId, {
         password,
         email_confirm: true,
