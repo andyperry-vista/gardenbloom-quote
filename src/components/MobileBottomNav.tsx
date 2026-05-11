@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Briefcase, Receipt, Users } from "lucide-react";
+import { LayoutDashboard, FileText, Briefcase, Mail, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { label: "Home", icon: LayoutDashboard, path: "/admin" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
   { label: "Quotes", icon: FileText, path: "/admin/quote-requests" },
   { label: "Jobs", icon: Briefcase, path: "/admin/jobs" },
-  { label: "Invoices", icon: Receipt, path: "/admin/invoices" },
+  { label: "Emails", icon: Mail, path: "/admin/tools" },
   { label: "Clients", icon: Users, path: "/admin/clients" },
 ];
 
