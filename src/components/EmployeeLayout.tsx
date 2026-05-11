@@ -23,8 +23,8 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-      <header className="bg-primary sticky top-0 z-40">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="bg-primary sticky top-0 z-40" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="px-4 py-3 flex items-center justify-between">
           <Link to="/employee" className="flex items-center gap-2">
             <img src={mayuraLogo} alt="Mayura" className="h-8 w-auto" />
