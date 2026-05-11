@@ -6,7 +6,7 @@ export default function LanguageToggle() {
   const { locale, setLocale } = useLanguage();
 
   return (
-    <div className="fixed top-4 left-4 z-50">
+    <div className="fixed left-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
       <Button
         variant="outline"
         size="sm"
