@@ -2,7 +2,7 @@
   "name": "Mayura Garden Services",
   "short_name": "Mayura Admin",
   "description": "Manage your garden services business on the go",
-  "start_url": "/admin",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#052A1D",
