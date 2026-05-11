@@ -31,8 +31,8 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-      <header className="border-b bg-primary sticky top-0 z-40">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b bg-primary sticky top-0 z-40" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="container flex items-center justify-between h-14 px-4">
           <Link to="/agent" className="flex items-center gap-3 shrink-0">
             <img src={mayuraLogo} alt="Mayura Garden Services" className="h-8 sm:h-9 w-auto" />
