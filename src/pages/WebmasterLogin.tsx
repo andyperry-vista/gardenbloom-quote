@@ -229,8 +229,7 @@ export default function WebmasterLogin() {
     <div className="min-h-screen bg-primary flex items-center justify-center p-4 relative">
       <Button
         variant="ghost"
-        className="absolute left-4 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground transition-colors"
-        style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}
+        className="absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground transition-colors"
         onClick={() => navigate("/")}
       >
         <ChevronLeft className="w-4 h-4 mr-1" /> Return to Homepage
