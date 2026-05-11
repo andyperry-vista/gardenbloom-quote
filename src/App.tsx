@@ -74,6 +74,7 @@ const App = () => (
               <Route path="/admin/clients" element={<AdminGuard><Clients /></AdminGuard>} />
               <Route path="/admin/materials" element={<AdminGuard><Materials /></AdminGuard>} />
               <Route path="/admin/tools" element={<AdminGuard><BusinessTools /></AdminGuard>} />
+              <Route path="/admin/emails" element={<AdminGuard><EmailDashboard /></AdminGuard>} />
               <Route path="/admin/settings" element={<AdminGuard><Settings /></AdminGuard>} />
               <Route path="/admin/agents" element={<AdminGuard><AdminAgents /></AdminGuard>} />
               <Route path="/admin/packages" element={<AdminGuard><AdminPackages /></AdminGuard>} />
