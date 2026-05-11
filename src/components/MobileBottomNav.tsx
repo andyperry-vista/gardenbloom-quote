@@ -10,7 +10,7 @@ const tabs: { key: TabKey; label: string; icon: typeof LayoutDashboard; path: st
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
   { key: "quotes", label: "Quotes", icon: FileText, path: "/admin/quote-requests" },
   { key: "jobs", label: "Jobs", icon: Briefcase, path: "/admin/jobs" },
-  { key: "emails", label: "Emails", icon: Mail, path: "/admin/tools" },
+  { key: "emails", label: "Emails", icon: Mail, path: "/admin/emails" },
   { key: "clients", label: "Clients", icon: Users, path: "/admin/clients" },
 ];
 
