@@ -1,18 +1,33 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, Briefcase, Mail, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useQuoteRequests } from "@/hooks/useQuoteRequests";
+import { useJobs } from "@/hooks/useJobs";
 
-const tabs = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
-  { label: "Quotes", icon: FileText, path: "/admin/quote-requests" },
-  { label: "Jobs", icon: Briefcase, path: "/admin/jobs" },
-  { label: "Emails", icon: Mail, path: "/admin/tools" },
-  { label: "Clients", icon: Users, path: "/admin/clients" },
+type TabKey = "dashboard" | "quotes" | "jobs" | "emails" | "clients";
+
+const tabs: { key: TabKey; label: string; icon: typeof LayoutDashboard; path: string }[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+  { key: "quotes", label: "Quotes", icon: FileText, path: "/admin/quote-requests" },
+  { key: "jobs", label: "Jobs", icon: Briefcase, path: "/admin/jobs" },
+  { key: "emails", label: "Emails", icon: Mail, path: "/admin/tools" },
+  { key: "clients", label: "Clients", icon: Users, path: "/admin/clients" },
 ];
 
 export default function MobileBottomNav() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  const { requests } = useQuoteRequests();
+  const { jobs } = useJobs();
+
+  const pendingQuotes = requests.filter((r) => r.status === "new").length;
+  const pendingJobs = jobs.filter((j) => j.status === "scheduled" || j.status === "in_progress").length;
+
+  const badgeFor: Partial<Record<TabKey, number>> = {
+    quotes: pendingQuotes,
+    jobs: pendingJobs,
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-md safe-bottom md:hidden">
@@ -22,12 +37,13 @@ export default function MobileBottomNav() {
             tab.path === "/admin"
               ? pathname === "/admin"
               : pathname === tab.path || pathname.startsWith(`${tab.path}/`);
+          const count = badgeFor[tab.key] ?? 0;
           return (
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
               aria-current={active ? "page" : undefined}
-              aria-label={tab.label}
+              aria-label={count > 0 ? `${tab.label} (${count} pending)` : tab.label}
               className={cn(
                 "relative flex flex-col items-center justify-center gap-0.5 flex-1 text-[10px] font-medium transition-colors",
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
@@ -41,11 +57,19 @@ export default function MobileBottomNav() {
               )}
               <span
                 className={cn(
-                  "flex items-center justify-center rounded-full transition-all",
+                  "relative flex items-center justify-center rounded-full transition-all",
                   active ? "bg-primary/10 px-3 py-1" : "px-2 py-1"
                 )}
               >
                 <tab.icon className={cn("w-5 h-5", active ? "text-primary" : "")} />
+                {count > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold leading-[18px] text-center shadow-sm"
+                  >
+                    {count > 99 ? "99+" : count}
+                  </span>
+                )}
               </span>
               <span className={cn(active && "font-semibold")}>{tab.label}</span>
             </button>
