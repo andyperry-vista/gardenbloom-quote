@@ -17,6 +17,7 @@ const QuoteEditor = lazy(() => import("./pages/QuoteEditor"));
 const QuoteView = lazy(() => import("./pages/QuoteView"));
 const Materials = lazy(() => import("./pages/Materials"));
 const BusinessTools = lazy(() => import("./pages/BusinessTools"));
+const EmailDashboard = lazy(() => import("./pages/EmailDashboard"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Jobs = lazy(() => import("./pages/Jobs"));
