@@ -38,6 +38,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Install dependencies
+        run: deno install
+
       - name: Write .env for tests
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
