@@ -29,7 +29,7 @@ export default function BeforeAfterReveal() {
           <img
             key={i}
             src={slide.src}
-            alt={slide.label}
+            alt={slide.alt}
             width={1600}
             height={800}
             fetchPriority={i === 0 ? "high" : "low"}
