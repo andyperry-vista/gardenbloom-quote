@@ -49,6 +49,7 @@ export default function Unsubscribe() {
         <CardContent className="pt-8 pb-8 space-y-6">
           <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded" />
           <h1 className="text-xl font-semibold text-foreground">Unsubscribe from emails</h1>
+          {status === "loading" && <p className="text-muted-foreground">Verifying…</p>}
           {status === "valid" && (
             <>
               <p className="text-foreground">Are you sure you want to unsubscribe from emails?</p>
