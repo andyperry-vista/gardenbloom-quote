@@ -137,12 +137,14 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background" style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
-      <LanguageToggle />
+    <div className="min-h-screen relative bg-fixed bg-cover bg-center bg-no-repeat bg-[url('/hero-bg.jpg')] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed inset-0 bg-background/85 z-0 pointer-events-none" />
+      <div className="relative z-10">
+        <LanguageToggle />
 
-      {/* Hero */}
-      <section className="relative">
-        <div className="container flex flex-col items-center py-8 md:py-12 text-center">
+        {/* Hero */}
+        <section className="relative">
+          <div className="container flex flex-col items-center py-8 md:py-12 text-center">
           <img
             src={mayuraLogoStacked}
             alt="Mayura Garden Services"
@@ -494,6 +496,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
