@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import mayuraLogo from "@/assets/mayura-logo.png";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 type Status = "loading" | "valid" | "already_unsubscribed" | "invalid" | "success" | "error";
 
@@ -11,6 +12,12 @@ export default function Unsubscribe() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("loading");
+  useDocumentHead({
+    title: "Unsubscribe | Mayura Garden Services",
+    description: "Unsubscribe from Mayura Garden Services emails.",
+    path: "/unsubscribe",
+    noindex: true,
+  });
 
   useEffect(() => {
     if (!token) { setStatus("invalid"); return; }
