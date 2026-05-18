@@ -109,7 +109,8 @@ export default function AgentLogin() {
       </Button>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />
+          <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-4" />
+          <h1 className="sr-only">Real Estate Agent Portal — Mayura Garden Services</h1>
           <CardTitle>Agent Portal</CardTitle>
           <CardDescription>Sign in or create your agent account</CardDescription>
         </CardHeader>
