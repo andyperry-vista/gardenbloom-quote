@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff, ChevronLeft, HardHat } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { toast } from "sonner";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 export default function EmployeeLogin() {
   const [email, setEmail] = useState("");

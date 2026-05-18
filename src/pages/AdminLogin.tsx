@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Lock, Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,12 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Admin Sign In | Mayura Garden Services",
+    description: "Staff-only admin portal for Mayura Garden Services. Authorised users only.",
+    path: "/admin/login",
+    noindex: true,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
