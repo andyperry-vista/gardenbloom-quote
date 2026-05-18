@@ -18,6 +18,12 @@ export default function EmployeeLogin() {
   const [error, setError] = useState("");
   const [forgot, setForgot] = useState(false);
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Crew Sign In | Mayura Garden Services",
+    description: "Crew sign-in portal for Mayura Garden Services team members to log hours and view assigned jobs.",
+    path: "/employee/login",
+    noindex: true,
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
