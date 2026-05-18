@@ -60,7 +60,8 @@ export default function EmployeeLogin() {
 
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-3" />
+          <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-3" />
+          <h1 className="sr-only">Crew Sign In — Mayura Garden Services</h1>
           <CardTitle className="flex items-center justify-center gap-2"><HardHat className="w-5 h-5" /> Crew Sign In</CardTitle>
           <CardDescription>{forgot ? "Reset your password" : "Log hours and view your assigned jobs"}</CardDescription>
         </CardHeader>
