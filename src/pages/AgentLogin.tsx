@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, UserPlus, Loader2, Eye, EyeOff, ChevronLeft } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 export default function AgentLogin() {
   const [tab, setTab] = useState<"login" | "signup">("login");
@@ -21,6 +22,11 @@ export default function AgentLogin() {
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Real Estate Agent Portal | Mayura Garden Services",
+    description: "Sign in or apply for the Mayura Garden Services real estate agent referral portal.",
+    path: "/agent/login",
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

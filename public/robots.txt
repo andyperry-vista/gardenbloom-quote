@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /agent
+Disallow: /employee
+Disallow: /webmaster
 
-Sitemap: https://www.mayuragardenservices.com.au/sitemap.xml
+Sitemap: https://mayuragardenservices.com.au/sitemap.xml

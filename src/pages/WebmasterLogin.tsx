@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Crown, Loader2, Eye, EyeOff, ChevronLeft, ShieldAlert } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 /**
  * Verifies the given user still has the webmaster role.
@@ -104,6 +105,12 @@ export default function WebmasterLogin() {
   const [throttle, setThrottle] = useState<ThrottleState>(() => readThrottle());
   const [now, setNow] = useState<number>(Date.now());
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Webmaster Sign In | Mayura Garden Services",
+    description: "Restricted webmaster console for Mayura Garden Services.",
+    path: "/webmaster/login",
+    noindex: true,
+  });
 
   const lockRemaining = Math.max(0, throttle.lockedUntil - now);
   const isLocked = lockRemaining > 0;

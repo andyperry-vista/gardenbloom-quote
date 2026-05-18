@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff, ChevronLeft, HardHat } from "lucide-react";
 import mayuraLogo from "@/assets/mayura-logo.png";
 import { toast } from "sonner";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 export default function EmployeeLogin() {
   const [email, setEmail] = useState("");
@@ -17,6 +18,12 @@ export default function EmployeeLogin() {
   const [error, setError] = useState("");
   const [forgot, setForgot] = useState(false);
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Crew Sign In | Mayura Garden Services",
+    description: "Crew sign-in portal for Mayura Garden Services team members to log hours and view assigned jobs.",
+    path: "/employee/login",
+    noindex: true,
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

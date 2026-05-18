@@ -141,6 +141,7 @@ export default function LandingPage() {
       <div className="fixed inset-0 bg-background/85 z-0 pointer-events-none" />
       <div className="relative z-10">
         <LanguageToggle />
+        <main>
 
         {/* Hero */}
         <section className="relative">
@@ -470,6 +471,7 @@ export default function LandingPage() {
           )}
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-border py-8">
