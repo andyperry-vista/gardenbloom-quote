@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import mayuraLogo from "@/assets/mayura-logo.png";
+import { useDocumentHead } from "@/hooks/useDocumentHead";
 
 type Status = "loading" | "valid" | "already_unsubscribed" | "invalid" | "success" | "error";
 
@@ -11,6 +12,12 @@ export default function Unsubscribe() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("loading");
+  useDocumentHead({
+    title: "Unsubscribe | Mayura Garden Services",
+    description: "Unsubscribe from Mayura Garden Services emails.",
+    path: "/unsubscribe",
+    noindex: true,
+  });
 
   useEffect(() => {
     if (!token) { setStatus("invalid"); return; }
@@ -40,7 +47,8 @@ export default function Unsubscribe() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md text-center">
         <CardContent className="pt-8 pb-8 space-y-6">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded" />
+          <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded" />
+          <h1 className="text-xl font-semibold text-foreground">Unsubscribe from emails</h1>
           {status === "loading" && <p className="text-muted-foreground">Verifying…</p>}
           {status === "valid" && (
             <>

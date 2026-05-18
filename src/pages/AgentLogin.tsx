@@ -82,7 +82,7 @@ export default function AgentLogin() {
         </Button>
         <Card className="w-full max-w-sm text-center">
           <CardHeader>
-            <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />
+            <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-4" />
             <CardTitle>Check Your Email</CardTitle>
             <CardDescription>
               We've sent a confirmation link to <strong>{email}</strong>. Please verify your email, then log in. Your account will be reviewed by our team.
@@ -109,7 +109,8 @@ export default function AgentLogin() {
       </Button>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />
+          <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-4" />
+          <h1 className="sr-only">Real Estate Agent Portal — Mayura Garden Services</h1>
           <CardTitle>Agent Portal</CardTitle>
           <CardDescription>Sign in or create your agent account</CardDescription>
         </CardHeader>
@@ -135,6 +136,8 @@ export default function AgentLogin() {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-pressed={showPassword}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -174,6 +177,8 @@ export default function AgentLogin() {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-pressed={showPassword}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

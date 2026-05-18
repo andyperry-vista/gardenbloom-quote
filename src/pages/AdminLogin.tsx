@@ -68,7 +68,8 @@ export default function AdminLogin() {
       </Button>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />
+          <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-4" />
+          <h1 className="sr-only">Admin Sign In — Mayura Garden Services</h1>
           <CardTitle className="flex items-center justify-center gap-2">
             <Lock className="w-4 h-4" /> Admin Access
           </CardTitle>
@@ -100,6 +101,8 @@ export default function AdminLogin() {
                   type="button"
                   tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

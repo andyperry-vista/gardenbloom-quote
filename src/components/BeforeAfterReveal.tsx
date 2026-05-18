@@ -10,9 +10,9 @@ export default function BeforeAfterReveal() {
   const { settings } = useSettings();
 
   const slides = [
-    { src: settings.heroBeforeImage || heroBefore, label: "Before", variant: "outline" as const },
-    { src: settings.heroAfterImage || heroAfter, label: "After", variant: "default" as const },
-    { src: settings.heroProfessionalImage || heroProfessional, label: "Professional Shot", variant: "secondary" as const },
+    { src: settings.heroBeforeImage || heroBefore, label: "Before", alt: "Garden before styling by Mayura Garden Services", variant: "outline" as const },
+    { src: settings.heroAfterImage || heroAfter, label: "After", alt: "Garden after styling by Mayura Garden Services", variant: "default" as const },
+    { src: settings.heroProfessionalImage || heroProfessional, label: "Professional Shot", alt: "Professionally photographed styled garden ready for sale", variant: "secondary" as const },
   ];
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function BeforeAfterReveal() {
           <img
             key={i}
             src={slide.src}
-            alt={slide.label}
+            alt={slide.alt}
             width={1600}
             height={800}
             fetchPriority={i === 0 ? "high" : "low"}

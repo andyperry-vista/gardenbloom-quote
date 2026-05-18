@@ -155,7 +155,7 @@ export default function LandingPage() {
             decoding="async"
             className="w-full max-w-sm md:max-w-md h-auto mb-8 px-4 sm:px-0 shadow-none object-scale-down"
           />
-          <h1 className="sr-only">Mayura Garden Services</h1>
+          <h1 className="sr-only">Mayura Garden Services — Professional Pre-sale Garden Styling in Melbourne</h1>
           <p className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-8">
             {t("heroTagline")}
           </p>
