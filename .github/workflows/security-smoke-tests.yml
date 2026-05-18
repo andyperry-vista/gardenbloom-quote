@@ -23,6 +23,9 @@ concurrency:
   group: security-smoke-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   smoke-tests:
     name: RLS / JWT / Storage smoke tests
