@@ -42,13 +42,13 @@ jobs:
           deno-version: v2.x
 
       - name: Install Deno dependencies for security-smoke-tests
-        run: deno install --allow-net --allow-env --allow-read supabase/functions/security-smoke-tests/
+        run: deno install --global --allow-net --allow-env --allow-read supabase/functions/security-smoke-tests/
 
       - name: Install Deno dependencies for storage-rls-regression
-        run: deno install --allow-net --allow-env --allow-read supabase/functions/storage-rls-regression/
+        run: deno install --global --allow-net --allow-env --allow-read supabase/functions/storage-rls-regression/
 
       - name: Install Deno dependencies for process-email-queue
-        run: deno install --allow-net --allow-env --allow-read supabase/functions/process-email-queue/
+        run: deno install global-- --allow-net --allow-env --allow-read supabase/functions/process-email-queue/
       - name: Install dependencies
         run: deno install --node-modules-dir
 
