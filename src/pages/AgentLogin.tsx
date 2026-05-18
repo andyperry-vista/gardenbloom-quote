@@ -82,7 +82,7 @@ export default function AgentLogin() {
         </Button>
         <Card className="w-full max-w-sm text-center">
           <CardHeader>
-            <img src={mayuraLogo} alt="Mayura" className="h-16 w-auto mx-auto rounded mb-4" />
+            <img src={mayuraLogo} alt="Mayura Garden Services Logo" className="h-16 w-auto mx-auto rounded mb-4" />
             <CardTitle>Check Your Email</CardTitle>
             <CardDescription>
               We've sent a confirmation link to <strong>{email}</strong>. Please verify your email, then log in. Your account will be reviewed by our team.
