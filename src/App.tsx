@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import LandingPage from "./pages/LandingPage";
+import { Navigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Lazy-load non-landing routes to reduce initial JS bundle and improve LCP
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
@@ -47,6 +49,13 @@ const EmployeeHome = lazy(() => import("./pages/EmployeeHome"));
 const EmployeeJobs = lazy(() => import("./pages/EmployeeJobs"));
 const EmployeeJobDetail = lazy(() => import("./pages/EmployeeJobDetail"));
 const EmployeeHours = lazy(() => import("./pages/EmployeeHours"));
+const AdminCard = lazy(() => import("./pages/AdminCard"));
+
+function AdminHome() {
+  const isMobile = useIsMobile();
+  if (isMobile) return <Navigate to="/admin/card" replace />;
+  return <Dashboard />;
+}
 
 const queryClient = new QueryClient();
 
@@ -62,7 +71,9 @@ const App = () => (
               <Route path="/" element={<LandingPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/webmaster/login" element={<WebmasterLogin />} />
-              <Route path="/admin" element={<AdminGuard><Dashboard /></AdminGuard>} />
+              <Route path="/admin" element={<AdminGuard><AdminHome /></AdminGuard>} />
+              <Route path="/admin/card" element={<AdminGuard><AdminCard /></AdminGuard>} />
+              <Route path="/admin/dashboard" element={<AdminGuard><Dashboard /></AdminGuard>} />
               <Route path="/admin/quotes/new" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
               <Route path="/admin/quotes/:id" element={<AdminGuard><QuoteView /></AdminGuard>} />
               <Route path="/admin/quotes/:id/edit" element={<AdminGuard><QuoteEditor /></AdminGuard>} />
