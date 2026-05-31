@@ -1,47 +1,43 @@
+## Goal
 
+On mobile, the admin portal opens to a new **Contact Card** menu screen — a polished digital business card with the business's contact details, shareable via QR, vCard download, and native share sheet. Desktop admin behaviour is unchanged.
 
-## Plan: Streamline Admin Workflow — Quote-to-Job Flow & Unified Email Composer
+## Behaviour
 
-### Problem
-1. **QuoteView** imports a non-existent `mayura-logo.jpeg` (should be `.png`)
-2. The **Business Tools** email section has separate manual forms for each template — no client picker, no PDF attachment, too many fields to fill by hand
-3. The quote-to-job button works but is only visible on `draft`/`sent` — should be more prominent
-4. Missing templates: "Booking Confirmation", "Rate & Review", "Tax Invoice"
+- New route `/admin/card` rendered inside the existing admin layout (auth-guarded).
+- On mobile only, visiting `/admin` redirects to `/admin/card`. Desktop continues to land on the existing Dashboard.
+- Card screen shows the business defaults:
+  - Mayura Garden Services + tagline
+  - Nick — 0413 806 551
+  - nicholas@mayuragardenservices.com.au
+  - ABN 22 046 912 532
+  - Website + WeChat QR (reuse `/wechat-qr.jpg`)
+- Actions on the card:
+  - **Save to contacts** — generates a `.vcf` (vCard 3.0) and triggers download.
+  - **Share** — uses `navigator.share` when available (sends link + vCard), falls back to copy-link toast.
+  - **Show QR** — large QR encoding the vCard URL / website for someone else to scan.
+  - Tap-to-call and tap-to-email shortcuts.
+- "Open full dashboard" link at the bottom so admins can still reach `/admin/dashboard`-style views.
+- Add a "Contact Card" entry to the mobile bottom nav so it's reachable after navigating away.
 
-### What Will Change
+## Visual direction
 
-**1. Fix broken logo import in QuoteView**
-- Change `mayura-logo.jpeg` to `mayura-logo.png` in `src/pages/QuoteView.tsx`
+- Forest green (#052A1D) background with subtle gold (#BFA358) gradient sheen — looks like a premium collectible card, not literally an NFT.
+- Horizontal Mayura logo at top, Great Vibes accent flourish, DM Sans body.
+- Rounded-2xl card with soft shadow, gold hairline border, holographic gradient highlight on hover/tilt (CSS only, no extra libs).
+- Action buttons: primary gold "Save contact", outline "Share", ghost "Show QR".
 
-**2. Create a Quote PDF generator** (`src/lib/generateQuotePdf.ts`)
-- Similar to `generateInvoicePdf.ts` — branded A4 PDF with quote details, line items, totals
-- Returns a Blob (for download or potential future use) and also triggers download
+## Technical notes
 
-**3. Add "Download PDF" button to QuoteView**
-- Add a Download PDF button alongside the existing Send/Create Job buttons
+- New file `src/pages/AdminCard.tsx` + small `src/lib/vcard.ts` helper that builds and downloads a vCard blob.
+- QR rendering via existing `/wechat-qr.jpg` for WeChat plus a generated QR for the vCard — add lightweight `qrcode` npm package (no API key needed) and render to `<canvas>`.
+- Route added in `src/App.tsx` (lazy-loaded).
+- Mobile redirect handled inside `Dashboard.tsx` (or a tiny wrapper) using existing `useIsMobile()` hook + `<Navigate to="/admin/card" replace />` when mobile.
+- Extend `MobileBottomNav` with a "Card" tab (replace or add alongside an existing one — will keep 5 tabs, swap "Clients" → "Card" to stay at 5).
+- No DB / backend changes. No new secrets. No changes to business logic.
 
-**4. Rebuild Business Tools email section as a unified Email Composer**
-Replace the 4 separate form tabs with a single smart form:
-- **Step 1 — Pick scenario** from a dropdown: Sending Quote, Booking Confirmation, Payment Request, Payment Follow-Up, Job Completion, Rate & Review, Tax Invoice
-- **Step 2 — Pick client** from a dropdown (populated from `useClients()` hook), which auto-fills the email address and first name
-- **Step 3 — Optional notes** textarea for custom message content
-- **Step 4 — Send** button that invokes `send-transactional-email` with the correct template name and pre-filled `templateData` (clientName from the selected client)
-- The form will show which PDF would be relevant (quote or invoice) based on scenario, with a note that the PDF link is included in the email
+## Out of scope
 
-**5. Create missing email templates**
-- `booking-confirmation.tsx` — confirms a job booking with the client
-- `rate-review.tsx` — asks client to leave a review after job completion
-- `tax-invoice.tsx` — sends tax invoice details to client
-- Update `registry.ts` to register all new templates
-- Deploy edge functions after changes
-
-**6. Keep GST/BAS section** unchanged in Business Tools
-
-### Technical Details
-
-- **Files modified:** `QuoteView.tsx`, `BusinessTools.tsx`, `registry.ts`
-- **Files created:** `generateQuotePdf.ts`, `booking-confirmation.tsx`, `rate-review.tsx`, `tax-invoice.tsx`
-- **No database changes needed** — all templates use existing data
-- **Edge functions redeployed** after template changes
-- The unified email composer uses `useClients()` for the client dropdown and `useQuotes()`/`useInvoices()` to optionally link a specific quote or invoice to the email context
-
+- Real blockchain NFT minting / wallet connect.
+- Per-user editable card fields (uses business defaults only).
+- Changes to agent or employee portals.
