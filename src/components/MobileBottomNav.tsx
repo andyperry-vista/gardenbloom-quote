@@ -1,17 +1,17 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Briefcase, Mail, Users } from "lucide-react";
+import { LayoutDashboard, FileText, Briefcase, Mail, IdCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuoteRequests } from "@/hooks/useQuoteRequests";
 import { useJobs } from "@/hooks/useJobs";
 
-type TabKey = "dashboard" | "quotes" | "jobs" | "emails" | "clients";
+type TabKey = "card" | "quotes" | "jobs" | "emails" | "dashboard";
 
 const tabs: { key: TabKey; label: string; icon: typeof LayoutDashboard; path: string }[] = [
-  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+  { key: "card", label: "Card", icon: IdCard, path: "/admin/card" },
   { key: "quotes", label: "Quotes", icon: FileText, path: "/admin/quote-requests" },
   { key: "jobs", label: "Jobs", icon: Briefcase, path: "/admin/jobs" },
   { key: "emails", label: "Emails", icon: Mail, path: "/admin/emails" },
-  { key: "clients", label: "Clients", icon: Users, path: "/admin/clients" },
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
 ];
 
 export default function MobileBottomNav() {
@@ -34,9 +34,7 @@ export default function MobileBottomNav() {
       <div className="flex items-stretch justify-around h-16">
         {tabs.map((tab) => {
           const active =
-            tab.path === "/admin"
-              ? pathname === "/admin"
-              : pathname === tab.path || pathname.startsWith(`${tab.path}/`);
+            pathname === tab.path || pathname.startsWith(`${tab.path}/`);
           const count = badgeFor[tab.key] ?? 0;
           return (
             <button
