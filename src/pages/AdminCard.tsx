@@ -10,7 +10,7 @@ import mayuraLogo from "@/assets/mayura-logo-horizontal.png";
 import { buildVCard, downloadVCard, type VCardData } from "@/lib/vcard";
 
 const CONTACT: VCardData = {
-  fullName: "Nicholas Mayura",
+  fullName: "Nicholas Di Pietro",
   organization: "Mayura Garden Services",
   title: "Pre-sale Garden Styling & Landscaping",
   phone: "+61413806551",
@@ -117,7 +117,7 @@ export default function AdminCard() {
                   Digital Contact Card
                 </p>
                 <h1 className="font-display text-3xl" style={{ color: "#F5EBD0" }}>
-                  Nicholas Mayura
+                  Nicholas Di Pietro
                 </h1>
                 <p className="text-xs" style={{ color: "rgba(245,235,208,0.7)" }}>
                   Pre-sale Garden Styling &amp; Landscaping
@@ -142,7 +142,7 @@ export default function AdminCard() {
           {/* Actions */}
           <div className="grid grid-cols-3 gap-2 mt-5">
             <Button
-              onClick={() => downloadVCard(CONTACT, "nicholas-mayura.vcf")}
+              onClick={() => downloadVCard(CONTACT, "nicholas-di-pietro.vcf")}
               className="h-12 flex-col gap-0.5 text-[11px]"
               style={{ background: "#BFA358", color: "#052A1D" }}
             >
